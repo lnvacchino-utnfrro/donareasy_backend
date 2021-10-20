@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from ABMs.views import altaDonante
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('abmDonante/', altaDonante),
 ]

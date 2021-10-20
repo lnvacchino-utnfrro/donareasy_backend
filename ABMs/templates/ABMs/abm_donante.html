@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <title>ABM de Donante</title>
+    </head>
+
+    <body>
+        <h1>Contáctanos</h1>
+        <form action="/abmDonante/" method="POST"> {% csrf_token %}
+            <p>Nombre: 
+                <input type="text" name="nombre">
+            </p>
+            <p>Apellido: 
+                <input type="text" name="apellido">
+            </p>
+            <p>Email: 
+                <input type="text" name="email">
+            </p>
+            <p>Edad: 
+                <input type="text" name="edad">
+            </p>
+            <input type="submit" value="Enviar">
+    </body>
+</html>
