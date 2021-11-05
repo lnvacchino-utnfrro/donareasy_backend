@@ -1,10 +1,14 @@
 <html>
     <head>
-        <title>ALTA de Donante</title>
+        <title>BAJA de Donante</title>
     </head>
 
     <body>
-        <h1>Donante Borrado</h1>
+        <p>Seguro que quieres borrar al donante {{nombre}}?</p>
+
+    <form action="" method="POST">                {% csrf_token %}
+    <input type="submit" action="" value="Yes, delete." />
+</form>
     </body>
 </html>
 

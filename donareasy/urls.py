@@ -15,10 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ABMs.views import altaDonante, buscarDonante
+from ABMs.views import altaDonante, buscarDonante, bajaDonante
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('alta_donante/', altaDonante),
     path('donante/<int:id_donante>/',buscarDonante),
+    path('baja_donante/<int:id_donante>/',bajaDonante),
 ]
