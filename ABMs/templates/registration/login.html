@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>Ingresar</title>
+    </head>
+
+    <body>
+        <h1>Completa con tus datos</h1>
+        <form method="POST"> {% csrf_token %}
+            <label for="usuario">
+                Usuario
+                <input type="text" name="username">
+            </label>
+            <label for="contraseña">
+                Contraseña
+                <input type="password" name="password">
+            </label>
+            <input type="submit" value="Ingresar">
+    </body>
+</html>
+

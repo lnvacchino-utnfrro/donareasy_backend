@@ -2,8 +2,13 @@ from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from .models import Donante
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
+def index(request):
+    return render(request, "ABMs/index.html")
+
 def altaDonante(request):
     # if this is a POST request we need to process the form data
     if request.method=="POST":
@@ -57,7 +62,8 @@ def modificarDonante(request,id_donante):
     else:
         donante = Donante.objects.get(id__exact = id_donante)
 
-        diccionario = { "nombre":   donante.nombre,
+        diccionario = { "id_donante": donante.id,
+                        "nombre":   donante.nombre,
                         "apellido": donante.apellido,
                         "email":    donante.email,
                         "edad":     donante.edad}
