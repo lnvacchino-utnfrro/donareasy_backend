@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ABMs',
+    'login',
+    'rest_framework',
+    #'<nombre_app>.apps.<nombre_libreria>Config',
 ]
 
 MIDDLEWARE = [
@@ -128,3 +130,10 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# La paginación le permite controlar cuántos objetos por página se devuelven.
+# Para habilitarlo, agregue las siguientes líneas atutorial/settings.py
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
