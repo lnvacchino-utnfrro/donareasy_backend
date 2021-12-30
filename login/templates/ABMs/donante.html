@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>Búsqueda de Donante</title>
+    </head>
+
+    <body>
+        <h1>Datos de un Donante</h1>
+        <p>Nombre: {{nombre}} </p>
+        <p>Apellido: {{apellido}} </p>
+        <p>Email: {{email}} </p>
+        <p>Edad: {{edad}} </p>
+        <form action="/alta_donante" method="GET">
+            <input type="submit" value="altaDonante">
+        </form>
+        <input type="submit" value='modif' action="modificarDonante">
+        <form action="/baja_donante/" {{id}} method="GET">
+            <input type="submit" value="bajaDonante">
+        </form>
+    </body>
+</html>
+

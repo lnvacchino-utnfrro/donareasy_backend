@@ -110,9 +110,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'es-eu'
+LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'America/Buenos_Aires'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -131,9 +131,13 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+<<<<<<< HEAD
 # La paginación le permite controlar cuántos objetos por página se devuelven.
 # Para habilitarlo, agregue las siguientes líneas atutorial/settings.py
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
+=======
+LOGIN_REDIRECT_URL = '/alta_donante/'
+>>>>>>> main
