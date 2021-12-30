@@ -131,13 +131,9 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-<<<<<<< HEAD
 # La paginación le permite controlar cuántos objetos por página se devuelven.
 # Para habilitarlo, agregue las siguientes líneas atutorial/settings.py
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
-=======
-LOGIN_REDIRECT_URL = '/alta_donante/'
->>>>>>> main

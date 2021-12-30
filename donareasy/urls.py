@@ -15,24 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-<<<<<<< HEAD
 from rest_framework import routers
 #from <libreria> import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', include('login.urls')),
-=======
-from ABMs.views import altaDonante, buscarDonante, bajaDonante, modificarDonante
-from django.contrib.auth import views as auth_views
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('alta_donante/', altaDonante),
-    path('donante/<int:id_donante>/',buscarDonante),
-    path('baja_donante/<int:id_donante>/',bajaDonante),
-    path('modif_donante/<int:id_donante>/',modificarDonante),
-    path('accounts/', include('django.contrib.auth.urls')),
-
->>>>>>> main
 ]
