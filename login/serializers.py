@@ -4,9 +4,7 @@ from rest_framework import serializers
 from rest_framework.utils.field_mapping import needs_label
 from login.models import Donante
 
-class DonanteSerializer(serializers.Serializer):
+class DonanteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Donante
-        fields = [] #campos
-
-    
+        fields = ['id', 'nombre', 'apellido', 'email', 'edad'] 

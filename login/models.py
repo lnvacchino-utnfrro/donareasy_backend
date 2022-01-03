@@ -17,8 +17,6 @@ class Donante(models.Model):
         verbose_name = 'Donante'
         verbose_name_plural = 'Donantes'
 
-"""
-    # ? Hay que programar la función para el alta de instancias
     def save(self, *args, **kwargs):
         nombre = self.nombre
         apellido = self.apellido
@@ -26,5 +24,3 @@ class Donante(models.Model):
         edad = self.edad
         #self.highlighted = highlight(self.code, lexer, formatter)
         super(Donante, self).save(*args, **kwargs)
-"""
-
