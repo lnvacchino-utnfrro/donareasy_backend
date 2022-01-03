@@ -55,6 +55,7 @@ class Donante(models.Model):
         verbose_name = 'Donante'
         verbose_name_plural = 'Donantes'
 
+<<<<<<< HEAD
     # def save(self, *args, **kwargs):
     #     nombre = self.nombre
     #     apellido = self.apellido
@@ -86,3 +87,12 @@ class Institucion(models.Model):
         ordering = ['nombre']
         verbose_name = 'Institucion'
         verbose_name_plural = 'Instituciones'
+=======
+    def save(self, *args, **kwargs):
+        nombre = self.nombre
+        apellido = self.apellido
+        email = self.email
+        edad = self.edad
+        #self.highlighted = highlight(self.code, lexer, formatter)
+        super(Donante, self).save(*args, **kwargs)
+>>>>>>> e1dfdaf (Se completaron los demás métodos para el ABM de Donantes)

@@ -7,6 +7,7 @@ from login.models import Donante, Institucion
 class DonanteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Donante
+<<<<<<< HEAD
         fields = ['id', 'nombre', 'apellido','usuario']
 
 class UserSerializer(serializers.ModelSerializer):
@@ -23,3 +24,6 @@ class InstitucionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institucion
         fields = ['id', 'nombre', 'usuario']
+=======
+        fields = ['id', 'nombre', 'apellido', 'email', 'edad'] 
+>>>>>>> e1dfdaf (Se completaron los demás métodos para el ABM de Donantes)
