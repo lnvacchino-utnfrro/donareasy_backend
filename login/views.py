@@ -4,7 +4,6 @@ from login.models import Donante
 from login.serializers import DonanteSerializer, UserSerializer
 from django.contrib.auth.models import User
 
-# Create your views here.
 class DonanteList(generics.ListCreateAPIView):
     queryset = Donante.objects.all()
     serializer_class = DonanteSerializer
