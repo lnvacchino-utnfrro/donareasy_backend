@@ -7,4 +7,9 @@ from login.models import Donante
 class DonanteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Donante
-        fields = ['id', 'nombre', 'apellido', 'email', 'edad'] 
+        fields = ['id', 'nombre', 'apellido','usuario']
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id','username','email','password','first_name','last_name']
