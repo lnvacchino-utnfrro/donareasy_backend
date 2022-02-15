@@ -12,7 +12,7 @@ class DonanteDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Donante.objects.all()
     serializer_class = DonanteSerializer
 
-class UserList(generics.ListCreateAPIView):
+class UserCreate(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -27,3 +27,12 @@ class InstitucionList(generics.ListCreateAPIView):
 class InstitucionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Institucion.objects.all()
     serializer_class = InstitucionSerializer
+
+# class UserCreate(generics.CreateAPIView):
+#     #queryset = User.objects.all()
+#     serializer_class = UserSerializer
+
+#     def post(self,request):
+#         serializer = self.serializer_class(data = request.data)
+
+

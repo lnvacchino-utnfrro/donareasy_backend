@@ -12,13 +12,13 @@ class DonanteSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','username','email','password','first_name','last_name']
+        fields = ['id','username','first_name','last_name','email','password','groups']
 
 class UserAuthSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username','email','first_name','last_name']
-        
+
 class InstitucionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institucion
