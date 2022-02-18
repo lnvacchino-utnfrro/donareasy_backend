@@ -35,4 +35,15 @@ class InstitucionDetail(generics.RetrieveUpdateDestroyAPIView):
 #     def post(self,request):
 #         serializer = self.serializer_class(data = request.data)
 
+#* Lo que sigue son las vistas sólo para la creación de instituciones/donantes
+class DonanteCreate(generics.CreateAPIView):
+    queryset = Donante.objects.all()
+    serializer_class = DonanteSerializer
+
+class InstitucionCreate(generics.CreateAPIView):
+    queryset = Institucion.objects.all()
+    serializer_class = InstitucionSerializer
+#* Fin ----
+
+
 

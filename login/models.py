@@ -1,3 +1,7 @@
+import binascii
+import os
+import datetime
+
 from django.db import models
 from django.db.models.fields import EmailField
 from django.contrib.auth.models import User
@@ -86,3 +90,28 @@ class Institucion(models.Model):
         ordering = ['nombre']
         verbose_name = 'Institucion'
         verbose_name_plural = 'Instituciones'
+
+class CodigoRecuperacion(models.Model):
+    email = models.EmailField(blank=True,max_length=255,verbose_name='mail_usuario')
+    codigo = models.CharField(blank=True,max_length=20,verbose_name='codigo_recuperacion')
+    activo = models.BooleanField(blank=True,verbose_name='codigo_activo')
+    fecha_expiracion = models.DateField(blank=True,verbose_name='fecha_expiracion')
+    usuario = models.ForeignKey(User, verbose_name=("id_usuario"), on_delete=models.CASCADE, related_name='usuario_codigo_recuperacion', null=True)
+
+    def save(self, *args, **kwargs):
+        print('ENTRÓ EN EL SAVE DEL MODELO')
+        print(self.email)
+        print(self.usuario)
+        print(self.id)
+        if self.id is None:
+            if self.email is None and self.usuario is None:
+                return
+            self.codigo = binascii.hexlify(os.urandom(10)).decode('utf-8')
+            self.activo = True
+            self.fecha_expiracion = datetime.datetime.now() + datetime.timedelta(days=2)
+            print('PARECE QUE SE GUARDÓ')
+        super().save(*args, **kwargs)
+
+    def delete(self):
+        self.activo = False
+        self.save()
