@@ -1,4 +1,9 @@
 from datetime import datetime
+from urllib import response
+
+from django.contrib.sessions.models import Session
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist, EmptyResultSet, MultipleObjectsReturned
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -6,10 +11,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.views import APIView
 
-from login.serializers import CodigoRecuperacionSerializer, EmailSerializer, UserAuthSerializer
+from login.serializers import CodigoRecuperacionSerializer, EmailSerializer, UserAuthSerializer, UserPasswordSerializer
 from login.models import CodigoRecuperacion
-from django.contrib.sessions.models import Session
-from django.contrib.auth.models import User
 
 class Login(ObtainAuthToken):
 
@@ -104,3 +107,59 @@ class RecuperacionContraseña(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                     
+
+class CambiarContraseñaRecuperada(APIView):
+    serializer_class = UserPasswordSerializer
+    
+    def get(self, request, code):
+        try:
+            cod_rec = CodigoRecuperacion.objects.get(codigo=code)
+        except ObjectDoesNotExist:
+            return Response({'mensaje':'Código Incorrecto'},status=status.HTTP_400_BAD_REQUEST)
+        except EmptyResultSet:
+            return Response({'mensaje':'Código Incorrecto'},status=status.HTTP_400_BAD_REQUEST)
+        except MultipleObjectsReturned:
+            return Response({'mensaje':'Código Incorrecto'},status=status.HTTP_400_BAD_REQUEST)
+
+        if not(cod_rec.activo):
+            return Response({'mensaje':'El código no se encunetra activo'},status=status.HTTP_401_UNAUTHORIZED)
+
+        if cod_rec.fecha_expiracion < datetime.now().date():
+            return Response({'mensaje':'El código se encunetra caducado'},status=status.HTTP_401_UNAUTHORIZED)
+        print(cod_rec.usuario.get_username())
+        #cod_rec_serializer = UserPasswordSerializer(cod_rec.usuario.get_username())
+        #cod_rec_serializer = UserPasswordSerializer(data={'username':cod_rec.usuario.get_username()})
+        #print(cod_rec_serializer)
+        #if cod_rec_serializer.is_valid():
+        #    return Response(cod_rec_serializer.data,status=status.HTTP_200_OK)
+        #else:
+        #    print('UPS2')
+        #    return Response({'mensaje':cod_rec_serializer.error_messages},status=status.HTTP_409_CONFLICT)
+        return Response({'username':cod_rec.usuario.get_username()},status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        rec_password_serializer = UserPasswordSerializer(data = request.data)
+        print(rec_password_serializer)
+        print(rec_password_serializer.is_valid())
+        if rec_password_serializer.is_valid():
+            print('HASTA ACÁ LLEGÓ')
+            rec_password_serializer.save()
+            print('Y POR ACÁ TAMBIÉN')
+            return Response({'mensaje':'La contraseña fue cambiada con éxito'},status=status.HTTP_201_CREATED)
+        
+        return Response({'mensaje':rec_password_serializer.error_messages},status=status.HTTP_409_CONFLICT)
+
+# class ChangePasswordView(UpdateAPIView):
+#     serializer_class = RecuperarContraseñaSerializer
+
+#     def update(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.save()
+#         # if using drf authtoken, create a new token 
+#         if hasattr(user, 'auth_token'):
+#             user.auth_token.delete()
+#         token, created = Token.objects.get_or_create(user=user)
+#         # return new token
+#         return Response({'token': token.key}, status=status.HTTP_200_OK)
