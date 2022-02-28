@@ -3,8 +3,8 @@ from django.db.models.fields import EmailField
 from django.contrib.auth.models import User
 
 class Donante(models.Model):
-    nombre = models.CharField(blank=True,max_length=100,verbose_name='nombre')
-    apellido = models.CharField(blank=True,max_length=100,verbose_name='apellido')
+    nombre = models.CharField(max_length=100,verbose_name='nombre')
+    apellido = models.CharField(max_length=100,verbose_name='apellido')
     fecha_nacimiento = models.DateField(blank=True, verbose_name='fecha_nacimiento', null=True)
     dni = models.CharField(blank=True,max_length=8,verbose_name='dni', null=True) #? El dni no puede ser null
     domicilio = models.CharField(blank=True,max_length=100,verbose_name='domicilio', null=True)
@@ -19,6 +19,24 @@ class Donante(models.Model):
 
     def __str__(self):
         return self.nombre
+
+    def __eq__(self, other):
+        return self.nombre == other.nombre \
+            and self.apellido == other.apellido \
+            and self.fecha_nacimiento == other.fecha_nacimiento \
+            and self.dni == other.dni \
+            and self.domicilio == other.domicilio \
+            and self.localidad == other.localidad \
+            and self.provincia == other.provincia \
+            and self.pais == other.pais \
+            and self.telefono == other.telefono \
+            and self.estado_civil == other.estado_civil \
+            and self.genero == other.genero \
+            and self.ocupacion == other.ocupacion \
+            and self.usuario == other.usuario
+
+                
+        
 
     class Meta:
         ordering = ['nombre']
