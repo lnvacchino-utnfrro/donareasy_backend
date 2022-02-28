@@ -1,3 +1,3 @@
 from django.contrib import admin
 
-#admin.site.register(Donante)
+# Register your models here.
