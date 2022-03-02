@@ -1,3 +1,4 @@
+"""Pruebas de integración"""
 from datetime import date
 
 from django.urls import reverse
@@ -8,14 +9,33 @@ from rest_framework import status
 
 from baseApp.models import Donante
 
-class DonantesListTestCase(APITestCase):
+# pylint: disable=no-member
+
+class DonantesListCreateTestCase(APITestCase):
+    """
+    Pruebas realizadas sobre el listado y la creación de instancias de la
+    clase Donante.
+    """
     def setUp(self):
+        """
+        Preparo algunas variables utilizadas en las pruebas de la clase.
+        Inicio el cliente, creo el usuario john (que será el que tenga el rol
+        de Donante) y genero la url .../donantes/.
+        """
         self.client = APIClient()
-        self.user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword', first_name='john',last_name='lennon')
+        self.user = User.objects.create_user('john',
+                                             'lennon@thebeatles.com',
+                                             'johnpassword',
+                                             first_name='john',
+                                             last_name='lennon')
         self.user.save()
         self.url = reverse('donantes-list')
 
     def test_crear_donante(self):
+        """
+        Valido que al realizar un POST con todos los datos de un Donante,
+        se genere una instancia Donante en la Base de Datos.
+        """
         data = {
             'nombre': self.user.first_name,
             'apellido': self.user.last_name,
@@ -31,15 +51,19 @@ class DonantesListTestCase(APITestCase):
             'ocupacion': 'reportero deportivo',
             'usuario': self.user.id
         }
-        response = self.client.post(self.url,data)
+        response = self.client.post(self.url, data)
         cantidad = Donante.objects.count()
         if cantidad > 0:
             donante = Donante.objects.get(id=response.data['id'])
-        self.assertEqual(cantidad,1)
+        self.assertEqual(cantidad, 1)
         self.assertEqual(donante.nombre, self.user.first_name)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_no_crear_donante_con_todos_nulos(self):
+        """
+        Valido que al realizar un POST sin ningún dato, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donante en la Base de Datos.
+        """
         data = {
             'nombre': 'null',
             'apellido': 'null',
@@ -55,12 +79,17 @@ class DonantesListTestCase(APITestCase):
             'ocupacion': 'null',
             'usuario': 'null' #0
         }
-        response = self.client.post(self.url,data)
+        response = self.client.post(self.url, data)
         cantidad = Donante.objects.count()
-        self.assertEqual(cantidad,0)
+        self.assertEqual(cantidad, 0)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_no_crear_donante_con_todos_blancos(self):
+        """
+        Valido que al realizar un POST con todos los datos blancos, devuelva
+        un mensaje HTTP_400 sin generar una instancia Donante en la Base de
+        Datos.
+        """
         data = {
             'nombre': '',
             'apellido': '',
@@ -82,7 +111,13 @@ class DonantesListTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_crear_donante_con_datos_minimos(self):
-        # Esto se debe definir según nuetro criterio
+        """
+        Valido que al realizar un POST con los datos mínimos necesarios para
+        registrar un Donante, se genere una instancia Donante en la Base de
+        Datos.
+        """
+
+        #? Esto se debe definir según nuetro criterio
         data = {
             'nombre': self.user.first_name,
             'apellido': self.user.last_name,
@@ -100,7 +135,7 @@ class DonantesListTestCase(APITestCase):
         }
         response = self.client.post(self.url,data)
         cantidad = Donante.objects.count()
-        if cantidad>0:
+        if cantidad > 0:
             donante = Donante.objects.get(id=response.data['id'])
         self.assertEqual(cantidad,1)
         self.assertIsNone(response.data['fecha_nacimiento'])
@@ -108,6 +143,13 @@ class DonantesListTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_nombre_apellido_usuario_donante(self):
+        """
+        Valido que al realizar un POST con los datos mínimos necesarios para
+        registrar un Donante, se genere una instancia Donante en la Base de
+        Datos vinculado a un usuario ya registrado (campo usuario) y que tenga
+        el mismo nombre y apellido que los registrados para el usuario
+        asociado.
+        """
         data = {
             'nombre': self.user.first_name,
             'apellido': self.user.last_name,
@@ -133,6 +175,10 @@ class DonantesListTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_listar_donante(self):
+        """
+        Valido que al realizar un GET después de registrar un solo Donante en
+        la Base de Datos, devuelva sólo los datos del Donante registrado.
+        """
         donante = Donante.objects.create(
             nombre=self.user.first_name,
             apellido=self.user.last_name,
@@ -154,18 +200,24 @@ class DonantesListTestCase(APITestCase):
         donante_response = response.data['results'][0]
         self.assertEqual(donante.nombre,donante_response['nombre'])
         self.assertEqual(donante.apellido,donante_response['apellido'])
-        self.assertEqual(donante.fecha_nacimiento,date.fromisoformat(donante_response['fecha_nacimiento']))
+        self.assertEqual(donante.fecha_nacimiento,
+                    date.fromisoformat(donante_response['fecha_nacimiento']))
         self.assertEqual(donante.dni,donante_response['dni'])
         self.assertEqual(donante.domicilio,donante_response['domicilio'])
         self.assertEqual(donante.localidad,donante_response['localidad'])
         self.assertEqual(donante.provincia,donante_response['provincia'])
         self.assertEqual(donante.pais,donante_response['pais'])
         self.assertEqual(donante.telefono,donante_response['telefono'])
-        self.assertEqual(donante.estado_civil,donante_response['estado_civil'])
+        self.assertEqual(donante.estado_civil,
+                    donante_response['estado_civil'])
         self.assertEqual(donante.ocupacion,donante_response['ocupacion'])
         self.assertEqual(donante.usuario.id,donante_response['usuario'])
 
     def test_listar_varios_donantes(self):
+        """
+        Valido que al realizar un GET después de registrar dos Donantes en la
+        Base de Datos, devuelva los datos de los donantes registrados.
+        """
         donante1 = Donante.objects.create(
             nombre=self.user.first_name,
             apellido=self.user.last_name,
@@ -180,7 +232,11 @@ class DonantesListTestCase(APITestCase):
             ocupacion='mecanico dental',
             usuario=self.user
         )
-        user2 = User.objects.create_user('paul', 'paul@thebeatles.com', 'paulpassword', first_name='paul',last_name='mccarny')
+        user2 = User.objects.create_user('paul',
+                                         'paul@thebeatles.com',
+                                         'paulpassword',
+                                         first_name='paul',
+                                         last_name='mccarny')
         donante2 = Donante.objects.create(
             nombre=user2.first_name,
             apellido=user2.last_name,
@@ -206,6 +262,10 @@ class DonantesListTestCase(APITestCase):
         self.assertEqual(donante2.apellido,donante2_response['apellido'])
 
     def test_lista_donantes_vacia(self):
+        """
+        Valido que al realizar un GET cuando no existen donantes en la Base de
+        Datos, no devuelva nada.
+        """
         response = self.client.get(self.url)
         cantidad = len(response.data['results'])
         self.assertEqual(cantidad,0)

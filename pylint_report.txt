@@ -1,0 +1,12 @@
+************* Module baseApp
+baseApp\__init__.py:1:0: C0103: Module name "baseApp" doesn't conform to snake_case naming style (invalid-name)
+************* Module baseApp.admin
+baseApp\admin.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+baseApp\admin.py:1:0: W0611: Unused admin imported from django.contrib (unused-import)
+************* Module baseApp.apps
+baseApp\apps.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+baseApp\apps.py:4:0: C0115: Missing class docstring (missing-class-docstring)
+
+------------------------------------------------------------------
+Your code has been rated at 9.70/10 (previous run: 9.70/10, +0.00)
+

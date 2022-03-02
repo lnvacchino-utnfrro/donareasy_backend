@@ -1,15 +1,21 @@
-from django.contrib.auth.models import User
-from typing_extensions import Required
+"""Archivo para generar Serializadores"""
 from rest_framework import serializers
-from rest_framework.utils.field_mapping import needs_label
+
 from baseApp.models import Donante, Institucion
 
+# pylint: disable=too-few-public-methods
+
 class DonanteSerializer(serializers.ModelSerializer):
+    """Serializador para el modelo Donante"""
     class Meta:
+        # pylint: disable=missing-class-docstring
         model = Donante
         fields = '__all__'
 
+
 class InstitucionSerializer(serializers.ModelSerializer):
+    """Serializador para el modelo Institucion"""
     class Meta:
+        # pylint: disable=missing-class-docstring
         model = Institucion
         fields = '__all__'
