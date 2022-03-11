@@ -1,10 +1,12 @@
+"""docstring"""
 import binascii
 import os
 import datetime
 
 from django.db import models
-from django.db.models.fields import EmailField
 from django.contrib.auth.models import User
+
+#pylint: disable=no-member, pointless-string-statement
 
 """
 #* contrib.auth.model
@@ -25,7 +27,7 @@ Fields:
 
 #* Class: Groups
 Fields:
-    name: Required. 
+    name: Required.
     permissions: integer (clave foránea de la clase Permission)
 
 #* Class: Permission
@@ -37,36 +39,59 @@ Fields:
 """
 
 class CodigoRecuperacion(models.Model):
-    email = models.EmailField(blank=True,max_length=255,verbose_name='mail_usuario')
-    codigo = models.CharField(blank=True,max_length=20,verbose_name='codigo_recuperacion')
-    activo = models.BooleanField(blank=True,verbose_name='codigo_activo')
-    fecha_expiracion = models.DateField(blank=True,verbose_name='fecha_expiracion')
-    usuario = models.ForeignKey(User, verbose_name="id_usuario_codigo_recuperacion", on_delete=models.CASCADE, related_name='usuario_codigo_recuperacion', null=True)
+    """docstring"""
+    email = models.EmailField(blank=True,
+                              max_length=255,
+                              verbose_name='mail_usuario')
+    codigo = models.CharField(blank=True,
+                              max_length=20,
+                              verbose_name='codigo_recuperacion')
+    activo = models.BooleanField(blank=True,
+                                 verbose_name='codigo_activo')
+    fecha_expiracion = models.DateField(blank=True,
+                                        verbose_name='fecha_expiracion')
+    usuario = models.ForeignKey(User,
+                                verbose_name="id_usuario_codigo_recuperacion",
+                                on_delete=models.CASCADE,
+                                related_name='usuario_codigo_recuperacion',
+                                null=True)
 
     def save(self, *args, **kwargs):
-        print('ENTRÓ EN EL SAVE DEL MODELO')
-        print(self.email)
-        print(self.usuario)
-        print(self.id)
+        """docstring"""
         if self.id is None:
             if self.email is None and self.usuario is None:
                 return
             self.codigo = binascii.hexlify(os.urandom(10)).decode('utf-8')
             self.activo = True
             self.fecha_expiracion = datetime.datetime.now() + datetime.timedelta(days=2)
-            print('PARECE QUE SE GUARDÓ')
         super().save(*args, **kwargs)
 
-    def delete(self):
+    def delete(self, using=None, keep_parents=False):
+        """docstring"""
         self.activo = False
         self.save()
 
-class paseInvitado(models.Model):
-    fecha_alta = models.DateTimeField(blank=True,verbose_name='fecha_alta')
-    nombre_invitado = models.CharField(blank=True,max_length=50,verbose_name='nombre_invitado')
-    email_invitado = models.EmailField(blank=True,max_length=255,verbose_name='mail_invitado')
+
+class PaseInvitado(models.Model):
+    """docstring"""
+    fecha_alta = models.DateTimeField(blank=True,
+                                      verbose_name='fecha_alta')
+    nombre_invitado = models.CharField(blank=True,
+                                       max_length=50,
+                                       verbose_name='nombre_invitado')
+    email_invitado = models.EmailField(blank=True,
+                                       max_length=255,
+                                       verbose_name='mail_invitado')
     #Usuario_invitado
-    codigo_pase = models.CharField(blank=True,max_length=20,verbose_name='codigo_recuperacion')
-    estado = models.IntegerField(blank=True,verbose_name='codigo_estado')
-    activo = models.BooleanField(blank=True,verbose_name='pase_activo')
-    usuario = models.ForeignKey(User, verbose_name=("id_usuario"), on_delete=models.CASCADE, related_name='usuario_que_invita', null=True)
+    codigo_pase = models.CharField(blank=True,
+                                   max_length=20,
+                                   verbose_name='codigo_recuperacion')
+    estado = models.IntegerField(blank=True,
+                                 verbose_name='codigo_estado')
+    activo = models.BooleanField(blank=True,
+                                 verbose_name='pase_activo')
+    usuario = models.ForeignKey(User,
+                                verbose_name=("id_usuario"),
+                                on_delete=models.CASCADE,
+                                related_name='usuario_que_invita',
+                                null=True)
