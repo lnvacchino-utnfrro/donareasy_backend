@@ -1,7 +1,6 @@
 """docstring"""
 from django.urls import reverse
 from django.contrib.auth.models import User, Group
-from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
@@ -107,32 +106,23 @@ class LoguotUsuarioTestCase(APITestCase):
     def setUp(self):
         self.username = 'john'
         self.password = 'johnpassword'
-        User.objects.create_user(self.username,
-                                'lennon@thebeatles.com',
-                                self.password,
-                                first_name='john',
-                                last_name='lennon')
+        self.usuario = User.objects.create_user(self.username,
+                                                'lennon@thebeatles.com',
+                                                self.password,
+                                                first_name='john',
+                                                last_name='lennon')
         self.client = APIClient()
         self.url = reverse('logout')
 
     def test_logout_usuario(self):
         """Valida la salida del usuario"""
-        usuario = self.client.login(username=self.username, password=self.password)
-        self.assertTrue(usuario)
-        if usuario is not None:
-            try:
-                token = Token.objects.get(user__username=self.username)
-            except User.DoesNotExist:
-                self.fail('No se encontró el token del usuario')
-
+        login_user = self.client.login(username=self.username,
+                                       password=self.password)
+        self.assertTrue(login_user)
+        if login_user is not None:
+            token, created = Token.objects.get_or_create(user = self.usuario)
             self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
-            data = {
-                'token':token.key
-            }
+            data = {'token':token.key}
             response = self.client.post(self.url,data)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            #self.assertRaises(ObjectDoesNotExist,
-            #                 Token.objects.get(user__username=self.username))
-            print('PASÓ POR ACÁ')
-            with self.assertRaises(ObjectDoesNotExist):
-                Token.objects.get(user__username=self.username)
+            self.assertEqual(Token.objects.filter(user=self.usuario).count(),0)

@@ -55,12 +55,12 @@ class Login(ObtainAuthToken):
             return Response({'mensaje':'El usuario no se encuentra autorizado'},
                             status = status.HTTP_401_UNAUTHORIZED)
 
-        return Response({'mensaje':'El usuario ingresado no es válido'},
+        return Response({'mensaje':'Los datos no son válidos'},
                         status = status.HTTP_400_BAD_REQUEST)
 
 class Logout(APIView):
     """docstring"""
-    def post(request):
+    def post(self,request):
         """docstring"""
         token = request.POST.get('token')
         token = Token.objects.filter(key = token).first()
@@ -204,15 +204,16 @@ class CambiarContraseniaRecuperada(APIView):
 class CambioContrasenia(APIView):
     serializer_class = CambioContraseniaSerializer
 
-    def post(request):
-        serializer = CambioContraseniaSerializer(data = request.data)
-        serializer.is_valid(raise_exception=True)
+    def post(self,request):
         token = request.POST.get('token')
         token = Token.objects.filter(key=token).first()
         if token:
             user = token.user
-            if user.check_password(serializer.data['old_password']):
-                user.set_password(serializer.data['new_password1'])
+            serializer = CambioContraseniaSerializer(data = request.data)
+            serializer.is_valid(raise_exception=True)
+            print(serializer.validated_data)
+            if user.check_password(serializer.validated_data['old_password']):
+                user.set_password(serializer.validated_data['new_password1'])
                 user.save()
                 return Response({'mensaje':'La contraseña fue actualizada con éxito'},
                                 status=status.HTTP_200_OK)
@@ -224,9 +225,9 @@ class CambioContrasenia(APIView):
                         status=status.HTTP_400_BAD_REQUEST)
 
         
-        # if using drf authtoken, create a new token
-        if hasattr(user, 'auth_token'):
-            user.auth_token.delete()
-        token, created = Token.objects.get_or_create(user=user)
-        # return new token
-        return Response({'token': token.key}, status=status.HTTP_200_OK)
+        # # if using drf authtoken, create a new token
+        # if hasattr(user, 'auth_token'):
+        #     user.auth_token.delete()
+        # token, created = Token.objects.get_or_create(user=user)
+        # # return new token
+        # return Response({'token': token.key}, status=status.HTTP_200_OK)

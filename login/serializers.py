@@ -99,9 +99,9 @@ class CambioContraseniaSerializer(serializers.Serializer):
         validate_password(password2)
         return data
 
-    def save(self, **kwargs):
-        password = self.validated_data['new_password1']
-        user = self.context['request'].user
-        user.set_password(password)
-        user.save()
-        return user
+    # def save(self, **kwargs):
+    #     password = self.validated_data['new_password1']
+    #     user = self.context['request'].user
+    #     user.set_password(password)
+    #     user.save()
+    #     return user
