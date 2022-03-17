@@ -120,7 +120,7 @@ class RecuperacionContrasenia(APIView):
 
                     #* ENVIAR MAIL CON EL CÓDIGO DE RECUPERACIÓN
                     dominio = 'http://127.0.0.1:8000'
-                    ruta = reverse('cambiar_contrasena_recuperada',args=[codigo])
+                    ruta = reverse('cambiar_contrasenia_recuperada',args=[codigo])
                     template = loader.get_template('recuperacion_password.html')
                     context = {
                         'dominio': dominio,
@@ -160,7 +160,7 @@ class CambiarContraseniaRecuperada(APIView):
     """docstring"""
     serializer_class = UserPasswordSerializer
 
-    def get(code):
+    def get(self,code):
         """docstring"""
         try:
             cod_rec = CodigoRecuperacion.objects.get(codigo=code)
