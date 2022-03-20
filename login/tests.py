@@ -100,6 +100,18 @@ class LoginUsuarioTestCase(APITestCase):
         response = self.client.post(self.url,data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_doble_login_usuario(self):
+        """Valido login de usuario cuando el usuario ya está logueado"""
+        data = {
+            'username': self.username,
+            'password': self.password
+        }
+        self.client.post(self.url, data)
+        response = self.client.post(self.url, data)
+        usuario = User.objects.get(username=response.data['user']['username'])
+        self.assertTrue(usuario.is_authenticated)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class LoguotUsuarioTestCase(APITestCase):
     """Pruebas que validan la salida (logout) del usuario"""
@@ -126,3 +138,48 @@ class LoguotUsuarioTestCase(APITestCase):
             response = self.client.post(self.url,data)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(Token.objects.filter(user=self.usuario).count(),0)
+
+    def test_logout_doble_usuario(self):
+        """
+        Valida que ocurra un error si el usuario realiza un segundo logout
+        consecutivo
+        """
+        login_user = self.client.login(username=self.username,
+                                       password=self.password)
+        self.assertTrue(login_user)
+        if login_user is not None:
+            token, created = Token.objects.get_or_create(user = self.usuario)
+            self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+            data = {'token':token.key}
+            self.client.post(self.url,data)
+            response = self.client.post(self.url,data)
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_logout_con_token_aleatorio(self):
+        random_token_key = Token.generate_key()
+        data = {'token':random_token_key}
+        response = self.client.post(self.url,data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class RecuperacionContraseniaTestCase(APITestCase):
+    """
+    Pruebas que validan la recuperación de contraseña a partir del envío de un
+    mail al usuario donde podrá acceder al link con la página de recuperación
+    donde ingresará la nueva contraseña
+    """
+    def setUp(self):
+        self.username = 'john'
+        self.password = 'johnpassword'
+        self.usuario = User.objects.create_user(self.username,
+                                                'lennon@thebeatles.com',
+                                                self.password,
+                                                first_name='john',
+                                                last_name='lennon')
+        self.client = APIClient()
+        self.url = reverse('recuperacion')
+
+    def test_envio_mail(self):
+        """Valido que al ingresar mail, se envíe el mail"""
+        data = {'email':self.usuario.email}
+        response = self.client.post(self.url,data)
