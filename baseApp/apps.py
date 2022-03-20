@@ -1,7 +1,6 @@
-"""docstring"""
 from django.apps import AppConfig
 
-class LoginConfig(AppConfig):
-    """docstring"""
+
+class BaseappConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'login'
+    name = 'baseApp'

@@ -21,4 +21,5 @@ from rest_framework import routers
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', include('login.urls')),
+    path('home/models/', include('baseApp.urls')),
 ]
