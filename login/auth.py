@@ -62,7 +62,7 @@ class Logout(APIView):
     """docstring"""
     def post(self,request):
         """docstring"""
-        token = request.POST.get('token')
+        token = request.data['token']
         token = Token.objects.filter(key = token).first()
         if token:
             user = token.user
