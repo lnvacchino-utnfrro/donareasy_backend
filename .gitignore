@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Created by https://www.toptal.com/developers/gitignore/api/django
 # Edit at https://www.toptal.com/developers/gitignore?templates=django
@@ -176,3 +177,7 @@ pylint_report.txt
 
 # git rm -r --cached node_modules
 # git commit -m 'Eliminada carpeta node_modules del repo'
+=======
+# Ignora todos los pycache
+**/*.pyc
+>>>>>>> 48af028d698960129b54c4003f8732c4da38c379
