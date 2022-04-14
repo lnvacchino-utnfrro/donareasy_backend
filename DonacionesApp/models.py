@@ -49,8 +49,7 @@ class DonacionMonetaria(Donacion):
                                     )
 
 class DonacionBienes(Donacion):
-    """docstring"""
-    
+    """docstring""" 
     fecha_retiro = models.DateField(blank=True,
                                     verbose_name='fecha_retiro',
                                     null=True

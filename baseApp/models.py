@@ -80,6 +80,22 @@ class Donante(models.Model):
         verbose_name = 'Donante'
         verbose_name_plural = 'Donantes'
 
+class Chicos(models.Model):
+    nombre = models.CharField(blank=True,
+                              max_length=100,
+                              verbose_name='nombre')
+    apellido = models.CharField(blank=True,
+                              max_length=100,
+                              verbose_name='apellido')
+    edad = models.SmallIntegerField(blank=True,
+                                    verbose_name='cant_empleados')
+    descripcion = models.CharField(blank=True,
+                              max_length=500,
+                              verbose_name='descripcion',
+                              null=True)
+    fotografia = models.ImageField(blank=True,
+                                   verbose_name='fotografia',
+                                   null=True)
 
 class Institucion(models.Model):
     """
@@ -116,7 +132,11 @@ class Institucion(models.Model):
                                 max_length=15,
                                 verbose_name='telefono',
                                 null=True)
-    #chicos = (ver como poner acá una relación uno a muchos (una institución tiene muchos chicos))
+    chicos = models.ForeignKey(Chicos,
+                                on_delete=models.SET_NULL,
+                                verbose_name='chicos',
+                                null=True
+                                )
     cant_empleados = models.SmallIntegerField(blank=True,
                                               verbose_name='cant_empleados',
                                               null=True)

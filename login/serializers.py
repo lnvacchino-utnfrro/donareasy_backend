@@ -37,7 +37,7 @@ class CodigoRecuperacionSerializer(serializers.ModelSerializer):
         fields = ['email','usuario']
 
     def create(self, validated_data):
-        """docstring"""
+        """parámetro validated_data es un dato tipo diccionario. Ya está validado"""
         codigo_recuperacion = self.Meta.model(
             email=validated_data['email'],
             usuario=validated_data['usuario'],
