@@ -9,7 +9,7 @@ from baseApp.serializers import DonanteSerializer, InstitucionSerializer
 from DonacionesApp import serializers
 # Create your views here.
 
-class InstitucionesList(viewsets.ModelViewSet):
+class InstitucionesList(generics.RetrieveAPIView):
     """docstring"""
     queryset = Institucion.objects.all()
     serializer_class = InstitucionSerializer

@@ -6,7 +6,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from DonacionesApp import views
 
 urlpatterns = [
-    path('/eligeInstitucion/',
+    path('/eligeInstitucion',
         views.InstitucionesList.as_view(), #Muestra la lista de instituciones para seleccionar 1 
         name='instituciones_list'),
 
@@ -17,7 +17,7 @@ urlpatterns = [
     
     path('/eligeInstitucion/donarBienes/bien',
         views.BienesCreate.as_view(),
-        name='crear_bienes')
+        name='crear_bienes'),
 
   ##  path('/eligeInstitucion/donarDinero',
   ##      views.DonacionMonetaria.as_view(),
