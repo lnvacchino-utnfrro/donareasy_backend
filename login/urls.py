@@ -30,7 +30,11 @@ urlpatterns = [
         name='cambiar_contrasenia_recuperada'),
     path('cambioClave/',
         auth.CambioContrasenia.as_view(),
-        name='cambiar_contrasenia')
+        name='cambiar_contrasenia'),
+
+    path('logupTest/',
+        views.UserSystemCreate.as_view(),
+        name='creacion-usuario-sistema'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
