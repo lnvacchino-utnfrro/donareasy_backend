@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import permissions
-from DonacionesApp.serializers import DonacionBienesSerializer, BienesSerializer, DonacionIdSerializer
+from DonacionesApp.serializers import DonacionBienesSerializer, BienesSerializer, AceptarDonacionSerializer
 from DonacionesApp.models import Donacion, DonacionBienes, DonacionMonetaria, Bien
 from baseApp.models import Donante, Institucion
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
@@ -24,11 +24,6 @@ class DonacionBienesDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = DonacionBienes.objects.all()
     serializer_class = DonacionBienesSerializer
 
-class DonacionId(generics.RetrieveAPIView):
-    """docstring"""
-    queryset = DonacionBienes.objects.all() #Ver como devolver uno solo
-    serializer_class = DonacionIdSerializer
-
 class BienesCreate(generics.CreateAPIView):
     """docstring"""
     queryset = Bien.objects.all()
@@ -38,3 +33,6 @@ class BienesList(generics.RetrieveAPIView):
     queryset = Bien.objects.all()
     serializer_class = BienesSerializer
 
+class AceptarDonacion(generics.RetrieveUpdateAPIView):
+    queryset = DonacionBienes.objects.all()
+    serializer_class = AceptarDonacionSerializer

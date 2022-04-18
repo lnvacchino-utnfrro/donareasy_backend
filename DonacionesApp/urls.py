@@ -21,6 +21,14 @@ urlpatterns = [
   ##  path('/eligeInstitucion/donarDinero',
   ##      views.DonacionMonetaria.as_view(),
   ##      name='donacion_monetaria')
+    # path('/listaDonaciones',
+    #     views.ElegirDonacion.as_view(),
+    #     name='listar_donaciones'),
+
+    path('/elegirDonacion/<int:pk>',
+        views.AceptarDonacion.as_view(),
+        name='aceptar_donacion'),
+    
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

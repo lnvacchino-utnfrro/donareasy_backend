@@ -23,7 +23,7 @@ class Donacion(models.Model):
                                     verbose_name='institución',
                                     null=True
                                     )
-    fecha_creacion = models.DateField(blank=True,
+    fecha_creacion = models.DateTimeField(blank=True,
                                     verbose_name='fecha_creacion'
                                     )
     fecha_aceptacion = models.DateField(blank=True,
