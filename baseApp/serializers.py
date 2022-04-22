@@ -19,3 +19,30 @@ class InstitucionSerializer(serializers.ModelSerializer):
         # pylint: disable=missing-class-docstring
         model = Institucion
         fields = '__all__'
+
+
+class DonanteSinForeingKeySerializer(serializers.ModelSerializer):
+    """
+    Serializador para el modelo Donante sin incluir la Clave Foránea
+    que lo relaciona con la clase User
+    """
+    class Meta:
+        # pylint: disable=missing-class-docstring
+        model = Donante
+        exclude = ('usuario',)
+
+
+class InstitucionSinForeingKeySerializer(serializers.ModelSerializer):
+    """
+    Serializador para el modelo institución sin incluir la Clave Foránea
+    que lo relaciona con la clase User
+    """
+    class Meta:
+        # pylint: disable=missing-class-docstring
+        model = Institucion
+        exclude = ('usuario',)
+
+    def to_represetation(self,value):
+        print('REPRESENTACION DEL SERIALIZADOR DE INSTITUCION')
+        print('REPRESENTACION ',value)
+        return ''

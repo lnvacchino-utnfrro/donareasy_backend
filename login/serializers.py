@@ -1,8 +1,11 @@
 """docstring"""
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, UserManager
 from django.contrib.auth.password_validation import validate_password
 
 from rest_framework import serializers
+
+from baseApp.models import Donante
+from baseApp.serializers import DonanteSinForeingKeySerializer
 
 from login.models import CodigoRecuperacion
 
@@ -105,3 +108,91 @@ class CambioContraseniaSerializer(serializers.Serializer):
     #     user.set_password(password)
     #     user.save()
     #     return user
+
+class UsuarioSistemaSerializer(serializers.ModelSerializer):
+    donante = DonanteSinForeingKeySerializer()
+
+    class Meta:
+        model = User
+        # fields = "__all__"
+        # fields = ['id','username','first_name','last_name','email','password','groups']
+        fields = ['username','first_name','last_name','email','password','groups','donante']
+        # fields = ['nombre','apellido','fecha_nacimiento','dni','domicilio','localidad','provincia','pais','telefono','estado_civil','genero','ocupacion','usuario']
+
+    def to_represetation(self,value):
+        print('ESTO ES UNA REPRESENTACION DE - ',value)
+        return 'REPRESENTACION'
+
+    def create(self, validated_data):
+        print('1: ',validated_data)
+        donante_data = validated_data.pop('donante', None)
+        print('2: ',validated_data)
+        print('3: ',donante_data)
+        print('4: ',validated_data['username'])
+        print('4: ',validated_data['username'][0])
+        # username = validated_data.pop('username')
+        # email = validated_data.pop('email')
+        # password = validated_data.pop('password')
+
+        # username=validated_data['username'],
+        # email=validated_data['email'],
+        # password=validated_data['password'],
+        # first_name=validated_data['first_name'],
+        # last_name=validated_data['last_name'],
+        # groups=validated_data['groups']
+        # print('4: ',username[0],'5: ',email[0],'6: ',password[0])
+        # print('4: ',type(username[0]),'5: ',type(email[0]),'6: ',type(password[0]))
+        # print('7: ',first_name[0],'8: ',last_name[0],'9: ',groups)
+        # print('7: ',type(first_name[0]),'8: ',type(last_name[0]),'9: ',type(groups[0]))
+        usuario = User.objects.create_user(
+            # username=validated_data['username'][0],
+            # email=validated_data['email'][0],
+            # password=validated_data['password'][0],
+            # first_name=validated_data['first_name'][0],
+            # last_name=validated_data['last_name'][0]
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
+        ) 
+        usuario.groups.set(validated_data['groups'])
+        print('HASTA ACÁ LLEGÓ')
+        #try:
+        print('10: ',donante_data)
+        print('10: ',type(donante_data))
+        print('11: ',donante_data['nombre'])
+        print('11: ',type(donante_data['nombre']))
+        # Donante.objects.create(usuario=usuario, **donante_data)
+        donante = Donante.objects.create(
+            nombre=donante_data['nombre'],
+            apellido=donante_data['apellido'],
+            fecha_nacimiento=donante_data['fecha_nacimiento'],
+            dni=donante_data['dni'],
+            domicilio=donante_data['domicilio'],
+            localidad=donante_data['localidad'],
+            provincia=donante_data['provincia'],
+            pais=donante_data['pais'],
+            telefono=donante_data['telefono'],
+            estado_civil=donante_data['estado_civil'],
+            genero=donante_data['genero'],
+            ocupacion=donante_data['ocupacion'],
+            usuario=usuario 
+            # usuario=usuario.id
+        )
+        print('TAMBIEN LLEGÓ HASTA ACA - ',donante)
+        # except:
+        #    usuario.delete()
+        #    print('OCURRIÓ UN ERROR')
+        #    return ''
+        usuario.delete()
+        # donante.delete()
+        print('TODO BORRADO')
+        return usuario
+
+
+class UsuarioPruebaSerializer(serializers.ModelSerializer):
+    class Meta:
+        # pylint: disable=missing-class-docstring
+        model = User
+        fields = ['id','username','first_name','last_name','email','password','groups']
