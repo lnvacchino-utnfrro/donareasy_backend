@@ -33,6 +33,10 @@ urlpatterns = [
         name='cambiar_contrasenia'),
 
     path('logupTest/',
+        views.DonanteUserCreate.as_view(),
+        name='creacion-usuario-donante'),
+
+    path('logupPosta/',
         views.UserSystemCreate.as_view(),
         name='creacion-usuario-sistema'),
 ]
