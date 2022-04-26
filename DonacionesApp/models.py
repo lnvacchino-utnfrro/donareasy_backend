@@ -78,8 +78,8 @@ class Bien(models.Model):
                                    verbose_name='cantidad')
     donacion = models.ForeignKey(DonacionBienes,
                                 on_delete=models.SET_NULL,
-                                verbose_name='donacion_bienes',
-                                null=True
+                                null=True,
+                                related_name='bienes'
                                 )
     # imagen 
 

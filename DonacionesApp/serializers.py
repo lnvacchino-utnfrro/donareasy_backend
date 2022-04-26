@@ -7,56 +7,48 @@ import datetime
 class BienesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bien
-        fields = '__all__'
+        exclude = ['donacion']
 
 
 class DonacionBienesSerializer(serializers.ModelSerializer):
     # donante = DonanteSerializer(many = True),
     # institucion = InstitucionSerializer()  
-    #bienes = BienesSerializer(many=True)
+    bienes = BienesSerializer(many=True)
     class Meta:
         model = DonacionBienes
-        fields = ['donante','institucion']
+        fields = ['donante','institucion','bienes']
         read_only_fields = ['cod_estado','fecha_creacion']
 
     def create(self,validated_data):
-    #     donante_data = validated_data.pop('donante'),
-    #     institucion_data = validated_data.pop('institucion'),
+         bienes_data = validated_data.pop('bienes')
          donacion = DonacionBienes.objects.create(
              donante = validated_data['donante'],
              institucion = validated_data['institucion'],
              cod_estado = 1,
              fecha_creacion = datetime.datetime.now()
          )
-        # bienes_data = validated_data.pop('donaciones')
-        # bien = Bien.objects.create(**validated_data)
-        # for donacion_data in donaciones_data:
-        #     DonacionBienes.objects.create(bien=bien, **donacion_data)       
-         donacion.save()
+         for bien_data in bienes_data:
+            Bien.objects.create(donacion=donacion, **bien_data)
+        #  donacion.save()          
          return donacion
 
-# class DonacionIdSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = DonacionBienes
-#         fields = ['id']
-        
-# class BienesSerializer(serializers.ModelSerializer):
-#     #donaciones = DonacionBienesSerializer(many=True)
-#     class Meta:
-#         model = Bien
-#         fields = '__all__'
-
-#     def create(self,validated_data):
-#         donaciones_data = validated_data.pop('donaciones')
-#         bien = Bien.objects.create(**validated_data)
-#         for donacion_data in donaciones_data:
-#             DonacionBienes.objects.create(bien=bien, **donacion_data)
-#         return bien
-
 class AceptarDonacionSerializer(serializers.ModelSerializer):
+    #bienes = BienesSerializer(many=True)
     class Meta:
         model = DonacionBienes
-        fields = '__all__'
-
+        fields = ['fecha_retiro']
+        #read_only_fields = ['fecha_aceptacion','cod_estado']
+    # def update(self,validated_data):
+    #     bienes_data = validated_data.pop('bienes')
+    #      donacion = DonacionBienes.objects.update(
+    #          donante = validated_data['donante'],
+    #          institucion = validated_data['institucion'],
+    #          cod_estado = 1,
+    #          fecha_creacion = datetime.datetime.now()
+    #      )
+    #      for bien_data in bienes_data:
+    #         Bien.objects.create(donacion=donacion, **bien_data)
+    #     #  donacion.save()          
+    #      return donacion
 
     
