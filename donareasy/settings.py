@@ -48,6 +48,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -73,7 +74,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'donareasy.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -152,3 +152,7 @@ EMAIL_HOST_PASSWORD = 'utnfrro2022'
 # Si se quiere mostrar los mails por consola, comentar todo lo anterior y usar la 
 # siguiente línea
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Seteo que si lo URL dirijida no coincide con ninguna de las que se listan en el backend,
+# Django agregue automáticamente una barra al final y vuelva a buscar la URL
+APPEND_SLASH = True

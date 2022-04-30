@@ -40,15 +40,31 @@ class DonanteUserCreate(generics.CreateAPIView):
     queryset = Donante.objects.all()
     serializer_class = UsuarioDonanteSerializer
 
-# PEBA 2
+# PRUEBA 2
 class UserSystemCreate(generics.CreateAPIView):
     """docstring"""
+    group = 0
 
     def get_serializer_class(self):
-        if self.request.user.is_staff:
-            return FullAccountSerializer
-        return BasicAccountSerializer
+        print('SERIALIZADOR')
+        if self.group == 1:
+            return UsuarioDonanteSerializer
+        elif self.group == 2:
+            return UsuarioDonanteSerializer
+
+    def get_queryset(self):
+        print('queryset')
+        if self.group == 1:
+            obj = Donante
+        elif self.group == 2:
+            obj = Institucion
+        return obj.objects.all()
 
     def create(self, request):
-        print(request.data)
-        return
+        # print(request.data['groups'][0])
+        self.group = request.data['groups'][0]
+        self.serializer_class = self.get_serializer_class(self)
+        print('SERIALIZADOR: ',self.serializer_class)
+        self.queryset = self.get_queryset(self)
+        return self.create(request)
+
