@@ -1,10 +1,10 @@
 """docstring"""
-from django.contrib.auth.models import User, UserManager
+from django.contrib.auth.models import User, UserManager, Group
 from django.contrib.auth.password_validation import validate_password
 
 from rest_framework import serializers
 
-from baseApp.models import Donante
+from baseApp.models import Donante, Institucion
 from baseApp.serializers import DonanteSinForeingKeySerializer
 
 from login.models import CodigoRecuperacion
@@ -110,7 +110,7 @@ class CambioContraseniaSerializer(serializers.Serializer):
     #     return user
 
 
-class UsuarioDonanteSerializer(serializers.ModelSerializer):
+class DonanteUserSerializer(serializers.ModelSerializer):
     usuario = UserSerializer()
 
     class Meta:
@@ -134,17 +134,18 @@ class UsuarioDonanteSerializer(serializers.ModelSerializer):
         return donante
 
 
-class UsuarioSistemaSerializer(serializers.ModelSerializer):
+class InstitucionUserSerializer(serializers.ModelSerializer):
     usuario = UserSerializer()
 
     class Meta:
-        model = Donante
-        fields = ['usuario','nombre','apellido','fecha_nacimiento','dni','domicilio','localidad','provincia',
-        'pais','telefono','estado_civil','genero','ocupacion']
+        model = Institucion
+        fields = ['usuario','nombre','director','fecha_fundacion','domicilio',
+                    'localidad','provincia','pais','telefono','cant_empleados',
+                    'descripcion','cbu','cuenta_bancaria']
 
     def create(self, validated_data):
         usuario_data = validated_data.pop('usuario', None)
-        donante = Donante.objects.create(
+        institucion = Institucion.objects.create(
             **validated_data
         ) 
         usuario = User.objects.create_user(
@@ -155,4 +156,9 @@ class UsuarioSistemaSerializer(serializers.ModelSerializer):
             last_name=usuario_data['last_name']
         )
         usuario.groups.set(usuario_data['groups'])
-        return donante
+        return institucion
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['id','name']

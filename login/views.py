@@ -1,9 +1,11 @@
 """docstring"""
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
-from rest_framework import generics
+from rest_framework import generics,status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
-from login.serializers import UserSerializer, UsuarioSistemaSerializer, UsuarioDonanteSerializer
+from login.serializers import UserSerializer, DonanteUserSerializer, InstitucionUserSerializer, GroupSerializer
 
 from baseApp.models import Donante, Institucion
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
@@ -34,37 +36,31 @@ class InstitucionCreate(generics.CreateAPIView):
     serializer_class = InstitucionSerializer
 
 
-# Prueba 1
 class DonanteUserCreate(generics.CreateAPIView):
     """docstring"""
     queryset = Donante.objects.all()
-    serializer_class = UsuarioDonanteSerializer
+    serializer_class = DonanteUserSerializer
 
-# PRUEBA 2
-class UserSystemCreate(generics.CreateAPIView):
+
+class InstitucionUserCreate(generics.CreateAPIView):
     """docstring"""
-    group = 0
+    queryset = Institucion.objects.all()
+    serializer_class = InstitucionUserSerializer
 
-    def get_serializer_class(self):
-        print('SERIALIZADOR')
-        if self.group == 1:
-            return UsuarioDonanteSerializer
-        elif self.group == 2:
-            return UsuarioDonanteSerializer
 
-    def get_queryset(self):
-        print('queryset')
-        if self.group == 1:
-            obj = Donante
-        elif self.group == 2:
-            obj = Institucion
-        return obj.objects.all()
+class groupLinkList(APIView):
+    """docstring"""
+    serializer_class = GroupSerializer
 
-    def create(self, request):
-        # print(request.data['groups'][0])
-        self.group = request.data['groups'][0]
-        self.serializer_class = self.get_serializer_class(self)
-        print('SERIALIZADOR: ',self.serializer_class)
-        self.queryset = self.get_queryset(self)
-        return self.create(request)
-
+    def get(*args, **kwargs):
+        """docstring"""
+        grupos_data = []
+        grupos = Group.objects.all()
+        for grupo in grupos:
+            grupo_data = {
+                'id': grupo.id,
+                'url': '127.0.0.1:8000/login/logup/'+grupo.name+'/'
+            }
+            grupos_data.append(grupo_data)
+        return Response({'data':grupos_data},
+                        status=status.HTTP_200_OK)
