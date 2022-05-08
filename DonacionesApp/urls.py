@@ -14,9 +14,9 @@ urlpatterns = [
         views.DonacionBienesCreate.as_view(),
         name='donacion_bienes'),
     
-    path('/eligeInstitucion/donarBienes/bien',
-        views.BienesCreate.as_view(),
-        name='crear_bienes'),
+    # path('/eligeInstitucion/donarBienes/bien',
+    #     views.BienesCreate.as_view(),
+    #     name='crear_bienes'),
 
   ##  path('/eligeInstitucion/donarDinero',
   ##      views.DonacionMonetaria.as_view(),

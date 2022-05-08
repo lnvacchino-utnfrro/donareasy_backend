@@ -24,10 +24,10 @@ class DonacionBienesDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = DonacionBienes.objects.all()
     serializer_class = DonacionBienesSerializer
 
-class BienesCreate(generics.CreateAPIView):
-    """docstring"""
-    queryset = Bien.objects.all()
-    serializer_class = BienesSerializer
+# class BienesCreate(generics.CreateAPIView):
+#     """docstring"""
+#     queryset = Bien.objects.all()
+#     serializer_class = BienesSerializer
 
 class BienesList(generics.RetrieveAPIView):
     """docstring"""
