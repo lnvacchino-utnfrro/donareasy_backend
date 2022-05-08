@@ -25,7 +25,11 @@ urlpatterns = [
     #     views.ElegirDonacion.as_view(),
     #     name='listar_donaciones'),
 
-    path('/eligeDonacion/<int:pk>',
+    path('/eligeDonacion',
+        views.VerDonacion.as_view(),
+        name='ver_donacion'),
+
+    path('/eligeDonacion/aceptar/<int:pk>',
         views.AceptarDonacion.as_view(),
         name='aceptar_donacion'),
     

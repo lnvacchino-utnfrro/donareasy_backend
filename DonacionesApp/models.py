@@ -26,10 +26,18 @@ class Donacion(models.Model):
     fecha_creacion = models.DateTimeField(blank=True,
                                     verbose_name='fecha_creacion'
                                     )
-    fecha_aceptacion = models.DateField(blank=True,
+    fecha_aceptacion = models.DateTimeField(blank=True,
                                     verbose_name='fecha_aceptacion',
                                     null=True
                                     )
+    fecha_cancelacion = models.DateTimeField(blank=True,
+                                    verbose_name='fecha_cancelacion',
+                                    null=True
+                                    )
+    motivo_cancelacion = models.CharField(blank=True,
+                                   max_length=100,
+                                   verbose_name='descripcion',
+                                   null=True)
     fecha_entrega_real = models.DateField(blank=True,
                                     verbose_name='fecha_entrega',
                                     null=True
@@ -37,7 +45,8 @@ class Donacion(models.Model):
     #! 1:Creada , 2:Aceptada , 3:Enviada , 4:Recibida , 0:Cancelada
     cod_estado = models.SmallIntegerField(blank = True, 
                                     verbose_name='estado'
-                                    ) 
+                                    )
+    #Agregar fecha_rechazo y motivo_rechazo
     
 class DonacionMonetaria(Donacion):
     """docstring"""
