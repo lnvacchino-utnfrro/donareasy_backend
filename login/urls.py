@@ -22,15 +22,29 @@ urlpatterns = [
     # path('logup/institucion/',
     #     views.InstitucionCreate.as_view(),
     #     name='institucion-create'),
+
     path('recuperacion/',
-        auth.RecuperacionContrasenia.as_view(),
+        auth.GenerarCodigoRecuperacionContrasenia.as_view(),
         name='recuperacion_contrasenia'),
-    path('recuperacion/<str:code>/',
-        auth.CambiarContraseniaRecuperada.as_view(),
-        name='cambiar_contrasenia_recuperada'),
+
+    # path('recuperacion/<str:code>/',
+    #     auth.CambiarContraseniaRecuperada.as_view(),
+    #     name='cambiar_contrasenia_recuperada'),
+
     path('cambioClave/',
         auth.CambioContrasenia.as_view(),
         name='cambiar_contrasenia'),
+
+
+    path('recuperacion/codigo/',
+        auth.ValidarCodigoRecuperacionContrasenia.as_view(),
+        name='validar_codigo_recuperacion'),
+
+    path('recuperacion/cambioClave/',
+        auth.RecuperacionContrasenia.as_view(),
+        name='cambiar_contrasenia_recuperada'),
+
+
 
     path('logup/donante/',
         views.DonanteUserCreate.as_view(),

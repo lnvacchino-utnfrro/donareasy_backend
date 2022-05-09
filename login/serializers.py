@@ -32,6 +32,11 @@ class EmailSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255)
 
 
+class CodigoSerializer(serializers.Serializer):
+    """docstring"""
+    codigo = serializers.CharField(max_length=255)
+
+
 class CodigoRecuperacionSerializer(serializers.ModelSerializer):
     """docstring"""
     class Meta:
@@ -49,35 +54,24 @@ class CodigoRecuperacionSerializer(serializers.ModelSerializer):
         return codigo_recuperacion.codigo
 
 
-class UserPasswordSerializer(serializers.Serializer):
+class RecuperacionContraseniaSerializer(serializers.Serializer):
     """docstring"""
-    password1 = serializers.CharField(max_length=255)
-    password2 = serializers.CharField(max_length=255)
+    password = serializers.CharField(max_length=255)
     username = serializers.CharField(max_length=255)
 
     def save(self):
         """docstring"""
         user = User.objects.get(username=self.validated_data['username'])
-        user.set_password(self.validated_data['password1'])
+        user.set_password(self.validated_data['password'])
         CodigoRecuperacion.objects.filter(usuario=user).filter(activo=1).delete()
         user.save()
         return user
 
-    def validate_password1(self,value):
+    def validate_password(self,value):
         """docstring"""
         validate_password(value)
         return value
 
-    def validate_password2(self,value):
-        """docstring"""
-        validate_password(value)
-        return value
-
-    def validate(self,attrs):
-        """docstring"""
-        if attrs['password1']!=attrs['password2']:
-            raise serializers.ValidationError('Las contraseñas ingresadas no son iguales')
-        return super().validate(attrs)
 
 # class PasswordSerializer(serializers.ModelSerializer):
 #     password = serializers.CharField(max_length=255)
