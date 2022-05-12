@@ -57,12 +57,13 @@ class CodigoRecuperacionSerializer(serializers.ModelSerializer):
 class RecuperacionContraseniaSerializer(serializers.Serializer):
     """docstring"""
     password = serializers.CharField(max_length=255)
-    username = serializers.CharField(max_length=255)
+    id_user = serializers.IntegerField()
 
     def save(self):
         """docstring"""
-        user = User.objects.get(username=self.validated_data['username'])
+        user = User.objects.get(id=self.validated_data['id_user'])
         user.set_password(self.validated_data['password'])
+        print('contraseña',self.validated_data['password'])
         CodigoRecuperacion.objects.filter(usuario=user).filter(activo=1).delete()
         user.save()
         return user
@@ -82,19 +83,23 @@ class RecuperacionContraseniaSerializer(serializers.Serializer):
 
 class CambioContraseniaSerializer(serializers.Serializer):
     old_password = serializers.CharField(max_length=128, write_only=True, required=True)
-    new_password1 = serializers.CharField(max_length=128, write_only=True, required=True)
-    new_password2 = serializers.CharField(max_length=128, write_only=True, required=True)
+    new_password = serializers.CharField(max_length=128, write_only=True, required=True)
 
-    def validate(self, data):
-        password1 = data['new_password1']
-        password2 = data['new_password2']
-        if password1 != password2:
-            raise serializers.ValidationError({
-                                          'new_password2': "Las dos contraseñas ingresadas no coinciden."
-                                      })
-        validate_password(password1)
-        validate_password(password2)
-        return data
+    def validate_new_password(self,value):
+        """docstring"""
+        validate_password(value)
+        return value
+
+    # def validate(self, data):
+    #     password1 = data['new_password1']
+    #     password2 = data['new_password2']
+    #     if password1 != password2:
+    #         raise serializers.ValidationError({
+    #                                       'new_password2': "Las dos contraseñas ingresadas no coinciden."
+    #                                   })
+    #     validate_password(password1)
+    #     validate_password(password2)
+    #     return data
 
     # def save(self, **kwargs):
     #     password = self.validated_data['new_password1']

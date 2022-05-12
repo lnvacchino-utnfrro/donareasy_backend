@@ -17,7 +17,7 @@ from rest_framework.views import APIView
 from login.serializers import CodigoRecuperacionSerializer, EmailSerializer, \
                                 UserAuthSerializer, \
                                 CambioContraseniaSerializer, CodigoSerializer, \
-                                RecuperacionContraseniaSerializer
+                                RecuperacionContraseniaSerializer, UserSerializer
 from login.models import CodigoRecuperacion
 
 # pylint: disable:no-member
@@ -164,16 +164,17 @@ class ValidarCodigoRecuperacionContrasenia(APIView):
 
     def post(self,request):
         """docstring"""
-        print(request.data)
-        print(request.data['codigo'])
+        # print(request.data)
+        # print(request.data['codigo'])
         rec_password_serializer = CodigoSerializer(data = {'codigo':request.data['codigo']})
-        print(rec_password_serializer)
-        print(rec_password_serializer.is_valid())
-        print('ESTO ES codigo: ',rec_password_serializer['codigo'])
-        print('TIPO CODIGO: ',type(rec_password_serializer['codigo']))
+        # print(rec_password_serializer)
+        # print(rec_password_serializer.is_valid())
+
         if rec_password_serializer.is_valid():
+            print('ESTO ES codigo: ',rec_password_serializer.data['codigo'])
+            print('TIPO CODIGO: ',type(rec_password_serializer.data['codigo']))
             try:
-                cod_rec = CodigoRecuperacion.objects.get(codigo=rec_password_serializer['codigo'])
+                cod_rec = CodigoRecuperacion.objects.get(codigo=rec_password_serializer.data['codigo'])
             except ObjectDoesNotExist:
                 return Response({'mensaje':'Código Incorrecto'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -192,7 +193,8 @@ class ValidarCodigoRecuperacionContrasenia(APIView):
                 return Response({'mensaje':'El código se encunetra caducado'},
                                 status=status.HTTP_401_UNAUTHORIZED)
 
-            return Response({'user':cod_rec.usuario},
+            usuario_serializer = UserSerializer(cod_rec.usuario)
+            return Response({'user':usuario_serializer.data},
                             status=status.HTTP_200_OK)
         else:
             return Response(rec_password_serializer.errors,
@@ -203,10 +205,13 @@ class RecuperacionContrasenia(APIView):
     """docstring"""
     serializer_class = RecuperacionContraseniaSerializer
 
-    def post(request):
+    def post(self,request):
         """docstring"""
         print(request.data)
-        rec_password_serializer = RecuperacionContraseniaSerializer(data = request.data)
+        rec_password_serializer = RecuperacionContraseniaSerializer(data = {
+                                                                'password':request.data['password'],
+                                                                'id_user':request.data['id_user']
+                                                            })
         print(rec_password_serializer)
         print(rec_password_serializer.is_valid())
         if rec_password_serializer.is_valid():
@@ -216,7 +221,7 @@ class RecuperacionContrasenia(APIView):
             return Response({'mensaje':'La contraseña fue cambiada con éxito'},
                             status=status.HTTP_201_CREATED)
 
-        return Response({'mensaje':rec_password_serializer.error_messages},
+        return Response({'mensaje':rec_password_serializer.errors},
                         status=status.HTTP_409_CONFLICT)
 
 
@@ -275,18 +280,19 @@ class CambioContrasenia(APIView):
         if token:
             user = token.user
             serializer = CambioContraseniaSerializer(data = request.data)
-            serializer.is_valid(raise_exception=True)
-            print(serializer.validated_data)
-            if user.check_password(serializer.validated_data['old_password']):
-                user.set_password(serializer.validated_data['new_password1'])
-                user.save()
-                return Response({'mensaje':'La contraseña fue actualizada con éxito'},
-                                status=status.HTTP_200_OK)
-            
-            return Response({'mensaje':'La contraseña ingresada no es correcta'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response({'ensaje':'Token inválido'},
+            if serializer.is_valid():
+                print(serializer.validated_data)
+                if user.check_password(serializer.validated_data['old_password']):
+                    user.set_password(serializer.validated_data['new_password'])
+                    user.save()
+                    return Response({'mensaje':'La contraseña fue actualizada con éxito'},
+                                    status=status.HTTP_200_OK)
+                
+                return Response({'mensaje':'La contraseña ingresada no es correcta'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'mensaje':serializer.errors},
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
+        return Response({'mensaje':'Token inválido'},
                         status=status.HTTP_400_BAD_REQUEST)
 
         

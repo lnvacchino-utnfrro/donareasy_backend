@@ -1,10 +1,14 @@
 """docstring"""
+from datetime import date
+
 from django.urls import reverse
 from django.contrib.auth.models import User, Group
 
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+
+from baseApp.models import Donante
 
 # pylint: disable=no-member
 
@@ -19,13 +23,16 @@ class LogupUsuarioTestCase(APITestCase):
         self.group_donante = Group.objects.create(name='donantes')
         self.client = APIClient()
         self.url = reverse('logup')
+        self.url_donante = reverse('donante-create')
+        self.url_institucion = reverse('institucion-create')
 
-    def test_crear_usuario(self):
+    def test_crear_usuario_donante(self):
         """
-        Valido que al realizar un POST con todos los datos de un Usuario,
-        se genere una instancia Usuario en la Base de Datos.
+        Valido que al realizar un POST con todos los datos de un Usuario con el
+        rol de donante, se genere una instancia Usuario y una instancia Donante
+        en la Base de Datos.
         """
-        data = {
+        usuario = {
             'username': 'juanp',
             'first_name': 'juan',
             'last_name': 'perez',
@@ -33,16 +40,38 @@ class LogupUsuarioTestCase(APITestCase):
             'password': 'secretPassword',
             'groups': [self.group_donante.id]
         }
-        response = self.client.post(self.url, data)
+        data = {
+            "usuario": usuario,
+            "nombre": "Alejandro",
+            "apellido": "Barrientos",
+            "fecha_nacimiento": date(1983,7,19),
+            "dni": "12345678",
+            "domicilio": "Calle falsa 123",
+            "localidad": "Loc",
+            "provincia": "prov",
+            "pais": "Arg",
+            "telefono": "0123-123456789",
+            "estado_civil": "Estado",
+            "genero": "Genero",
+            "ocupacion": "Ocupación"
+        }
+        response = self.client.post(self.url_donante, data)
+        # Evaluo el usuario
         cantidad = User.objects.count()
         if cantidad > 0:
             usuario = User.objects.first()
         self.assertEqual(cantidad, 1)
-        self.assertEqual(usuario.username, data['username'])
+        self.assertEqual(usuario.username, usuario['username'])
+        # Evaluo el donante
+        cantidad = Donante.objects.count()
+        if cantidad > 0:
+            donante = Donante.objects.first()
+        self.assertEqual(cantidad, 1)
+        self.assertEqual(donante.usuario.id, usuario.id)
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    #? COLOCAR AQUÍ LAS DEMÁS PRUEBAS RELACIONADAS AL ALTA DE UN USUARIO,
-    #? UN DONANTE Y UNA INSTITUCIÓN
+
 
 
 class LoginUsuarioTestCase(APITestCase):
