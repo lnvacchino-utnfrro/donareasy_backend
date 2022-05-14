@@ -55,20 +55,20 @@ class LogupUsuarioTestCase(APITestCase):
             "genero": "Genero",
             "ocupacion": "Ocupación"
         }
-        response = self.client.post(self.url_donante, data)
+        response = self.client.post(self.url_donante, data, format='json')
         # Evaluo el usuario
         cantidad = User.objects.count()
         if cantidad > 0:
-            usuario = User.objects.first()
+            usuario_db = User.objects.first()
         self.assertEqual(cantidad, 1)
-        self.assertEqual(usuario.username, usuario['username'])
+        self.assertEqual(usuario_db.username, usuario['username'])
         # Evaluo el donante
         cantidad = Donante.objects.count()
         if cantidad > 0:
             donante = Donante.objects.first()
         self.assertEqual(cantidad, 1)
-        self.assertEqual(donante.usuario.id, usuario.id)
-
+        self.assertEqual(donante.usuario.username, usuario_db.username)
+        # Evaluo el estado del response
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
