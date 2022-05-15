@@ -164,15 +164,9 @@ class ValidarCodigoRecuperacionContrasenia(APIView):
 
     def post(self,request):
         """docstring"""
-        # print(request.data)
-        # print(request.data['codigo'])
         rec_password_serializer = CodigoSerializer(data = {'codigo':request.data['codigo']})
-        # print(rec_password_serializer)
-        # print(rec_password_serializer.is_valid())
 
         if rec_password_serializer.is_valid():
-            print('ESTO ES codigo: ',rec_password_serializer.data['codigo'])
-            print('TIPO CODIGO: ',type(rec_password_serializer.data['codigo']))
             try:
                 cod_rec = CodigoRecuperacion.objects.get(codigo=rec_password_serializer.data['codigo'])
             except ObjectDoesNotExist:
@@ -184,7 +178,6 @@ class ValidarCodigoRecuperacionContrasenia(APIView):
             except MultipleObjectsReturned:
                 return Response({'mensaje':'Código Incorrecto'},
                                 status=status.HTTP_400_BAD_REQUEST)
-
             if not cod_rec.activo:
                 return Response({'mensaje':'El código no se encunetra activo'},
                                 status=status.HTTP_401_UNAUTHORIZED)
@@ -207,68 +200,17 @@ class RecuperacionContrasenia(APIView):
 
     def post(self,request):
         """docstring"""
-        print(request.data)
         rec_password_serializer = RecuperacionContraseniaSerializer(data = {
                                                                 'password':request.data['password'],
                                                                 'id_user':request.data['id_user']
                                                             })
-        print(rec_password_serializer)
-        print(rec_password_serializer.is_valid())
         if rec_password_serializer.is_valid():
-            print('HASTA ACÁ LLEGÓ')
             rec_password_serializer.save()
-            print('Y POR ACÁ TAMBIÉN')
             return Response({'mensaje':'La contraseña fue cambiada con éxito'},
                             status=status.HTTP_201_CREATED)
 
         return Response({'mensaje':rec_password_serializer.errors},
                         status=status.HTTP_409_CONFLICT)
-
-
-# class CambiarContraseniaRecuperada(APIView):
-#     """docstring"""
-#     serializer_class = UserPasswordSerializer
-
-#     def get(code, *args, **kwargs):
-#         """docstring"""
-#         try:
-#             cod_rec = CodigoRecuperacion.objects.get(codigo=code)
-#         except ObjectDoesNotExist:
-#             return Response({'mensaje':'Código Incorrecto'},
-#                             status=status.HTTP_400_BAD_REQUEST)
-#         except EmptyResultSet:
-#             return Response({'mensaje':'Código Incorrecto'},
-#                             status=status.HTTP_400_BAD_REQUEST)
-#         except MultipleObjectsReturned:
-#             return Response({'mensaje':'Código Incorrecto'},
-#                             status=status.HTTP_400_BAD_REQUEST)
-
-#         if not cod_rec.activo:
-#             return Response({'mensaje':'El código no se encunetra activo'},
-#                             status=status.HTTP_401_UNAUTHORIZED)
-
-#         if cod_rec.fecha_expiracion < datetime.now().date():
-#             return Response({'mensaje':'El código se encunetra caducado'},
-#                             status=status.HTTP_401_UNAUTHORIZED)
-
-#         return Response({'user':cod_rec.usuario},
-#                         status=status.HTTP_200_OK)
-
-#     def post(request):
-#         """docstring"""
-#         print(request.data)
-#         rec_password_serializer = UserPasswordSerializer(data = request.data)
-#         print(rec_password_serializer)
-#         print(rec_password_serializer.is_valid())
-#         if rec_password_serializer.is_valid():
-#             print('HASTA ACÁ LLEGÓ')
-#             rec_password_serializer.save()
-#             print('Y POR ACÁ TAMBIÉN')
-#             return Response({'mensaje':'La contraseña fue cambiada con éxito'},
-#                             status=status.HTTP_201_CREATED)
-
-#         return Response({'mensaje':rec_password_serializer.error_messages},
-#                         status=status.HTTP_409_CONFLICT)
 
 
 class CambioContrasenia(APIView):
@@ -281,7 +223,6 @@ class CambioContrasenia(APIView):
             user = token.user
             serializer = CambioContraseniaSerializer(data = request.data)
             if serializer.is_valid():
-                print(serializer.validated_data)
                 if user.check_password(serializer.validated_data['old_password']):
                     user.set_password(serializer.validated_data['new_password'])
                     user.save()
@@ -295,10 +236,4 @@ class CambioContrasenia(APIView):
         return Response({'mensaje':'Token inválido'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-        
-        # # if using drf authtoken, create a new token
-        # if hasattr(user, 'auth_token'):
-        #     user.auth_token.delete()
-        # token, created = Token.objects.get_or_create(user=user)
-        # # return new token
-        # return Response({'token': token.key}, status=status.HTTP_200_OK)
+    

@@ -63,7 +63,6 @@ class RecuperacionContraseniaSerializer(serializers.Serializer):
         """docstring"""
         user = User.objects.get(id=self.validated_data['id_user'])
         user.set_password(self.validated_data['password'])
-        print('contraseña',self.validated_data['password'])
         CodigoRecuperacion.objects.filter(usuario=user).filter(activo=1).delete()
         user.save()
         return user
@@ -74,13 +73,6 @@ class RecuperacionContraseniaSerializer(serializers.Serializer):
         return value
 
 
-# class PasswordSerializer(serializers.ModelSerializer):
-#     password = serializers.CharField(max_length=255)
-#     password_validate = serializers.CharField(max_length=255)
-
-#     class Meta:
-#         fields = ['password','password_validate']
-
 class CambioContraseniaSerializer(serializers.Serializer):
     old_password = serializers.CharField(max_length=128, write_only=True, required=True)
     new_password = serializers.CharField(max_length=128, write_only=True, required=True)
@@ -89,24 +81,6 @@ class CambioContraseniaSerializer(serializers.Serializer):
         """docstring"""
         validate_password(value)
         return value
-
-    # def validate(self, data):
-    #     password1 = data['new_password1']
-    #     password2 = data['new_password2']
-    #     if password1 != password2:
-    #         raise serializers.ValidationError({
-    #                                       'new_password2': "Las dos contraseñas ingresadas no coinciden."
-    #                                   })
-    #     validate_password(password1)
-    #     validate_password(password2)
-    #     return data
-
-    # def save(self, **kwargs):
-    #     password = self.validated_data['new_password1']
-    #     user = self.context['request'].user
-    #     user.set_password(password)
-    #     user.save()
-    #     return user
 
 
 class DonanteUserSerializer(serializers.ModelSerializer):
@@ -119,9 +93,6 @@ class DonanteUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         usuario_data = validated_data.pop('usuario', None)
-        donante = Donante.objects.create(
-            **validated_data
-        ) 
         usuario = User.objects.create_user(
             username=usuario_data['username'],
             email=usuario_data['email'],
@@ -130,6 +101,10 @@ class DonanteUserSerializer(serializers.ModelSerializer):
             last_name=usuario_data['last_name']
         )
         usuario.groups.set(usuario_data['groups'])
+        donante = Donante.objects.create(
+            usuario=usuario,
+            **validated_data
+        )
         return donante
 
 
@@ -144,9 +119,6 @@ class InstitucionUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         usuario_data = validated_data.pop('usuario', None)
-        institucion = Institucion.objects.create(
-            **validated_data
-        ) 
         usuario = User.objects.create_user(
             username=usuario_data['username'],
             email=usuario_data['email'],
@@ -155,6 +127,10 @@ class InstitucionUserSerializer(serializers.ModelSerializer):
             last_name=usuario_data['last_name']
         )
         usuario.groups.set(usuario_data['groups'])
+        institucion = Institucion.objects.create(
+            usuario=usuario,
+            **validated_data
+        ) 
         return institucion
 
 class GroupSerializer(serializers.ModelSerializer):
