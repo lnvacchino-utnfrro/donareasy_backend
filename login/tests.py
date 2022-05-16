@@ -144,7 +144,6 @@ class LoginUsuarioTestCase(APITestCase):
         }
         response = self.client.post(self.url,data)
         usuario = User.objects.get(username=response.data['user']['username'])
-        self.assertTrue(usuario.is_authenticated)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_login_usuario_inexistente(self):
@@ -185,7 +184,6 @@ class LoginUsuarioTestCase(APITestCase):
         self.client.post(self.url, data)
         response = self.client.post(self.url, data)
         usuario = User.objects.get(username=response.data['user']['username'])
-        self.assertTrue(usuario.is_authenticated)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
@@ -323,8 +321,7 @@ class RecuperacionContraseniaIngresoCodigoTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_ingreso_codigo_vencido(self):
-        self.codigo_recuperacion.fecha_expiracion = \
-            date.today().replace(hour=23, minute=59,second=59) - timedelta(days=1)
+        self.codigo_recuperacion.fecha_expiracion = date.today() - timedelta(days=1)
         self.codigo_recuperacion.save()
         data = {
             'codigo':self.codigo_recuperacion.codigo
@@ -332,6 +329,14 @@ class RecuperacionContraseniaIngresoCodigoTestCase(APITestCase):
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_ingreso_codigo_a_punto_de_vencer(self):
+        self.codigo_recuperacion.fecha_expiracion = date.today()
+        self.codigo_recuperacion.save()
+        data = {
+            'codigo':self.codigo_recuperacion.codigo
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 class RecuperacionContraseniaCambioClaveTestCase(APITestCase):
     """docstring"""
@@ -356,12 +361,11 @@ class RecuperacionContraseniaCambioClaveTestCase(APITestCase):
         """roscntril"""
         data = {
             'password':self.nueva_contrasenia,
-            'id_user':self.codigo_recuperacion.usuario.id
+            'id_user':self.usuario.id
         }
         response = self.client.post(self.url, data)
         usuario = User.objects.get(username=self.usuario.username)
-        # self.assertTrue(usuario.is_authenticated)
-        self.assertTrue(self.codigo_recuperacion.usuario.check_password(self.nueva_contrasenia))
+        self.assertTrue(usuario.check_password(self.nueva_contrasenia))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         
     def test_no_cambio_contrasenia_por_codigo_con_vacios(self):
@@ -372,7 +376,6 @@ class RecuperacionContraseniaCambioClaveTestCase(APITestCase):
         }
         response = self.client.post(self.url, data)
         usuario = User.objects.get(username=self.usuario.username)
-        # self.assertTrue(usuario.is_authenticated)
         self.assertFalse(self.usuario.check_password(''))
         self.assertTrue(self.usuario.check_password(self.password))
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
@@ -405,8 +408,6 @@ class CambioContraseniaTestCase(APITestCase):
             'new_password':self.nueva_contrasenia
         }
         response = self.client.post(self.url, data)
-        # usuario = User.objects.get(username=self.usuario.username)
-        # self.assertFalse(usuario.is_authenticated)
         usuario = User.objects.get(username=self.usuario.username)
         self.assertTrue(usuario.check_password(self.nueva_contrasenia))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -420,7 +421,6 @@ class CambioContraseniaTestCase(APITestCase):
         }
         response = self.client.post(self.url, data)
         usuario = User.objects.get(username=self.usuario.username)
-        self.assertFalse(usuario.is_authenticated)
         # self.assertEqual(usuario.password,self.password)
         self.assertTrue(usuario.check_password(self.password))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -434,7 +434,6 @@ class CambioContraseniaTestCase(APITestCase):
         }
         response = self.client.post(self.url, data)
         usuario = User.objects.get(username=self.usuario.username)
-        self.assertTrue(usuario.is_authenticated)
         # self.assertEqual(usuario.password,self.password)
         self.assertTrue(usuario.check_password(self.password))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -448,7 +447,6 @@ class CambioContraseniaTestCase(APITestCase):
         }
         response = self.client.post(self.url, data)
         usuario = User.objects.get(username=self.usuario.username)
-        self.assertTrue(usuario.is_authenticated)
         # self.assertEqual(usuario.password,self.password)
         self.assertTrue(usuario.check_password(self.password))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
