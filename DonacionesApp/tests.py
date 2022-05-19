@@ -156,7 +156,7 @@ class DonanacionBienesListCreateTestCase(APITestCase):
                                              first_name='Leo',
                                              last_name='Dan')
         self.user3.save()
-        
+        print(self.user3.id)
         self.institucion2 = Institucion.objects.create(nombre= self.user3.first_name,
                                                         director= "Leoncito",
                                                         fecha_fundacion= date(1999,8,4),
@@ -172,6 +172,12 @@ class DonanacionBienesListCreateTestCase(APITestCase):
                                                         usuario= self.user3)
         self.institucion2.save()
         response = self.client.get(self.url)
-        print(response.data)
+        #print(response.data)
         cantidad = len(response.data['results'])
+        institucion_response = response.data['results'][1] 
+        #Toma la posición 1 ya que a medida que se agrega un objeto nuevo se coloca en posición 0, metodo pila (el primero se coloca encima)
+        institucion2_response = response.data['results'][0] 
         self.assertEqual(cantidad,2)
+        self.assertEqual(self.institucion.nombre,institucion_response['nombre']) #valido nombre institucion1
+        self.assertEqual(self.institucion2.nombre,institucion2_response['nombre']) #valido nombre institucion2
+        #* Se puede seguir validando los demas campos, no le veo mucho sentido
