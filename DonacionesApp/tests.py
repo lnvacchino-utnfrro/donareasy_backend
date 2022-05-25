@@ -9,7 +9,7 @@ from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 
 from baseApp.models import Donante, Institucion
-from DonacionesApp.models import DonacionBienes,Donacion
+from DonacionesApp.models import DonacionBienes,Bien
 
 #fake = Faker()
 class DonanacionBienesListCreateTestCase(APITestCase):
@@ -156,7 +156,6 @@ class DonanacionBienesListCreateTestCase(APITestCase):
                                              first_name='Leo',
                                              last_name='Dan')
         self.user3.save()
-        print(self.user3.id)
         self.institucion2 = Institucion.objects.create(nombre= self.user3.first_name,
                                                         director= "Leoncito",
                                                         fecha_fundacion= date(1999,8,4),
@@ -181,3 +180,142 @@ class DonanacionBienesListCreateTestCase(APITestCase):
         self.assertEqual(self.institucion.nombre,institucion_response['nombre']) #valido nombre institucion1
         self.assertEqual(self.institucion2.nombre,institucion2_response['nombre']) #valido nombre institucion2
         #* Se puede seguir validando los demas campos, no le veo mucho sentido
+
+    def test_listar_donaciones(self):
+        self.url = reverse('ver_donacion')
+        self.user3 = User.objects.create_user('Leonardo',
+                                             'leo@dan.com',
+                                             'leodan222',
+                                             first_name='Leo',
+                                             last_name='Dan')
+        self.user3.save()
+        self.institucion2 = Institucion.objects.create(nombre= self.user3.first_name,
+                                                        director= "Leoncito",
+                                                        fecha_fundacion= date(1999,8,4),
+                                                        domicilio= "aaa123",
+                                                        localidad= "stafe",
+                                                        provincia= "stafe",
+                                                        pais= "arg",
+                                                        telefono= "341000000",
+                                                        cant_empleados=20,
+                                                        descripcion= "leo dan",
+                                                        cbu= 88888888,
+                                                        cuenta_bancaria= "",
+                                                        usuario= self.user3)
+        self.institucion2.save()
+        self.donacion1 = DonacionBienes.objects.create(   
+            donante = self.donante,
+            institucion = self.institucion,
+            cod_estado = 1,
+            fecha_creacion = datetime.now()  
+        )
+        self.donacion2 = DonacionBienes.objects.create(   
+            donante = self.donante,
+            institucion = self.institucion2,
+            cod_estado = 1,
+            fecha_creacion = datetime.now()       
+        )
+        self.donacion1.save()
+        self.donacion2.save()
+        self.bien1 = Bien.objects.create(
+                tipo = 1,
+                nombre = 'hrd',
+                descripcion = 'fsdg',
+                cantidad = 8,
+                donacion = self.donacion1      
+        )
+        self.bien2 = Bien.objects.create(
+                tipo = 3,
+                nombre = 'asd',
+                descripcion = 'gt',
+                cantidad = 11,
+                donacion = self.donacion2      
+        )
+        self.bien3 = Bien.objects.create(
+                tipo = 2,
+                nombre = 'fdhfdf',
+                descripcion = 'aaaa',
+                cantidad = 7,
+                donacion = self.donacion2     
+        )
+        self.bien1.save()
+        self.bien2.save()
+        self.bien3.save()
+        response = self.client.get(self.url)
+        #print(response.data)
+        cantidad = len(response.data['results'])
+        donacion_response = response.data['results'][0]
+        donacion2_response = response.data['results'][1]
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad,2)
+        self.assertEqual(self.donacion1.id,donacion_response['id'])
+        self.assertEqual(self.donacion2.id,donacion2_response['id'])
+        self.assertEqual(cantidad_bienes,3)
+
+    def test_aceptar_donaciones(self):
+        ''' Valido que se acepte la donacion elegida de manera correcta '''
+        self.donacion1 = DonacionBienes.objects.create(   
+            donante = self.donante,
+            institucion = self.institucion,
+            cod_estado = 1,
+            fecha_creacion = datetime.now(),
+            fecha_aceptacion = None,
+            fecha_cancelacion = None,
+            motivo_cancelacion = None  
+        )
+        
+        self.donacion1.save()
+        self.bien1 = Bien.objects.create(
+                tipo = 1,
+                nombre = 'hrd',
+                descripcion = 'fsdg',
+                cantidad = 8,
+                donacion = self.donacion1      
+        )
+        self.bien2 = Bien.objects.create(
+                tipo = 3,
+                nombre = 'asd',
+                descripcion = 'gt',
+                cantidad = 11,
+                donacion = self.donacion1      
+        )
+        self.bien3 = Bien.objects.create(
+                tipo = 2,
+                nombre = 'fdhfdf',
+                descripcion = 'aaaa',
+                cantidad = 7,
+                donacion = self.donacion1     
+        )
+        self.bien1.save()
+        self.bien2.save()
+        self.bien3.save()
+        self.url = reverse('aceptar_donacion', args=[self.donacion1.id])
+        data = {
+            "cod_estado": 2,
+            #"motivo_cancelacion": None,
+            "fecha_aceptacion": datetime.now()
+            #"fecha_cancelacion": None
+        }
+        data2 = {
+            "cod_estado": 0,
+            "motivo_cancelacion": "Cancelado",
+            #"fecha_aceptacion": None,
+            "fecha_cancelacion": datetime.now()
+        }
+        #print(self.url)
+        response = self.client.put(self.url,data) #Acepta donacion
+        response2 = self.client.put(self.url,data2) #Cancela donacion
+        """Valido que el response sea correcto tanto para la aceptacion como para la cancelacion"""
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response2.status_code, status.HTTP_200_OK)
+
+        """Valido datos al aceptar donacion"""
+        self.assertEqual(response.data['cod_estado'],2)
+        #Fecha de aceptación no se puede validar porque es un campo read_only
+        print(response)
+        """Valido datos al cancelar donacion"""
+        self.assertEqual(response2.data['cod_estado'],0)
+        self.assertEqual(response2.data['motivo_cancelacion'],"Cancelado")
+        #Fecha de cancelacion no se puede validar porque es un campo read_only
+        
+        
