@@ -5,6 +5,8 @@ from rest_framework import generics,status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from drf_yasg.utils import swagger_auto_schema
+
 from login.serializers import UserSerializer, DonanteUserSerializer, InstitucionUserSerializer, GroupSerializer
 
 from baseApp.models import Donante, Institucion
