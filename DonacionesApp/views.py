@@ -24,10 +24,6 @@ class DonacionBienesDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = DonacionBienes.objects.all()
     serializer_class = DonacionBienesSerializer
 
-# class BienesCreate(generics.CreateAPIView):
-#     """docstring"""
-#     queryset = Bien.objects.all()
-#     serializer_class = BienesSerializer
 
 class BienesList(generics.RetrieveAPIView):
     """docstring"""
@@ -45,3 +41,30 @@ class VerDonacion(generics.ListAPIView):
     def get_queryset(self):
         return DonacionBienes.objects.filter(cod_estado = 1) #or DonacionBienes.objects.filter(cod_estado = 2)
         # Me traigo las donaciones que tienen estado "creadas" o "aceptadas"
+
+class InstitucionesListConCBU(generics.ListAPIView):
+    serializer_class = InstitucionSerializer
+    def get_queryset(self):
+        return Institucion.objects.filter(cbu__isnull=False)
+
+class EligeInstitucionConCBU(generics.RetrieveAPIView):
+    serializer_class = DatosBancariosInstitucion
+    def get_queryset(self):
+        return Institucion.objects.filter(cbu__isnull=False)
+
+class DonacionMonetariaCreate(generics.CreateAPIView):
+    """docstring"""
+    queryset = DonacionMonetaria.objects.all()
+    serializer_class = DonacionMonetariaSerializer
+
+class VerDonacionMonetaria(generics.ListAPIView):
+    """docstring"""   
+    serializer_class = VerTransferenciaSerializer
+    def get_queryset(self):
+        return DonacionMonetaria.objects.filter(cod_estado = 3)
+
+class AceptarTransferencia(generics.UpdateAPIView):
+    """docstring"""
+    serializer_class = AceptarTransferenciaSerializer
+    def get_queryset(self):
+        return DonacionMonetaria.objects.filter(cod_estado = 3)
