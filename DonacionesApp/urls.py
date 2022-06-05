@@ -35,4 +35,4 @@ urlpatterns = [
     
 ]
 
-urlpatterns = format_suffix_patterns(urlpatterns)
+# urlpatterns = format_suffix_patterns(urlpatterns)
