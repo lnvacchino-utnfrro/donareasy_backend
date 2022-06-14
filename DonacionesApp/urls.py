@@ -6,11 +6,11 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from DonacionesApp import views
 
 urlpatterns = [
-    path('/eligeInstitucion/',
+    path('eligeInstitucion/',
         views.InstitucionesList.as_view(), #Muestra la lista de instituciones para seleccionar 1 
         name='instituciones_list'),
 
-    path('/eligeInstitucion/donarBienes/',
+    path('eligeInstitucion/donarBienes/',
         views.DonacionBienesCreate.as_view(),
         name='donacion_bienes'),
     
@@ -25,11 +25,11 @@ urlpatterns = [
     #     views.ElegirDonacion.as_view(),
     #     name='listar_donaciones'),
 
-    path('/eligeDonacion/',
+    path('eligeDonacion/',
         views.VerDonacion.as_view(),
         name='ver_donacion'),
 
-    path('/eligeDonacion/aceptar/<int:pk>/',
+    path('eligeDonacion/aceptar/<int:pk>/',
         views.AceptarDonacion.as_view(),
         name='aceptar_donacion'),
     

@@ -1,7 +1,7 @@
 """Archivo para generar Serializadores"""
 from rest_framework import serializers
 
-from baseApp.models import Donante, Institucion
+from baseApp.models import Cadete, Donante, Institucion
 
 # pylint: disable=too-few-public-methods
 
@@ -18,6 +18,14 @@ class InstitucionSerializer(serializers.ModelSerializer):
     class Meta:
         # pylint: disable=missing-class-docstring
         model = Institucion
+        fields = '__all__'
+
+
+class CadeteSerializer(serializers.ModelSerializer):
+    """Serializador para el modelo Cadete"""
+    class Meta:
+        # pylint: disable=missing-class-docstring
+        model = Cadete
         fields = '__all__'
 
 
@@ -42,7 +50,13 @@ class InstitucionSinForeingKeySerializer(serializers.ModelSerializer):
         model = Institucion
         exclude = ('usuario',)
 
-    def to_represetation(self,value):
-        print('REPRESENTACION DEL SERIALIZADOR DE INSTITUCION')
-        print('REPRESENTACION ',value)
-        return ''
+
+class CadeteSinForeingKeySerializer(serializers.ModelSerializer):
+    """
+    Serializador para el modelo Cadete sin incluir la Clave Foránea
+    que lo relaciona con la clase User
+    """
+    class Meta:
+        # pylint: disable=missing-class-docstring
+        model = Cadete
+        exclude = ('usuario',)

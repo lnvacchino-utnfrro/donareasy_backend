@@ -167,3 +167,91 @@ class Chicos(models.Model):
     #fotografia = models.ImageField(blank=True,
      #                              verbose_name='fotografia',
       #                             null=True)
+
+
+class Cadete(models.Model):
+    """
+    Rol de un usuario. Aquel que realiza la recolección de los donativos.
+    """
+    nombre = models.CharField(max_length=100,
+                              verbose_name='nombre')
+    apellido = models.CharField(max_length=100,
+                                verbose_name='apellido')
+    fecha_nacimiento = models.DateField(blank=True,
+                                        verbose_name='fecha_nacimiento',
+                                        null=True)
+    dni = models.CharField(blank=True,  #? El dni no puede ser null
+                           max_length=8,
+                           verbose_name='dni',
+                           null=True)
+    domicilio = models.CharField(blank=True,
+                                 max_length=100,
+                                 verbose_name='domicilio',
+                                 null=True)
+    localidad = models.CharField(blank=True,
+                                 max_length=100,
+                                 verbose_name='ciudad',
+                                 null=True)
+    provincia = models.CharField(blank=True,
+                                 max_length=100,
+                                 verbose_name='provincia',
+                                 null=True)
+    pais = models.CharField(blank=True,
+                            max_length=100,
+                            verbose_name='pais',
+                            null=True)
+    telefono = models.CharField(blank=True,
+                                max_length=15,
+                                verbose_name='telefono',
+                                null=True)
+    estado_civil = models.CharField(blank=True,
+                                    max_length=20,
+                                    verbose_name='provincia',
+                                    null=True)
+    genero = models.CharField(blank=True,
+                              max_length=20,
+                              verbose_name='genero',
+                              null=True)
+    ocupacion = models.CharField(blank=True,
+                                 max_length=100,
+                                 verbose_name='ocupacion',
+                                 null=True)
+    medio_transporte = models.CharField(blank=True,
+                                        max_length=100,
+                                        verbose_name='medio-de-transporte',
+                                        null=True)
+    usuario = models.OneToOneField(User,
+                                   verbose_name=("id_usuario"),
+                                   on_delete=models.CASCADE,
+                                   related_name='usuario_cadete',
+                                   null=True)
+    institucion = models.ForeignKey(Institucion,
+                                on_delete=models.SET_NULL,
+                                verbose_name='institucion',
+                                null=True)
+
+    def __str__(self):
+        return str(self.nombre)
+
+    def __eq__(self, other):
+        return self.nombre == other.nombre \
+            and self.apellido == other.apellido \
+            and self.fecha_nacimiento == other.fecha_nacimiento \
+            and self.dni == other.dni \
+            and self.domicilio == other.domicilio \
+            and self.localidad == other.localidad \
+            and self.provincia == other.provincia \
+            and self.pais == other.pais \
+            and self.telefono == other.telefono \
+            and self.estado_civil == other.estado_civil \
+            and self.genero == other.genero \
+            and self.ocupacion == other.ocupacion \
+            and self.medio_transporte == other.medio_transporte \
+            and self.usuario == other.usuario
+
+    class Meta:
+        # pylint: disable=missing-class-docstring, too-few-public-methods
+        ordering = ['nombre']
+        verbose_name = 'Cadete'
+        verbose_name_plural = 'Cadetes'
+
