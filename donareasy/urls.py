@@ -43,5 +43,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', include('login.urls')),
     path('home/models/', include('baseApp.urls')),
-    path('donaciones',include('DonacionesApp.urls')),
+    path('donaciones/',include('DonacionesApp.urls')),
 ]

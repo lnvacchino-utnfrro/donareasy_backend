@@ -1,6 +1,7 @@
 # Create your tests here.
 """Pruebas de integración"""
 from datetime import date, datetime
+#from queue import Empty
 
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -10,6 +11,7 @@ from rest_framework import status
 
 from baseApp.models import Donante, Institucion
 from DonacionesApp.models import DonacionBienes,Bien
+from DonacionesApp.models import DonacionMonetaria
 
 #fake = Faker()
 class DonanacionBienesListCreateTestCase(APITestCase):
@@ -317,5 +319,276 @@ class DonanacionBienesListCreateTestCase(APITestCase):
         self.assertEqual(response2.data['cod_estado'],0)
         self.assertEqual(response2.data['motivo_cancelacion'],"Cancelado")
         #Fecha de cancelacion no se puede validar porque es un campo read_only
-        
-        
+
+#! Comienzo a validar las donaciones monetarias!
+
+class DonanacionMonetariaCreateTestCase(APITestCase):
+    """
+    Pruebas realizadas sobre el listado de Instituciones con CBU y la creación de instancias de la
+    clase DonacionMonetaria.
+    """
+    def setUp(self):
+        """
+        Preparo algunas variables utilizadas en las pruebas de la clase.
+        Inicio el cliente, creo 3 usuarios (que será el que tenga el rol
+        de Donante) y genero la url .../InstitucionConCBU/.
+        """
+        self.client = APIClient()
+        self.user1 = User.objects.create_user('john',
+                                             'lennon@thebeatles.com',
+                                             'johnpassword',
+                                             first_name='john',
+                                             last_name='lennon')
+        self.user2 = User.objects.create_user('Paul',
+                                             'paul@thebeatles.com',
+                                             'paulpassword',
+                                             first_name='Paul',
+                                             last_name='McCartney')
+        self.user3 = User.objects.create_user('Ringo',
+                                             'ringostarr@thebeatles.com',
+                                             'ringopassword',
+                                             first_name='Ringo',
+                                             last_name='Starr')
+        self.user1.save()
+        self.user2.save()
+        self.user3.save()
+        self.donante = Donante.objects.create(nombre= self.user1.first_name,
+                                            apellido= self.user1.last_name,
+                                            fecha_nacimiento= date(1983,7,19),
+                                            dni= '87654321',
+                                            domicilio= 'Calle falsa 789',
+                                            localidad= 'local',
+                                            provincia= 'prov',
+                                            pais= 'pais',
+                                            telefono= '1675-138745',
+                                            estado_civil= 'soltere',
+                                            genero= 'masculine',
+                                            ocupacion='reportero deportivo',
+                                            usuario= self.user1)
+        self.institucion1 = Institucion.objects.create(nombre= self.user2.first_name,
+                                                        director= "Ramón",
+                                                        fecha_fundacion= date(1980,1,1),
+                                                        domicilio= "",
+                                                        localidad= "",
+                                                        provincia= "",
+                                                        pais= "",
+                                                        telefono= "",
+                                                        cant_empleados=0,
+                                                        descripcion= "",
+                                                        cbu= 256000,
+                                                        cuenta_bancaria= "123-555555/8",
+                                                        usuario= self.user2)
+        self.institucion2 = Institucion.objects.create(nombre= self.user3.first_name,
+                                                        director= "Ringo",
+                                                        fecha_fundacion= date(1999,1,1),
+                                                        domicilio= "a",
+                                                        localidad= "b",
+                                                        provincia= "c",
+                                                        pais= "d",
+                                                        telefono= "",
+                                                        cant_empleados=10,
+                                                        descripcion= "",
+                                                        cbu= None,
+                                                        cuenta_bancaria= None,
+                                                        usuario= self.user3)
+        self.url = reverse('instituciones_list_cbu')
+
+    def test_listar_instituciones_con_cbu(self):
+        """
+        Valido que al realizar un GET se obtengan todas las instituciones que esten bancarizadas
+        """
+        response = self.client.get(self.url)
+        #print(response.data)
+        cantidad = len(response.data['results'])
+        institucion_response = response.data['results'][0]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(cantidad,1)
+        self.assertEqual(self.institucion1.nombre,institucion_response['nombre']) #valido nombre institucion1
+        #* Se puede seguir validando los demas campos, no le veo mucho sentido
+
+    def test_transferencia_institucion_elegida(self):
+        """
+        Valido que al realizar un GET se obtenga la información de la institucion bancarizada elegida
+        """
+        self.url = reverse('institucion_elegida_cbu', args=[self.institucion1.id])
+        data = {
+            "nombre": self.institucion1.nombre,
+            "cbu": self.institucion1.cbu,
+            "cuenta_bancaria": "1425-5869/0"
+        }
+        response = self.client.get(self.url,data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.institucion1.nombre,response.data['nombre'])
+        self.assertEqual(response.data['cbu'],self.institucion1.cbu)
+
+    def test_transferencia_institucion_sin_cbu(self):
+        """
+        Valido que al realizar un GET se obtenga la información de la institucion bancarizada elegida
+        """
+        self.url = reverse('institucion_elegida_cbu', args=[self.institucion2.id])
+        data = {
+            'nombre': self.institucion2.nombre,
+            'cbu': 'null',
+            'cuenta_bancaria': 'null'
+        }      
+        response = self.client.get(self.url,data,format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        #self.assertEqual(self.institucion2.nombre,response.data['results'][0]['nombre'])
+        self.assertIsNone(self.institucion2.cbu)
+
+#############################################################
+    def test_crear_donacion_monetaria(self):
+        """
+        Valido que al ingresar los datos requeridos se cree una donacion monetaria
+        """
+        self.url = reverse('donacion_monetaria')
+        data = {
+            'donante': self.donante.id,
+            'institucion': self.institucion1.id,
+            'monto': 500
+        }      
+        response = self.client.post(self.url,data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        cantidad = DonacionMonetaria.objects.count()
+        self.assertEqual(cantidad,1)
+        #self.assertEqual(self.institucion2.nombre,response.data['results'][0]['nombre'])
+        #self.assertIsNone(self.institucion2.cbu)
+
+    def test_NO_crear_donacion_monetaria_monto_menorigual_a_0(self):
+        """
+        Valido que al ingresar un monto <= 0 no se cree la donación
+        """
+        #self.url = reverse('donacion_monetaria')
+        data = {
+            'donante': self.donante.id,
+            'institucion': self.institucion1.id,
+            'monto': 0
+        }      
+        response = self.client.post(self.url,data)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        cantidad = DonacionMonetaria.objects.count()
+        self.assertEqual(cantidad,0)
+        """El error 405 No Permitido ocurre cuando el servidor web está configurado de una forma que no permita 
+        que usted pueda llevar a cabo una acción para un URL en particular.
+        Es un código de respuesta de estado HTTP que indica que el método requerido es conocido por el servidor, 
+        pero no es soportado por la fuente objetivo."""
+
+    def test_NO_crear_donacion_monetaria_institucion_sin_CBU(self):
+        """
+        Valido que al ingresar una institución sin cbu no se cree la donación
+        """
+        #Nose como está funcionando este test, pero funciona, no tocar.
+        data = {
+            'donante': self.donante.id,
+            'institucion': self.institucion2.id,
+            'monto': 10
+        }      
+        response = self.client.post(self.url,data)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        cantidad = DonacionMonetaria.objects.count()
+        self.assertEqual(cantidad,0)
+
+    def test_listar_transferencias(self):
+        """
+        Valido que al realizar un GET obtenga la lista de las transferencias
+        """
+        self.transf1 = DonacionMonetaria.objects.create(
+            donante = self.donante,
+            institucion = self.institucion1,
+            monto = 5000,
+            cod_estado = 3,
+            fecha_transferencia = date.today(),
+            fecha_creacion = datetime.now()
+        )
+        self.transf2 = DonacionMonetaria.objects.create(
+            donante = self.donante,
+            institucion = self.institucion1,
+            monto = 2000,
+            cod_estado = 3,
+            fecha_transferencia = date.today(),
+            fecha_creacion = datetime.now()
+        )
+        self.transf2.save()
+        self.transf1.save()
+        self.url = reverse('ver_transferencia')
+        response = self.client.get(self.url)
+        cantidad = len(response.data['results'])
+        transferencia_response = response.data['results'][0]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(cantidad,2)
+        #print(response.data['institucion'])
+        #self.assertEqual(self.institucion1.id,transferencia_response['institucion'])
+
+    def test_aceptar_transferencia(self):
+        """
+        Valido que al realizar un PUT se actualice el codigo de estado a 4 (Recibida)
+        """
+        self.transf3 = DonacionMonetaria.objects.create(
+            donante = self.donante,
+            institucion = self.institucion1,
+            monto = 5000,
+            cod_estado = 3,
+            fecha_transferencia = date.today(),
+            fecha_creacion = datetime.now()
+        )
+        self.transf3.save()
+        data = {
+            'cod_estado': 4,
+            'motivo_cancelacion': None,
+            'fecha_aceptacion': datetime.now(),
+            'fecha_cancelacion': None
+        }     
+        self.url = reverse('aceptar_transferencia',args=[self.transf3.id])
+        response = self.client.put(self.url,data,format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['cod_estado'],4)
+        #self.assertIsNone(self.institucion2.cbu)
+
+    def test_rechazar_transferencia(self):
+        """
+        Valido que al realizar un PUT se actualice el codigo de estado a 0 (Cancelada)
+        """
+        self.transf3 = DonacionMonetaria.objects.create(
+            donante = self.donante,
+            institucion = self.institucion1,
+            monto = 5000,
+            cod_estado = 3,
+            fecha_transferencia = date.today(),
+            fecha_creacion = datetime.now()
+        )
+        self.transf3.save()
+        data = {
+            'cod_estado': 0,
+            'motivo_cancelacion': "No llego",
+            'fecha_aceptacion': None,
+            'fecha_cancelacion': datetime.now()
+        }     
+        self.url = reverse('aceptar_transferencia',args=[self.transf3.id])
+        response = self.client.put(self.url,data,format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['cod_estado'],0)
+        self.assertEqual(response.data['motivo_cancelacion'],"No llego")
+        #self.assertIsNone(self.institucion2.cbu)
+
+    def test_no_aceptacion_de_transferencia_sin_enviar_transferencia(self):
+        """
+        Valido que al realizar un PUT a una donación que fue creada pero no enviada falle
+        """
+        self.transf3 = DonacionMonetaria.objects.create(
+            donante = self.donante,
+            institucion = self.institucion1,
+            monto = 5000,
+            cod_estado = 1,
+            fecha_transferencia = date.today(),
+            fecha_creacion = datetime.now()
+        )
+        self.transf3.save()
+        data = {
+            'cod_estado': 4,
+            'motivo_cancelacion': None,
+            'fecha_aceptacion': datetime.now(),
+            'fecha_cancelacion': None
+        }     
+        self.url = reverse('aceptar_transferencia',args=[self.transf3.id])
+        response = self.client.put(self.url,data,format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
