@@ -137,3 +137,7 @@ class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ['id','name']
+
+class TokenSerializer(serializers.Serializer):
+    """docstring"""
+    token = serializers.CharField(max_length=255)
