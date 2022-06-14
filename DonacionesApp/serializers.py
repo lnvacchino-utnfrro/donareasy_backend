@@ -68,7 +68,8 @@ class DonacionMonetariaSerializer(serializers.ModelSerializer):
     def create(self,validated_data):
         #if validated_data['institucion']['cbu'] is not None: 
         #! Ver como hacer para no permitir que elija instituciones no bancarizadas, #Lo hace frontend?
-        donacion = DonacionMonetaria.objects.create(
+        if (validated_data['monto'] > 0):
+            donacion = DonacionMonetaria.objects.create(
              donante = validated_data['donante'],
              institucion = validated_data['institucion'],
              monto = validated_data['monto'],
@@ -95,7 +96,7 @@ class VerTransferenciaSerializer(serializers.ModelSerializer):
 class AceptarTransferenciaSerializer(serializers.ModelSerializer):
     #bienes = BienesSerializer(many=True)
     class Meta:
-        model = DonacionBienes
+        model = DonacionMonetaria
         fields = ['cod_estado','motivo_cancelacion']
         read_only_fields = ['fecha_aceptacion','fecha_cancelacion']
     def update(self,donacion,validated_data):

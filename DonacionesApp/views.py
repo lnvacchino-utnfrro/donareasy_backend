@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from requests import Response
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import permissions
@@ -7,6 +8,7 @@ from DonacionesApp.models import Donacion, DonacionBienes, DonacionMonetaria, Bi
 from baseApp.models import Donante, Institucion
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
 from DonacionesApp import serializers
+from django.db.models import Q
 # Create your views here.
 
 class InstitucionesList(generics.ListAPIView):
@@ -30,10 +32,14 @@ class BienesList(generics.RetrieveAPIView):
     queryset = Bien.objects.all()
     serializer_class = BienesSerializer
 
-class AceptarDonacion(generics.UpdateAPIView):
+class AceptarDonacion(generics.RetrieveUpdateAPIView):
     """docstring"""
     queryset = DonacionBienes.objects.all()
     serializer_class = AceptarDonacionSerializer
+    # def retrieve(self,request):
+    #     queryset = self.get_object()
+    #     serializer = DonacionBienesSerializer(queryset)
+    #     return Response(serializer.data)
 
 class VerDonacion(generics.ListAPIView):
     """docstring"""   
@@ -42,6 +48,7 @@ class VerDonacion(generics.ListAPIView):
         return DonacionBienes.objects.filter(cod_estado = 1) #or DonacionBienes.objects.filter(cod_estado = 2)
         # Me traigo las donaciones que tienen estado "creadas" o "aceptadas"
 
+#! Comienzo a desarrollar vistas para donación monetaria
 class InstitucionesListConCBU(generics.ListAPIView):
     serializer_class = InstitucionSerializer
     def get_queryset(self):
@@ -61,7 +68,7 @@ class VerDonacionMonetaria(generics.ListAPIView):
     """docstring"""   
     serializer_class = VerTransferenciaSerializer
     def get_queryset(self):
-        return DonacionMonetaria.objects.filter(cod_estado = 3)
+        return DonacionMonetaria.objects.filter(cod_estado = 3) #(Q(cod_estado = 1) | Q(cod_estado = 3))
 
 class AceptarTransferencia(generics.UpdateAPIView):
     """docstring"""

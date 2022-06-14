@@ -41,7 +41,7 @@ urlpatterns = [
     
     path('/verTransferencia/aceptar/<int:pk>/',
         views.AceptarTransferencia.as_view(),
-        name='ver_transferencia'),
+        name='aceptar_transferencia'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
