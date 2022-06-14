@@ -592,3 +592,4 @@ class DonanacionMonetariaCreateTestCase(APITestCase):
         self.url = reverse('aceptar_transferencia',args=[self.transf3.id])
         response = self.client.put(self.url,data,format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        
