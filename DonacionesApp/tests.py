@@ -314,7 +314,7 @@ class DonanacionBienesListCreateTestCase(APITestCase):
         """Valido datos al aceptar donacion"""
         self.assertEqual(response.data['cod_estado'],2)
         #Fecha de aceptación no se puede validar porque es un campo read_only
-        print(response)
+        #print(response)
         """Valido datos al cancelar donacion"""
         self.assertEqual(response2.data['cod_estado'],0)
         self.assertEqual(response2.data['motivo_cancelacion'],"Cancelado")

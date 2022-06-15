@@ -330,11 +330,11 @@ class InstitucionListCreateTestCase(APITestCase):
             'telefono': '',
             'cant_empleados': '',
             'descripcion': '',
-            'cbu': 123456789012,
+            'cbu': None,
             'cuenta_bancaria': '',
             'usuario': ''
         }
-        response = self.client.post(self.url,data)
+        response = self.client.post(self.url,data,content_type='application/json')
         cantidad = Institucion.objects.count()
         self.assertEqual(cantidad,0)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

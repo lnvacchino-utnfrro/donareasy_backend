@@ -1,5 +1,6 @@
 """docstring"""
 from datetime import datetime
+from secrets import token_hex
 
 from django.contrib.sessions.models import Session
 from django.contrib.auth.models import User
@@ -320,19 +321,26 @@ class CambioContrasenia(APIView):
         token = Token.objects.filter(key=token).first()
         if token:
             user = token.user
-            serializer = CambioContraseniaSerializer(data = request.data)
-            if serializer.is_valid():
-                if user.check_password(serializer.validated_data['old_password']):
-                    user.set_password(serializer.validated_data['new_password'])
-                    user.save()
-                    return Response({'mensaje':'La contraseña fue actualizada con éxito'},
-                                    status=status.HTTP_200_OK)
-                
-                return Response({'mensaje':'La contraseña ingresada no es correcta'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            return Response({'mensaje':serializer.errors},
-                            status=status.HTTP_406_NOT_ACCEPTABLE)
+            sessions = Session.objects.all()
+            if sessions.exists():
+                for session in sessions:
+                    session_data = session.get_decoded()
+                    if int(session_data.get('_auth_user_id')) == user.id:
+                        serializer = CambioContraseniaSerializer(data = request.data)
+                        if serializer.is_valid():
+                            if user.check_password(serializer.validated_data['old_password']):
+                                user.set_password(serializer.validated_data['new_password'])
+                                user.save()
+                                return Response({'mensaje':'La contraseña fue actualizada con éxito'},
+                                                status=status.HTTP_200_OK)
+                            
+                            return Response({'mensaje':'La contraseña ingresada no es correcta'},
+                                            status=status.HTTP_400_BAD_REQUEST)
+                        return Response({'mensaje':serializer.errors},
+                                        status=status.HTTP_406_NOT_ACCEPTABLE)
+                return Response({'mensaje':'La sesión del usuario se encuentra cerrada'},
+                            status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'mensaje':'La sesión del usuario se encuentra cerrada'},
+                            status=status.HTTP_401_UNAUTHORIZED)
         return Response({'mensaje':'Token inválido'},
                         status=status.HTTP_400_BAD_REQUEST)
-
-    

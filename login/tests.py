@@ -129,12 +129,13 @@ class LogupUsuarioTestCase(APITestCase):
         en la Base de Datos.
         """
         # Creo la institución que será la que genere el nuevo usuario Cadete
-        usuario_institucion = User.objects.create(
-            username='rlopez',
+        # username_usuario_institucion = 'rlopez'
+        usuario_institucion = User.objects.create_user(
+            'rlopez',
+            'rlopez@gmail.com',
+            password='rlopez',
             first_name='Raul',
-            last_name='Lopez',
-            email='rlopez@gmail.com',
-            password='rlopez'
+            last_name='Lopez'
         )
         usuario_institucion.groups.set([self.group_institucion.id,])
         institucion = Institucion.objects.create(
@@ -153,7 +154,7 @@ class LogupUsuarioTestCase(APITestCase):
             cuenta_bancaria="123-123214/0"
         )
         # Creación de Cadete
-        usuario = {
+        usuario_cadete = {
             'username': 'tsanchez',
             'first_name': 'Teresa',
             'last_name': 'Sanchez',
@@ -162,7 +163,7 @@ class LogupUsuarioTestCase(APITestCase):
             'groups': [self.group_cadete.id]
         }
         data = {
-            "usuario": usuario,
+            "usuario": usuario_cadete,
             "institucion": institucion.id,
             "nombre": "Teresa",
             "apellido": "Sanchez",
@@ -183,12 +184,12 @@ class LogupUsuarioTestCase(APITestCase):
         cantidad = User.objects.count()
         if cantidad > 0:
             for u in User.objects.all():
-                if u.groups == self.group_institucion:
+                if u.groups.all()[0] == self.group_institucion:
                     usuario_institucion_db = u
-                elif u.groups == self.group_cadete:
+                elif u.groups.all()[0] == self.group_cadete:
                     usuario_cadete_db = u
         self.assertGreater(cantidad, 0)
-        self.assertEqual(usuario_institucion_db.username, usuario['username'])
+        self.assertEqual(usuario_institucion_db, usuario_institucion)
         # Evalúo la institución
         cantidad = Institucion.objects.count()
         if cantidad > 0:
@@ -196,7 +197,7 @@ class LogupUsuarioTestCase(APITestCase):
         self.assertEqual(cantidad, 1)
         self.assertEqual(institucion_db.usuario, usuario_institucion_db)
         #self.assertEqual(institucion_db.usuario.username, usuario_institucion_db.username)
-        # Evaluo el donante
+        # Evaluo el cadete
         cantidad = Cadete.objects.count()
         if cantidad > 0:
             cadete = Cadete.objects.first()
@@ -508,7 +509,7 @@ class CambioContraseniaTestCase(APITestCase):
         usuario = User.objects.get(username=self.usuario.username)
         # self.assertEqual(usuario.password,self.password)
         self.assertTrue(usuario.check_password(self.password))
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_no_cambiar_contra_con_token_incorrecto(self):
         token_incorrecto='II94xdu7frt8idb8fb'
@@ -535,6 +536,3 @@ class CambioContraseniaTestCase(APITestCase):
         # self.assertEqual(usuario.password,self.password)
         self.assertTrue(usuario.check_password(self.password))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-
-
