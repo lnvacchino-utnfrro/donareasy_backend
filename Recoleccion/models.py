@@ -13,13 +13,6 @@ class Recoleccion(models.Model):
                                 null=True,
                                 verbose_name='cadete'
                                 )
-    fecha_recoleccion: models.DateField(blank=True,
-                                    verbose_name='fecha_recoleccion'                           
-                                    )
-    hora_recoleccion: models.TimeField(blank=True,
-                                    verbose_name='hora_recoleccion',
-                                    null=True
-                                    )
     # 1:Creada , 2:En proceso , 3:Finalizada , 4:No finalizada , 0:Cancelada
     estado_recoleccion = models.SmallIntegerField(blank = True, 
                                     verbose_name='estado'
@@ -32,6 +25,14 @@ class Recoleccion(models.Model):
                                    max_length=100,
                                    verbose_name='descripcion',
                                    null=True)
+    hora_recoleccion = models.TimeField(blank=True,
+                                   verbose_name='hora_recoleccion',
+                                   null=True)
+    fecha_recoleccion = models.DateField(blank=True,
+                                   verbose_name='fecha_recoleccion',
+                                   null=True)
+    
+
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
         #ordering = ['fecha_recoleccion']

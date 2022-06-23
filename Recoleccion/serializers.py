@@ -7,11 +7,11 @@ from datetime import datetime,date
 from DonacionesApp.serializers import DonacionBienesSerializer
 
 class RecoleccionesCreateSerializer(serializers.ModelSerializer):
-     #donacion = DonacionBienesSerializer(many=True)
+     donacion = DonacionBienesSerializer(many=True)
      cadete = CadeteSerializer()
      class Meta:
          model = Recoleccion
-         fields = '__all__' #['cadete','fecha_recoleccion','hora_recoleccion','donacion']
+         fields = ['cadete','fecha_recoleccion','hora_recoleccion','donacion']
          #read_only_fields = ['estado_recoleccion']
 
     #  def create(self,validated_data):
