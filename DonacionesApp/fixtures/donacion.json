@@ -1,0 +1,44 @@
+[
+    {
+        "model": "DonacionesApp.donacion",
+        "pk": 1,
+        "fields": {
+            "donante": 3,
+            "institucion": 1,
+            "fecha_creacion": "2022-03-26T00:00:00",
+            "fecha_aceptacion": null,
+            "fecha_cancelacion": null,
+            "motivo_cancelacion": null,
+            "fecha_entrega_real": null,
+            "cod_estado": 1
+        }
+    },
+    {
+        "model": "DonacionesApp.donacion",
+        "pk": 2,
+        "fields": {
+            "donante": 4,
+            "institucion": 2,
+            "fecha_creacion": "2022-06-02T22:41:15.364",
+            "fecha_aceptacion": null,
+            "fecha_cancelacion": null,
+            "motivo_cancelacion": null,
+            "fecha_entrega_real": null,
+            "cod_estado": 1
+        }
+    },
+    {
+        "model": "DonacionesApp.donacion",
+        "pk": 3,
+        "fields": {
+            "donante": 5,
+            "institucion": 2,
+            "fecha_creacion": "2022-06-02T22:41:15.364",
+            "fecha_aceptacion": null,
+            "fecha_cancelacion": null,
+            "motivo_cancelacion": null,
+            "fecha_entrega_real": null,
+            "cod_estado": 1
+        }
+    }
+]
