@@ -1,9 +1,9 @@
-# coverage==6.3.2
+coverage==6.3.2
 Django==3.2.6
 django-cors-headers==3.11.0
 djangorestframework==3.12.4
-# httpie==2.6.0
-# mysqlclient==2.0.3
+httpie==2.6.0
+mysqlclient==2.0.3
 pylint==2.12.1
 requests==2.26.0
 drf-yasg==1.20.0
