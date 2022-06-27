@@ -8,12 +8,13 @@ class Recoleccion(models.Model):
     Recolección: es un conjunto de donaciones definidas por el cadete para recolectar en un día y hora
     en particular
     """
-    cadete: models.ForeignKey(Cadete,
+    cadete = models.ForeignKey(Cadete,
                                 on_delete=models.SET_NULL,
                                 null=True,
                                 verbose_name='cadete'
                                 )
-    # 1:Creada , 2:En proceso , 3:Finalizada , 4:No finalizada , 0:Cancelada
+    
+    #! 1:Creada , 2:En proceso , 3:Finalizada , 4:No finalizada , 0:Cancelada
     estado_recoleccion = models.SmallIntegerField(blank = True, 
                                     verbose_name='estado'
                                     )
