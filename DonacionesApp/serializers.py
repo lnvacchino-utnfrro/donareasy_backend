@@ -60,11 +60,6 @@ class VerDonacionSerializer(serializers.ModelSerializer):
         model = DonacionBienes
         fields = ['id','donante','cod_estado','bienes']
     
-class IdDonacionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DonacionBienes
-        fields = ['id']
-       
 class DonacionMonetariaSerializer(serializers.ModelSerializer):
     class Meta:
         model = DonacionMonetaria

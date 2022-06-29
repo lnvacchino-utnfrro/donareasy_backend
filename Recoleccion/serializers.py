@@ -5,7 +5,7 @@ from Recoleccion.models import *
 from baseApp.serializers import DonanteSerializer,CadeteSerializer
 from baseApp.models import Institucion, Cadete
 from datetime import datetime,date
-from DonacionesApp.serializers import DonacionBienesSerializer, IdDonacionSerializer
+from DonacionesApp.serializers import DonacionBienesSerializer
 
 class RecoleccionesCreateSerializer(serializers.ModelSerializer):
     serializers.PrimaryKeyRelatedField(many=True, queryset=DonacionBienes.objects.all())
@@ -26,6 +26,7 @@ class RecoleccionesCreateSerializer(serializers.ModelSerializer):
         recoleccion.save() 
         for donacion in donaciones_data:
             donacion.recoleccion = recoleccion
+            donacion.fecha_retiro = recoleccion.fecha_recoleccion
             donacion.save()
             
         return recoleccion
