@@ -59,7 +59,7 @@ class VerDonacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = DonacionBienes
         fields = ['id','donante','cod_estado','bienes']
-       
+    
 class DonacionMonetariaSerializer(serializers.ModelSerializer):
     class Meta:
         model = DonacionMonetaria
