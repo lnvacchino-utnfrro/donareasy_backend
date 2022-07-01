@@ -40,7 +40,7 @@ jobs:
     #     sudo /etc/init.d/mysql start
     #     mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
     - uses: actions/checkout@v3
-    - run: mysql -h 127.0.0.1 --port 3306 -u ${{ env.DB_USER }} -p ${{ env.DB_PASSWORD }} -e CREATE DATABASE IF NOT EXISTS ${{ env.DB_DATABASE }};'
+    - run: mysql -h 127.0.0.1 --port 3306 -u ${{ env.DB_USER }} -p ${{ env.DB_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS ${{ env.DB_DATABASE }};'
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
