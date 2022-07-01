@@ -35,11 +35,12 @@ jobs:
     #     options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=10s --health-retries=10
 
     steps:
-    - name: Set up MySQL #https://ovirium.com/blog/how-to-make-mysql-work-in-your-github-actions/
-      run: |
-        sudo /etc/init.d/mysql start
-        mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+    # - name: Set up MySQL #https://ovirium.com/blog/how-to-make-mysql-work-in-your-github-actions/
+    #   run: |
+    #     sudo /etc/init.d/mysql start
+    #     mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
     - uses: actions/checkout@v3
+    - run: mysql -h 127.0.0.1 --port 3306 -u ${{ env.DB_USER }} -p ${{ env.DB_PASSWORD }} 'CREATE DATABASE IF NOT EXISTS ${{ env.DB_DATABASE }};'
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
