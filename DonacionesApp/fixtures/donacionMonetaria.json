@@ -1,0 +1,10 @@
+[
+    {
+        "model": "DonacionesApp.donacionMonetaria",
+        "pk": 3,
+        "fields": {
+            "monto": 12345,
+            "fecha_transferencia": "2022-6-26"
+        }
+    }
+]
