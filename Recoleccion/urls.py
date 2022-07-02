@@ -14,4 +14,11 @@ urlpatterns = [
     path('seleccionaDonaciones/creaRecoleccion/',
         views.RecoleccionesCreate.as_view(), 
         name='crea_recoleccion'),
+
+    #path para paso 4 path('listaRecolecciones/')
+    #path para paso 4 path('listaRecolecciones/detalleRecoleccion/<int:pk>')
+
+    path('listaRecolecciones/detalleRecoleccion/<int:recoleccion>/detalleDonacion/<int:pk>',
+        views.RecoleccionDonacionDetail.as_view(),
+        name='detalle_donacion_recoleccion')
 ]
