@@ -47,6 +47,12 @@ class Donacion(models.Model):
                                     verbose_name='estado'
                                     )
     #Agregar fecha_rechazo y motivo_rechazo
+
+    class Meta:
+        # pylint: disable=missing-class-docstring, too-few-public-methods
+        ordering = ['fecha_creacion']
+        verbose_name = 'Donación'
+        verbose_name_plural = 'Donaciones'
     
 class DonacionMonetaria(Donacion):
     """docstring"""
@@ -57,12 +63,24 @@ class DonacionMonetaria(Donacion):
                                     verbose_name='fecha_transferencia'
                                     )
 
+    class Meta:
+        # pylint: disable=missing-class-docstring, too-few-public-methods
+        ordering = ['fecha_creacion']
+        verbose_name = 'Donación monetaria'
+        verbose_name_plural = 'Donaciones monetarias'
+
 class DonacionBienes(Donacion):
     """docstring""" 
     fecha_retiro = models.DateField(blank=True,
                                     verbose_name='fecha_retiro',
                                     null=True
                                     )
+
+    class Meta:
+        # pylint: disable=missing-class-docstring, too-few-public-methods
+        ordering = ['fecha_creacion']
+        verbose_name = 'Donación de bienes'
+        verbose_name_plural = 'Donaciones de bienes'
 
 class Bien(models.Model):
     """Objetos que va adonar el Donante a una institucion"""
@@ -92,3 +110,8 @@ class Bien(models.Model):
                                 )
     # imagen 
 
+    class Meta:
+        # pylint: disable=missing-class-docstring, too-few-public-methods
+        ordering = ['tipo']
+        verbose_name = 'Bien'
+        verbose_name_plural = 'Bienes'

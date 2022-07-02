@@ -11,7 +11,7 @@ from rest_framework.authtoken.models import Token
 
 from login.models import CodigoRecuperacion
 
-from baseApp.models import Donante, Institucion
+from baseApp.models import Cadete, Donante, Institucion
 
 # pylint: disable=no-member
 
@@ -25,10 +25,12 @@ class LogupUsuarioTestCase(APITestCase):
         """
         self.group_donante = Group.objects.create(name='donantes')
         self.group_institucion = Group.objects.create(name='instituciones')
+        self.group_cadete = Group.objects.create(name='cadetes')
         self.client = APIClient()
         self.url = reverse('logup')
         self.url_donante = reverse('donante-create')
         self.url_institucion = reverse('institucion-create')
+        self.url_cadete = reverse('cadete-create')
 
     def test_crear_usuario_donante(self):
         """
@@ -117,6 +119,90 @@ class LogupUsuarioTestCase(APITestCase):
             institucion = Institucion.objects.first()
         self.assertEqual(cantidad, 1)
         self.assertEqual(institucion.usuario, usuario_db)
+        # Evaluo el estado del response
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    
+    def test_crear_usuario_cadete(self):
+        """
+        Valido que al realizar un POST con todos los datos de un Usuario con el
+        rol de Cadete, se genere una instancia Usuario y una instancia Cadete
+        en la Base de Datos.
+        """
+        # Creo la institución que será la que genere el nuevo usuario Cadete
+        # username_usuario_institucion = 'rlopez'
+        usuario_institucion = User.objects.create_user(
+            'rlopez',
+            'rlopez@gmail.com',
+            password='rlopez',
+            first_name='Raul',
+            last_name='Lopez'
+        )
+        usuario_institucion.groups.set([self.group_institucion.id,])
+        institucion = Institucion.objects.create(
+            usuario=usuario_institucion,
+            nombre='Corazón Delator',
+            director=usuario_institucion.first_name,
+            fecha_fundacion=date(1983,7,19),
+            domicilio="Calle falsa 123",
+            localidad="Loc",
+            provincia="prov",
+            pais="Arg",
+            telefono="0123-123456789",
+            cant_empleados=7,
+            descripcion="Esto es una instiucion",
+            cbu=123456789012,
+            cuenta_bancaria="123-123214/0"
+        )
+        # Creación de Cadete
+        usuario_cadete = {
+            'username': 'tsanchez',
+            'first_name': 'Teresa',
+            'last_name': 'Sanchez',
+            'email': 'tsanchez@gmail.com',
+            'password': 'tsanchez',
+            'groups': [self.group_cadete.id]
+        }
+        data = {
+            "usuario": usuario_cadete,
+            "institucion": institucion.id,
+            "nombre": "Teresa",
+            "apellido": "Sanchez",
+            "fecha_nacimiento": date(1983,7,19),
+            "dni": "12345678",
+            "domicilio": "Calle falsa 123",
+            "localidad": "Loc",
+            "provincia": "prov",
+            "pais": "Arg",
+            "telefono": "0123-123456789",
+            "estado_civil": "Estado",
+            "genero": "Genero",
+            "ocupacion": "Ocupación",
+            "medio_transporte": "Camioneta Chevrolet 3 asietos con caja (de madera)"
+        }
+        response = self.client.post(self.url_cadete, data, format='json')
+        # Evaluo el usuario y la institucion
+        cantidad = User.objects.count()
+        if cantidad > 0:
+            for u in User.objects.all():
+                if u.groups.all()[0] == self.group_institucion:
+                    usuario_institucion_db = u
+                elif u.groups.all()[0] == self.group_cadete:
+                    usuario_cadete_db = u
+        self.assertGreater(cantidad, 0)
+        self.assertEqual(usuario_institucion_db, usuario_institucion)
+        # Evalúo la institución
+        cantidad = Institucion.objects.count()
+        if cantidad > 0:
+            institucion_db = Institucion.objects.first()
+        self.assertEqual(cantidad, 1)
+        self.assertEqual(institucion_db.usuario, usuario_institucion_db)
+        #self.assertEqual(institucion_db.usuario.username, usuario_institucion_db.username)
+        # Evaluo el cadete
+        cantidad = Cadete.objects.count()
+        if cantidad > 0:
+            cadete = Cadete.objects.first()
+        self.assertEqual(cantidad, 1)
+        self.assertEqual(cadete.usuario, usuario_cadete_db)
         # Evaluo el estado del response
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -423,10 +509,10 @@ class CambioContraseniaTestCase(APITestCase):
         usuario = User.objects.get(username=self.usuario.username)
         # self.assertEqual(usuario.password,self.password)
         self.assertTrue(usuario.check_password(self.password))
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_no_cambiar_contra_con_token_incorrecto(self):
-        token_incorrecto='II94xdu7frt8idb8ñb'
+        token_incorrecto='II94xdu7frt8idb8fb'
         data = {
             'token':token_incorrecto,
             'old_password':self.password,
@@ -450,6 +536,3 @@ class CambioContraseniaTestCase(APITestCase):
         # self.assertEqual(usuario.password,self.password)
         self.assertTrue(usuario.check_password(self.password))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-
-

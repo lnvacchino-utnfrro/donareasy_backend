@@ -4,7 +4,7 @@ from django.contrib.auth.password_validation import validate_password
 
 from rest_framework import serializers
 
-from baseApp.models import Donante, Institucion
+from baseApp.models import Cadete, Donante, Institucion
 from baseApp.serializers import DonanteSinForeingKeySerializer
 
 from login.models import CodigoRecuperacion
@@ -132,6 +132,32 @@ class InstitucionUserSerializer(serializers.ModelSerializer):
             **validated_data
         ) 
         return institucion
+
+
+class CadeteUserSerializer(serializers.ModelSerializer):
+    usuario = UserSerializer()
+
+    class Meta:
+        model = Cadete
+        fields = ['usuario','nombre','apellido','fecha_nacimiento','dni','domicilio','localidad','provincia',
+        'pais','telefono','estado_civil','genero','ocupacion','medio_transporte']
+
+    def create(self, validated_data):
+        usuario_data = validated_data.pop('usuario', None)
+        usuario = User.objects.create_user(
+            username=usuario_data['username'],
+            email=usuario_data['email'],
+            password=usuario_data['password'],
+            first_name=usuario_data['first_name'],
+            last_name=usuario_data['last_name']
+        )
+        usuario.groups.set(usuario_data['groups'])
+        cadete = Cadete.objects.create(
+            usuario=usuario,
+            **validated_data
+        )
+        return cadete
+
 
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:

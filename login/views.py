@@ -7,9 +7,10 @@ from rest_framework.response import Response
 
 from drf_yasg.utils import swagger_auto_schema
 
-from login.serializers import UserSerializer, DonanteUserSerializer, InstitucionUserSerializer, GroupSerializer
+from login.serializers import UserSerializer, DonanteUserSerializer, InstitucionUserSerializer, \
+                              GroupSerializer, CadeteUserSerializer
 
-from baseApp.models import Donante, Institucion
+from baseApp.models import Cadete, Donante, Institucion
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
 
 # pylint: disable=no-member
@@ -48,6 +49,12 @@ class InstitucionUserCreate(generics.CreateAPIView):
     """docstring"""
     queryset = Institucion.objects.all()
     serializer_class = InstitucionUserSerializer
+
+
+class CadeteUserCreate(generics.CreateAPIView):
+    """docstring"""
+    queryset = Cadete.objects.all()
+    serializer_class = CadeteUserSerializer
 
 
 class groupLinkList(APIView):
