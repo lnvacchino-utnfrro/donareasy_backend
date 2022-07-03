@@ -42,13 +42,12 @@ class AceptarDonacion(generics.RetrieveUpdateAPIView):
     #     return Response(serializer.data)
 
 class VerDonacion(generics.ListAPIView):
-    """docstring"""   
+    """Me traigo las donaciones que tienen estado "creadas" o "aceptadas"""
     serializer_class = VerDonacionSerializer
     def get_queryset(self):
         return DonacionBienes.objects.filter(cod_estado = 1) #or DonacionBienes.objects.filter(cod_estado = 2)
-        # Me traigo las donaciones que tienen estado "creadas" o "aceptadas"
 
-#! Comienzo a desarrollar vistas para donación monetaria
+
 class InstitucionesListConCBU(generics.ListAPIView):
     serializer_class = InstitucionSerializer
     def get_queryset(self):

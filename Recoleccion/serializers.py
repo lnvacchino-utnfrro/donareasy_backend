@@ -35,10 +35,7 @@ class RecoleccionesCreateSerializer(serializers.ModelSerializer):
         return recoleccion
 
 class RecoleccionSerializer(serializers.ModelSerializer):
-    # donante = DonanteSerializer(many = True),
-    # institucion = InstitucionSerializer()  
-    donaciones = DonacionBienesSerializer(many=True)
+    donaciones = DonacionBienesSerializer(many=True, read_only=True)
     class Meta:
         model = Recoleccion
         fields = '__all__'
-        # read_only_fields = ['cod_estado','fecha_creacion']
