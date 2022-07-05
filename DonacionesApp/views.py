@@ -6,7 +6,7 @@ from rest_framework import permissions
 from DonacionesApp.serializers import *
 from DonacionesApp.models import Donacion, DonacionBienes, DonacionMonetaria, Bien
 from baseApp.models import Donante, Institucion
-from baseApp.serializers import DonanteSerializer, InstitucionSerializer
+from baseApp.serializers import InstitucionSerializer
 from DonacionesApp import serializers
 from django.db.models import Q
 # Create your views here.
@@ -32,18 +32,18 @@ class BienesList(generics.RetrieveAPIView):
     queryset = Bien.objects.all()
     serializer_class = BienesSerializer
 
-class AceptarDonacion(generics.RetrieveUpdateAPIView):
+class DonacionDetail(generics.RetrieveUpdateAPIView):
     """docstring"""
     queryset = DonacionBienes.objects.all()
-    serializer_class = AceptarDonacionSerializer
+    serializer_class = ActualizarEstadoDonacionSerializer
     # def retrieve(self,request):
     #     queryset = self.get_object()
     #     serializer = DonacionBienesSerializer(queryset)
     #     return Response(serializer.data)
 
-class VerDonacion(generics.ListAPIView):
-    """Me traigo las donaciones que tienen estado "creadas" o "aceptadas"""
-    serializer_class = VerDonacionSerializer
+class TodasDonacionesList(generics.ListAPIView):
+    """Me traigo las donaciones que tienen estado 'creadas' o 'aceptadas'"""
+    serializer_class = DonacionesSerializer
     def get_queryset(self):
         return DonacionBienes.objects.filter(cod_estado = 1) #or DonacionBienes.objects.filter(cod_estado = 2)
 

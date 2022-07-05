@@ -33,7 +33,7 @@ class DonacionBienesSerializer(serializers.ModelSerializer):
          return donacion
 
 
-class AceptarDonacionSerializer(serializers.ModelSerializer):
+class ActualizarEstadoDonacionSerializer(serializers.ModelSerializer):
     #bienes = BienesSerializer(many=True)
     class Meta:
         model = DonacionBienes
@@ -54,7 +54,7 @@ class AceptarDonacionSerializer(serializers.ModelSerializer):
             donacion.save()         
         return donacion
 
-class VerDonacionSerializer(serializers.ModelSerializer):
+class DonacionesSerializer(serializers.ModelSerializer):
     bienes = BienesSerializer(many=True)
     donante = DonanteSerializer()
     class Meta:
