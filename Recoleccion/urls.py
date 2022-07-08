@@ -23,6 +23,10 @@ urlpatterns = [
         views.RecoleccionDonacionDetail.as_view(),
         name='detalle_donacion_recoleccion'),
 
+    path('listaRecolecciones/detalleRecoleccion/actualizaDonacion/<int:pk>/',
+        views.ActualizaEstadoDonacion.as_view(),
+        name='actualiza_donacion_recoleccion'),
+
     #Path paso 6: listar recolecciones en proceso para finalizarla
     path('recoleccionEnProceso/',
     views.RecoleccionList.as_view(),
