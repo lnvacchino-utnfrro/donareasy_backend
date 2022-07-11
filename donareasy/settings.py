@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'login',
     'baseApp',
+    'Recoleccion',
     'DonacionesApp',
     'noticias',
     'rest_framework',

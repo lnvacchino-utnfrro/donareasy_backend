@@ -4,6 +4,7 @@ from pkgutil import get_data
 from django.db import models
 from django.contrib.auth.models import User
 from baseApp.models import Donante, Institucion
+from Recoleccion.models import Recoleccion
 
 class Donacion(models.Model):
     """
@@ -46,7 +47,7 @@ class Donacion(models.Model):
     cod_estado = models.SmallIntegerField(blank = True, 
                                     verbose_name='estado'
                                     )
-    #Agregar fecha_rechazo y motivo_rechazo
+  
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
@@ -75,6 +76,11 @@ class DonacionBienes(Donacion):
                                     verbose_name='fecha_retiro',
                                     null=True
                                     )
+    recoleccion = models.ForeignKey(Recoleccion,
+                                on_delete=models.SET_NULL,
+                                null=True,
+                                related_name='donaciones'
+                                )
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods

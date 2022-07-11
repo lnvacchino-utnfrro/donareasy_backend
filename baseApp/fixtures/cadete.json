@@ -1,0 +1,86 @@
+[
+    {
+      "model": "baseApp.cadete",
+      "pk": 1,
+      "fields": {
+        "nombre": "Cintia",
+        "apellido": "Solano",
+        "fecha_nacimiento": "1987-11-4",
+        "dni": "33836955",
+        "domicilio": "Quicuyo 1746",
+        "localidad": "Rosario",
+        "provincia": "Santa Fe",
+        "pais": "Argentina",
+        "telefono": "3416399165",
+        "estado_civil": "Casada",
+        "genero": "Femenino",
+        "ocupacion": "Técnica de Línea Electrica",
+        "medio_transporte": "Volkswagen Gol",
+        "usuario": 13,
+        "institucion": 1
+      }
+    },
+    {
+      "model": "baseApp.cadete",
+      "pk": 2,
+      "fields": {
+        "nombre": "Leandro",
+        "apellido": "Aragon",
+        "fecha_nacimiento": "1992-11-13",
+        "dni": "37163472",
+        "domicilio": "Cesar Fournier 730",
+        "localidad": "Rosario",
+        "provincia": "Santa Fe",
+        "pais": "Argentina",
+        "telefono": "3414961276",
+        "estado_civil": "Soltero",
+        "genero": "Masculino",
+        "ocupacion": "Agente de Ventas de Seguros",
+        "medio_transporte": "Toyota Hilux",
+        "usuario": 14,
+        "institucion": 2
+      }
+    },
+    {
+      "model": "baseApp.cadete",
+      "pk": 3,
+      "fields": {
+        "nombre": "Raquel",
+        "apellido": "Lamas",
+        "fecha_nacimiento": "1991-2-15",
+        "dni": "36471716",
+        "domicilio": "Caracas 849",
+        "localidad": "Rosario",
+        "provincia": "Santa Fe",
+        "pais": "Argentina",
+        "telefono": "3410466497",
+        "estado_civil": "Casada",
+        "genero": "12345678",
+        "ocupacion": "Botánica",
+        "medio_transporte": "Ford Ranger",
+        "usuario": 15,
+        "institucion": 2
+      }
+    },
+    {
+      "model": "baseApp.cadete",
+      "pk": 4,
+      "fields": {
+        "nombre": "Alonso",
+        "apellido": "Lazaro",
+        "fecha_nacimiento": "1994-8-11",
+        "dni": "38655756",
+        "domicilio": "Juan Bautista Justo 506",
+        "localidad": "Rosario",
+        "provincia": "Santa Fe",
+        "pais": "Argentina",
+        "telefono": "3416638127",
+        "estado_civil": "Casado",
+        "genero": "Masculino",
+        "ocupacion": "Técnico de Banco",
+        "medio_transporte": "Toyota Corolla",
+        "usuario": 16,
+        "institucion": 3
+      }
+    }
+]
