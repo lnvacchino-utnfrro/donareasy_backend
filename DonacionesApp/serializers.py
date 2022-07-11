@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from DonacionesApp.models import DonacionBienes, Bien, DonacionMonetaria
-from baseApp.serializers import DonanteSerializer
+from baseApp.serializers import DonanteSerializer, InstitucionSerializer
 from baseApp.models import Institucion
 from datetime import datetime,date
 
@@ -11,8 +11,8 @@ class BienesSerializer(serializers.ModelSerializer):
 
 
 class DonacionBienesSerializer(serializers.ModelSerializer):
-    # donante = DonanteSerializer(many = True),
-    # institucion = InstitucionSerializer()  
+    donante = DonanteSerializer()
+    institucion = InstitucionSerializer()  
     bienes = BienesSerializer(many=True)
     class Meta:
         model = DonacionBienes
@@ -32,7 +32,8 @@ class DonacionBienesSerializer(serializers.ModelSerializer):
         #  donacion.save()          
          return donacion
 
-class AceptarDonacionSerializer(serializers.ModelSerializer):
+
+class ActualizarEstadoDonacionSerializer(serializers.ModelSerializer):
     #bienes = BienesSerializer(many=True)
     class Meta:
         model = DonacionBienes
@@ -65,7 +66,7 @@ class AceptarDonacionSerializer(serializers.ModelSerializer):
             donacion.save()       
         return donacion
 
-class VerDonacionSerializer(serializers.ModelSerializer):
+class DonacionesSerializer(serializers.ModelSerializer):
     bienes = BienesSerializer(many=True)
     donante = DonanteSerializer()
     class Meta:

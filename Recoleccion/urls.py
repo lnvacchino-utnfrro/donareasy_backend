@@ -9,7 +9,7 @@ from Recoleccion.views import RecoleccionList
 
 urlpatterns = [
     path('seleccionaDonaciones/',
-        VerDonacion.as_view(), #Muestra la lista de instituciones para seleccionar 1 
+        views.DonacionesSinRecoleccionList.as_view(),
         name='selecciona_donaciones'),
 
     path('seleccionaDonaciones/creaRecoleccion/',
@@ -17,7 +17,19 @@ urlpatterns = [
         name='crea_recoleccion'),
 
     #path para paso 4 path('listaRecolecciones/')
+    path('recolecciones/',
+         views.RecoleccionList.as_view(),
+         name='lista_recoleccion'),
+    
     #path para paso 4 path('listaRecolecciones/detalleRecoleccion/<int:pk>')
+    path('recolecciones/<int:pk>/',
+         views.RecoleccionDetail.as_view(),
+         name='detalle-institucion'),
+         
+    #path para la generación de ruta (ACTUALMENTE NO ESTÁ DISPONIBLE)
+    path('recoleccion/generaRuta/(pk_recoleccion)/',
+        views.GenerarRutaRecoleccion.as_view(),
+        name='generacion-ruta-recoleccion'),
 
     path('listaRecolecciones/detalleRecoleccion/detalleDonacion/<int:pk>/',
         views.RecoleccionDonacionDetail.as_view(),
@@ -34,5 +46,6 @@ urlpatterns = [
 
     path('recoleccionEnProceso/finalizar/<int:pk>',
     views.EstadoRecoleccionUpdate.as_view(),
-    name = 'finalizar_recoleccion_en_proceso')
+    name = 'finalizar_recoleccion_en_proceso'),
+
 ]
