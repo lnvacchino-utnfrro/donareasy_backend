@@ -22,6 +22,10 @@ class Recoleccion(models.Model):
                                     verbose_name='fecha_cancelacion',
                                     null=True
                                     )
+    fecha_finalizacion = models.DateTimeField(blank=True,
+                                    verbose_name='fecha_finalizacion',
+                                    null=True
+                                    )
     motivo_cancelacion = models.CharField(blank=True,
                                    max_length=100,
                                    verbose_name='descripcion',
@@ -32,7 +36,7 @@ class Recoleccion(models.Model):
     fecha_recoleccion = models.DateField(blank=True,
                                    verbose_name='fecha_recoleccion',
                                    null=True)
-    
+    #Falta agregar el campo de Ruta, ver si necesitamos ejes de coordenadas
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
