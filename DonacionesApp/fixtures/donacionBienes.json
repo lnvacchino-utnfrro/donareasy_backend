@@ -1,0 +1,16 @@
+[
+    {
+        "model": "DonacionesApp.donacionbienes",
+        "pk": 1,
+        "fields": {
+            "fecha_retiro": null
+        }
+    },
+    {
+        "model": "DonacionesApp.donacionbienes",
+        "pk": 2,
+        "fields": {
+            "fecha_retiro": null
+        }
+    }
+]

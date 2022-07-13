@@ -1,0 +1,35 @@
+[
+    {
+        "model": "DonacionesApp.bien",
+        "pk": 1,
+        "fields": {
+            "tipo": "1",
+            "nombre": "Vestibulum fringilla dapibus",
+            "descripcion": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "cantidad": 8,
+            "donacion": 1
+        }
+    },
+    {
+        "model": "DonacionesApp.bien",
+        "pk": 2,
+        "fields": {
+            "tipo": "1",
+            "nombre": "Quisque egestas",
+            "descripcion": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "cantidad": 2,
+            "donacion": 1
+        }
+    },
+    {
+        "model": "DonacionesApp.bien",
+        "pk": 3,
+        "fields": {
+            "tipo": "1",
+            "nombre": "porttitor dolor",
+            "descripcion": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "cantidad": 8,
+            "donacion": 2
+        }
+    }
+]

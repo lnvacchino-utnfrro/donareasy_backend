@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'login',
     'baseApp',
+    'Recoleccion',
     'DonacionesApp',
     'rest_framework',
     'rest_framework.authtoken',
@@ -123,7 +124,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

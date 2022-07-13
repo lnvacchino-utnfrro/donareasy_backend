@@ -1,0 +1,35 @@
+[
+    {
+        "model": "login.codigorecuperacion",
+        "pk": 1,
+        "fields": {
+            "email": "donareasy@gmail.com",
+            "codigo": "282f7e9525e2f6d20ccb",
+            "activo": false,
+            "fecha_expiracion": "2022-02-20",
+            "usuario": 1
+        }
+    },
+    {
+        "model": "login.codigorecuperacion",
+        "pk": 2,
+        "fields": {
+            "email": "robertoguir@gmail.com",
+            "codigo": "5097641d542a8ed2ea39",
+            "activo": false,
+            "fecha_expiracion": "2022-02-20",
+            "usuario": 5
+        }
+    },
+    {
+        "model": "login.codigorecuperacion",
+        "pk": 3,
+        "fields": {
+            "email": "robertoguir@gmail.com",
+            "codigo": "4992c59751de0c7c9ba6",
+            "activo": false,
+            "fecha_expiracion": "2022-02-20",
+            "usuario": 5
+        }
+    }
+]

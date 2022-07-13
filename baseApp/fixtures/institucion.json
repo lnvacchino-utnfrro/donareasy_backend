@@ -1,0 +1,59 @@
+[
+    {
+      "model": "baseApp.institucion",
+      "pk": 1,
+      "fields": {
+        "nombre": "Loqaveke",
+        "director": "Felician Ruiz",
+        "fecha_fundacion": "2005-10-4",
+        "domicilio": "Angel Gallardo",
+        "localidad": "Rosario",
+        "provincia": "Santa Fe",
+        "pais": "Argentina",
+        "telefono": "3412626866",
+        "cant_empleados": 16,
+        "descripcion": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ut venenatis est. Mauris eget euismod massa. Integer eleifend, lorem sed luctus vehicula, risus augue vulputate nibh, non sagittis ex velit aliquet enim. Etiam a cursus augue, sit amet posuere ligula.",
+        "cbu": "1991379490099",
+        "cuenta_bancaria": "391-183593/4",
+        "usuario": 10
+      }
+    },
+    {
+      "model": "baseApp.institucion",
+      "pk": 2,
+      "fields": {
+        "nombre": "Erinyes Maternal",
+        "director": "Victor de la Cruz",
+        "fecha_fundacion": "1987-10-5",
+        "domicilio": "Neptuno 780",
+        "localidad": "Rosario",
+        "provincia": "Santa Fe",
+        "pais": "Argentina",
+        "telefono": "3413032345",
+        "cant_empleados": 14,
+        "descripcion": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque orci arcu, fringilla consectetur efficitur non.",
+        "cbu": "5414905670422",
+        "cuenta_bancaria": "598-257246/8",
+        "usuario": 11
+      }
+    },
+    {
+      "model": "baseApp.institucion",
+      "pk": 3,
+      "fields": {
+        "nombre": "Duende Meticuloso",
+        "director": "Leire Miro",
+        "fecha_fundacion": "1996-6-20",
+        "domicilio": "Roque Saenz Peña 122",
+        "localidad": "Rosario",
+        "provincia": "Santa Fe",
+        "pais": "Argentina",
+        "telefono": "3413613737",
+        "cant_empleados": 13,
+        "descripcion": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque nec vehicula nibh. Integer ligula tellus, ultricies mollis leo nec, dignissim efficitur nulla. In in.",
+        "cbu": "5823279025270",
+        "cuenta_bancaria": "371-803766/4",
+        "usuario": 12
+      }
+    }
+]

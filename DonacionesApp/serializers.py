@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from DonacionesApp.models import DonacionBienes, Bien, DonacionMonetaria
-from baseApp.serializers import DonanteSerializer
+from baseApp.serializers import DonanteSerializer, InstitucionSerializer
 from baseApp.models import Institucion
 from datetime import datetime,date
 
@@ -11,8 +11,8 @@ class BienesSerializer(serializers.ModelSerializer):
 
 
 class DonacionBienesSerializer(serializers.ModelSerializer):
-    # donante = DonanteSerializer(many = True),
-    # institucion = InstitucionSerializer()  
+    donante = DonanteSerializer()
+    institucion = InstitucionSerializer()  
     bienes = BienesSerializer(many=True)
     class Meta:
         model = DonacionBienes
@@ -32,7 +32,8 @@ class DonacionBienesSerializer(serializers.ModelSerializer):
         #  donacion.save()          
          return donacion
 
-class AceptarDonacionSerializer(serializers.ModelSerializer):
+
+class ActualizarEstadoDonacionSerializer(serializers.ModelSerializer):
     #bienes = BienesSerializer(many=True)
     class Meta:
         model = DonacionBienes
@@ -45,21 +46,33 @@ class AceptarDonacionSerializer(serializers.ModelSerializer):
             donacion.fecha_cancelacion = None
             donacion.motivo_cancelacion = None          
             donacion.save()           
-        else:
+        elif validated_data['cod_estado'] == 0:
             donacion.cod_estado = validated_data.get('cod_estado',donacion.cod_estado)
             donacion.fecha_aceptacion = None 
             donacion.fecha_cancelacion = datetime.now()
             donacion.motivo_cancelacion = validated_data.get('motivo_cancelacion',donacion.motivo_cancelacion)
-            donacion.save()         
+            donacion.save()
+        elif validated_data['cod_estado'] == 5:
+            donacion.cod_estado = validated_data.get('cod_estado',donacion.cod_estado)
+            donacion.fecha_aceptacion = None 
+            donacion.fecha_cancelacion = datetime.now()
+            donacion.motivo_cancelacion = "La donación no fue entregada al cadete"
+            donacion.save()
+        else:
+            donacion.cod_estado = 1
+            donacion.fecha_aceptacion = None 
+            donacion.fecha_cancelacion = None
+            donacion.motivo_cancelacion = None
+            donacion.save()       
         return donacion
 
-class VerDonacionSerializer(serializers.ModelSerializer):
+class DonacionesSerializer(serializers.ModelSerializer):
     bienes = BienesSerializer(many=True)
     donante = DonanteSerializer()
     class Meta:
         model = DonacionBienes
         fields = ['id','donante','cod_estado','bienes']
-       
+    
 class DonacionMonetariaSerializer(serializers.ModelSerializer):
     class Meta:
         model = DonacionMonetaria

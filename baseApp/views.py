@@ -2,8 +2,8 @@
 
 from rest_framework import generics
 
-from baseApp.models import Donante, Institucion
-from baseApp.serializers import DonanteSerializer, InstitucionSerializer
+from baseApp.models import Cadete, Donante, Institucion
+from baseApp.serializers import CadeteSerializer, DonanteSerializer, InstitucionSerializer
 
 # pylint: disable=no-member
 
@@ -29,3 +29,15 @@ class InstitucionDetail(generics.RetrieveUpdateDestroyAPIView):
     """APIView para recuperar, actualizar y destruir una instancia de la clase Institucion"""
     queryset = Institucion.objects.all()
     serializer_class = InstitucionSerializer
+
+
+class CadeteList(generics.ListCreateAPIView):
+    """APIView para listar y crear instancias de la clase Cadete"""
+    queryset = Cadete.objects.all()
+    serializer_class = CadeteSerializer
+
+
+class CadeteDetail(generics.RetrieveUpdateDestroyAPIView):
+    """APIView para recuperar, actualizar y destruir una instancia de la clase Cadete"""
+    queryset = Cadete.objects.all()
+    serializer_class = CadeteSerializer

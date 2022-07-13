@@ -4,6 +4,7 @@ from pkgutil import get_data
 from django.db import models
 from django.contrib.auth.models import User
 from baseApp.models import Donante, Institucion
+from Recoleccion.models import Recoleccion
 
 class Donacion(models.Model):
     """
@@ -46,7 +47,13 @@ class Donacion(models.Model):
     cod_estado = models.SmallIntegerField(blank = True, 
                                     verbose_name='estado'
                                     )
-    #Agregar fecha_rechazo y motivo_rechazo
+  
+
+    class Meta:
+        # pylint: disable=missing-class-docstring, too-few-public-methods
+        ordering = ['fecha_creacion']
+        verbose_name = 'Donación'
+        verbose_name_plural = 'Donaciones'
     
 class DonacionMonetaria(Donacion):
     """docstring"""
@@ -57,12 +64,29 @@ class DonacionMonetaria(Donacion):
                                     verbose_name='fecha_transferencia'
                                     )
 
+    class Meta:
+        # pylint: disable=missing-class-docstring, too-few-public-methods
+        ordering = ['fecha_creacion']
+        verbose_name = 'Donación monetaria'
+        verbose_name_plural = 'Donaciones monetarias'
+
 class DonacionBienes(Donacion):
     """docstring""" 
     fecha_retiro = models.DateField(blank=True,
                                     verbose_name='fecha_retiro',
                                     null=True
                                     )
+    recoleccion = models.ForeignKey(Recoleccion,
+                                on_delete=models.SET_NULL,
+                                null=True,
+                                related_name='donaciones'
+                                )
+
+    class Meta:
+        # pylint: disable=missing-class-docstring, too-few-public-methods
+        ordering = ['fecha_creacion']
+        verbose_name = 'Donación de bienes'
+        verbose_name_plural = 'Donaciones de bienes'
 
 class Bien(models.Model):
     """Objetos que va adonar el Donante a una institucion"""
@@ -92,3 +116,8 @@ class Bien(models.Model):
                                 )
     # imagen 
 
+    class Meta:
+        # pylint: disable=missing-class-docstring, too-few-public-methods
+        ordering = ['tipo']
+        verbose_name = 'Bien'
+        verbose_name_plural = 'Bienes'
