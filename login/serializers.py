@@ -164,6 +164,15 @@ class GroupSerializer(serializers.ModelSerializer):
         model = Group
         fields = ['id','name']
 
+
 class TokenSerializer(serializers.Serializer):
     """docstring"""
     token = serializers.CharField(max_length=255)
+
+
+class PublicUserSerializer(serializers.ModelSerializer):
+    """docstring""" 
+    class Meta:
+        # pylint: disable=missing-class-docstring
+        model = User
+        fields = ['id','username','first_name','last_name']
