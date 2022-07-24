@@ -84,16 +84,17 @@ class RecoleccionDonacionDetail(generics.RetrieveAPIView): #mixins.ListModelMixi
         return donacion
         # Me traigo las donaciones que tienen estado "creadas" o "aceptadas"
 
-class ActualizaEstadoDonacion(generics.UpdateAPIView):
-    """docstring"""   
-    serializer_class = AceptarDonacionSerializer
-    queryset = DonacionBienes.objects.all()
+# class ActualizaEstadoDonacion(generics.UpdateAPIView):
+#     """docstring"""   
+#     serializer_class = AceptarDonacionSerializer
+#     queryset = DonacionBienes.objects.all()
         
 
 class RecoleccionList(generics.ListAPIView):
     serializer_class = RecoleccionListSerializer
     def get_queryset(self):
         return Recoleccion.objects.filter(estado_recoleccion = 2)
+
 
 class EstadoRecoleccionUpdate(generics.UpdateAPIView):
     serializer_class = CambiaEstadoRecoleccionSerializer
