@@ -8,14 +8,6 @@ from login.serializers import PublicUserSerializer
 from noticias.models import ComentarioPublicacion, Etiqueta, Noticia, Reaccion
 
 # pylint: disable=too-few-public-methods
-
-class NoticiaSerializer(serializers.ModelSerializer):
-    """Serializador para el modelo Noticia"""
-    class Meta:
-        # pylint: disable=missing-class-docstring
-        model = Noticia
-        fields = '__all__'
-
     
 class EtiquetaSerializer(serializers.ModelSerializer):
     """docstring"""
@@ -30,6 +22,19 @@ class ReaccionSerializer(serializers.ModelSerializer):
     class Meta:
         # pylint: disable=missing-class-docstring
         model = Reaccion
+        fields = '__all__'
+
+
+class NoticiaSerializer(serializers.ModelSerializer):
+    """Serializador para el modelo Noticia"""
+    # institucion = InstitucionSerializer()
+    # usuario = PublicUserSerializer()
+    # etiquetas = EtiquetaSerializer(many=True)
+    # reacciones = ReaccionSerializer(many=True)
+
+    class Meta:
+        # pylint: disable=missing-class-docstring
+        model = Noticia
         fields = '__all__'
 
 
@@ -65,8 +70,8 @@ class NoticiaConComentariosSerializer(serializers.ModelSerializer):
 class ComentarioPublicacionSerializer(serializers.ModelSerializer):
     """
     Serializador para crear una instancia de la clase ComentarioPublicacion
-    """
+    """    
     class Meta:
         # pylint: disable=missing-class-docstring
         model = ComentarioPublicacion
-        fields = '__all__'
+        fields = ['texto_comentario','fecha_publicacion','usuario','noticia','comentario_comentario','reacciones']
