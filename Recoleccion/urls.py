@@ -4,7 +4,6 @@ from django.urls import path
 from rest_framework import urlpatterns
 from rest_framework.urlpatterns import format_suffix_patterns
 from Recoleccion import views
-from DonacionesApp.views import VerDonacion
 from Recoleccion.views import RecoleccionList
 
 urlpatterns = [
