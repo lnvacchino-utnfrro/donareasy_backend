@@ -43,8 +43,7 @@ class LogupUsuarioTestCase(APITestCase):
             'first_name': 'juan',
             'last_name': 'perez',
             'email': 'juanperez@gmail.com',
-            'password': 'secretPassword',
-            'groups': [self.group_donante.id]
+            'password': 'secretPassword'
         }
         data = {
             "usuario": usuario,
@@ -88,8 +87,7 @@ class LogupUsuarioTestCase(APITestCase):
             'first_name': 'Raul',
             'last_name': 'Lopez',
             'email': 'rlopez@gmail.com',
-            'password': 'rlopez',
-            'groups': [self.group_institucion.id]
+            'password': 'rlopez'
         }
         data = {
             "usuario": usuario,
@@ -159,8 +157,7 @@ class LogupUsuarioTestCase(APITestCase):
             'first_name': 'Teresa',
             'last_name': 'Sanchez',
             'email': 'tsanchez@gmail.com',
-            'password': 'tsanchez',
-            'groups': [self.group_cadete.id]
+            'password': 'tsanchez'
         }
         data = {
             "usuario": usuario_cadete,

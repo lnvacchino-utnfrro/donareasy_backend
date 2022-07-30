@@ -86,7 +86,7 @@ class RecoleccionDonacionDetail(generics.RetrieveAPIView): #mixins.ListModelMixi
 
 class ActualizaEstadoDonacion(generics.UpdateAPIView):
     """docstring"""   
-    serializer_class = AceptarDonacionSerializer
+    serializer_class = ActualizarEstadoDonacionSerializer
     queryset = DonacionBienes.objects.all()
         
 
