@@ -1,8 +1,14 @@
 """Archivo para generar Serializadores para el módulo Noticias"""
+from datetime import datetime
+
+from django.contrib.auth.models import User
+
 from rest_framework import serializers
-from rest_framework_recursive.fields import RecursiveField
+# from rest_framework_recursive.fields import RecursiveField
 
 from baseApp.serializers import InstitucionSerializer
+from baseApp.models import Institucion
+
 from login.serializers import PublicUserSerializer
 
 from noticias.models import ComentarioPublicacion, Etiqueta, Noticia, Reaccion
@@ -36,6 +42,35 @@ class NoticiaSerializer(serializers.ModelSerializer):
         # pylint: disable=missing-class-docstring
         model = Noticia
         fields = '__all__'
+
+
+class CreateNoticiaInstitucionSerializer(serializers.ModelSerializer):
+    """Serializador para el modelo Noticia"""
+    # institucion = InstitucionSerializer()
+    # usuario = PublicUserSerializer()
+    # etiquetas = EtiquetaSerializer(many=True)
+    # reacciones = ReaccionSerializer(many=True)
+
+    class Meta:
+        # pylint: disable=missing-class-docstring
+        model = Noticia
+        fields = ['id','etiquetas','titulo','descripcion','autores']
+
+    def create(self,validated_data):
+        institucion = Institucion.objects.get(pk=1)
+        user = User.objects.get(pk=1)
+        noticia = Noticia.objects.create(
+            titulo = validated_data['titulo'],
+            descripcion = validated_data['descripcion'],
+            fecha_publicacion = datetime.now(),
+            autores = validated_data['autores'],
+            institucion = institucion,
+            usuario = user
+        )
+        noticia.etiquetas.set(validated_data['etiquetas'])
+        noticia.save()
+            
+        return noticia
 
 
 class ComentarioSerializer(serializers.ModelSerializer):
@@ -74,4 +109,17 @@ class ComentarioPublicacionSerializer(serializers.ModelSerializer):
     class Meta:
         # pylint: disable=missing-class-docstring
         model = ComentarioPublicacion
-        fields = ['texto_comentario','fecha_publicacion','usuario','noticia','comentario_comentario','reacciones']
+        fields = ['texto_comentario','noticia','comentario_comentario']
+
+    def create(self,validated_data):
+        user = User.objects.get(pk=1)
+        comentario = ComentarioPublicacion.objects.create(
+            texto_comentario = validated_data['texto_comentario'],
+            noticia = validated_data['noticia'],
+            fecha_publicacion = datetime.now(),
+            usuario = user
+        )
+        comentario.comentario_comentario.set(validated_data['comentario_comentario'])
+        comentario.save()
+            
+        return comentario

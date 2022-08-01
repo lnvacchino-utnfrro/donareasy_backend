@@ -8,7 +8,8 @@ from rest_framework import status
 from baseApp.models import Institucion
 
 from noticias.models import ComentarioPublicacion, Noticia
-from noticias.serializers import NoticiaSerializer, NoticiaConComentariosSerializer, ComentarioPublicacionSerializer
+from noticias.serializers import NoticiaSerializer, NoticiaConComentariosSerializer, ComentarioPublicacionSerializer, \
+                                 CreateNoticiaInstitucionSerializer
 
 # pylint: disable=no-member
 
@@ -26,7 +27,7 @@ class NoticiaGeneralDetail(generics.RetrieveAPIView):
 
 class NoticiaInstitucionList(generics.ListCreateAPIView):
     """docstring"""
-    serializer_class = NoticiaSerializer
+    serializer_class = CreateNoticiaInstitucionSerializer
 
     def get_queryset(self):
     #     user = self.request.user
