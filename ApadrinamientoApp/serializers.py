@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from rest_framework import serializers
 from ApadrinamientoApp.models import *
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
@@ -23,10 +24,9 @@ class ChicosCreateSerializer(serializers.ModelSerializer):
                 descripcion = validated_data['descripcion'],
                 institucion = validated_data['institucion'],
             )
-        return chico
-        # else:
-        #     mensaje = print("La edad debe ser entre 0 y 17 años")
-        #     return mensaje
+            return chico
+        else:
+            raise serializers.ValidationError({'name': "El niño/a debe ser menor de edad."})
 
 #!Editar luego el create a gusto
 class SolicitudCreateSerializer(serializers.ModelSerializer):

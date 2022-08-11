@@ -16,7 +16,7 @@ urlpatterns = [
         #* Alta de la solicitud de apadrinamiento de la FS
         path('solicitud/',
         views.SolicitudCreate.as_view(),
-        name='selecciona_donaciones'),
+        name='alta_solicitud'),
 
         #* Revisión de la solicitud por parte de la institución
         path('solicitudes/',
