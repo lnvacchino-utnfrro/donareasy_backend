@@ -1,5 +1,5 @@
 """Pruebas de integración"""
-from datetime import datetime
+from datetime import date, datetime
 
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -86,6 +86,7 @@ class NoticiaGeneralListTestCase(APITestCase):
         self.assertEqual(noticia_response['institucion'], noticia.institucion.id)
         self.assertEqual(noticia_response['usuario'], noticia.usuario.id)
         # self.assertEqual(noticia_response['etiquetas'], noticia.etiquetas)
+
 
     def test_listar_noticias_generales(self):
         """
@@ -248,4 +249,3 @@ class CreateComentarioPublicacionTestCase(APITestCase):
         self.assertEqual(comentario.fecha_publicacion, data['fecha_publicacion'])
         self.assertEqual(comentario.usuario.id, data['usuraio'])
         self.assertEqual(comentario.noticia.id, data['noticia'])
-        

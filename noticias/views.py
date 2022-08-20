@@ -30,15 +30,18 @@ class NoticiaInstitucionList(generics.ListCreateAPIView):
     serializer_class = CreateNoticiaInstitucionSerializer
 
     def get_queryset(self):
-    #     user = self.request.user
-    #     if self.request.user.groups.filter(name='instituciones').exists():
-    #         institucion = Institucion.objects.get(usuario=user)
-    #         queryset = Noticia.objects.filter(institucion=institucion)
-    #     else:
-    #         print('camino 2')
-    #         print(self.request.user)
-    #         queryset = []
-        return Noticia.objects.all()
+        user = self.request.user
+        print(user)
+        if user.groups.filter(name='instituciones').exists():
+            print('camino 1')
+            institucion = Institucion.objects.get(usuario=user)
+            queryset = Noticia.objects.filter(institucion=institucion)
+        else:
+            print('camino 2')
+            # queryset = []
+            queryset = Noticia.objects.none()
+        # return Noticia.objects.all()
+        return queryset
 
 
 class NoticiaInstitucionDetail(generics.RetrieveUpdateDestroyAPIView):
