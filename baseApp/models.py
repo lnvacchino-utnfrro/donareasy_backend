@@ -146,29 +146,6 @@ class Institucion(models.Model):
         verbose_name_plural = 'Instituciones'
 
 
-class Chicos(models.Model):
-    nombre = models.CharField(blank=True,
-                              max_length=100,
-                              verbose_name='nombre')
-    apellido = models.CharField(blank=True,
-                              max_length=100,
-                              verbose_name='apellido')
-    edad = models.SmallIntegerField(blank=True,
-                                    verbose_name='cant_empleados')
-    descripcion = models.CharField(blank=True,
-                              max_length=500,
-                              verbose_name='descripcion',
-                              null=True)
-    institucion = models.ForeignKey(Institucion,
-                                on_delete=models.SET_NULL,
-                                verbose_name='institucion',
-                                null=True
-                                )
-    #fotografia = models.ImageField(blank=True,
-     #                              verbose_name='fotografia',
-      #                             null=True)
-
-
 class Cadete(models.Model):
     """
     Rol de un usuario. Aquel que realiza la recolección de los donativos.
