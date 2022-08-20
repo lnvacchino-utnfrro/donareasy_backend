@@ -57,8 +57,13 @@ class CreateNoticiaInstitucionSerializer(serializers.ModelSerializer):
         fields = ['id','etiquetas','titulo','descripcion','autores']
 
     def create(self,validated_data):
-        institucion = Institucion.objects.get(pk=1)
-        user = User.objects.get(pk=1)
+        # institucion = Institucion.objects.get(pk=1)
+        # user = User.objects.get(pk=1)
+        user = self.context['request'].user
+        if user.groups.first().id != 2:
+            # El usuario no es una institucion
+            print('CAMINO de ERROR')
+        institucion = Institucion.objects.get(usuario=user)
         noticia = Noticia.objects.create(
             titulo = validated_data['titulo'],
             descripcion = validated_data['descripcion'],
@@ -112,7 +117,7 @@ class ComentarioPublicacionSerializer(serializers.ModelSerializer):
         fields = ['texto_comentario','noticia','comentario_comentario']
 
     def create(self,validated_data):
-        user = User.objects.get(pk=1)
+        user = self.context['request'].user
         comentario = ComentarioPublicacion.objects.create(
             texto_comentario = validated_data['texto_comentario'],
             noticia = validated_data['noticia'],
