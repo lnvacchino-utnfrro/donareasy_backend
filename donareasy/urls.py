@@ -45,5 +45,6 @@ urlpatterns = [
     path('home/models/', include('baseApp.urls')),
     path('donaciones/',include('DonacionesApp.urls')),
     path('cadete/',include('Recoleccion.urls')),
+    path('noticias/',include('noticias.urls')),
     path('apadrinamiento/',include('ApadrinamientoApp.urls')),
 ]

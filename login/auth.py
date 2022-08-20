@@ -4,6 +4,7 @@ from secrets import token_hex
 
 from django.contrib.sessions.models import Session
 from django.contrib.auth.models import User
+from django.contrib import auth
 from django.core.exceptions import ObjectDoesNotExist, EmptyResultSet, MultipleObjectsReturned
 from django.core.mail import BadHeaderError, send_mail
 from django.template import loader
@@ -26,11 +27,14 @@ from login.models import CodigoRecuperacion
 
 # pylint: disable:no-member
 
-class Login(ObtainAuthToken):
+# class Login(ObtainAuthToken):
+class Login(APIView):
     """
     Ingreso de un usuario al sistema. Al recibir el usuario y contraseña, 
     se devuelven los datos del usuario y el token.
     """
+    serializer_class = UserAuthSerializer
+
     @swagger_auto_schema(
         operation_summary='Login',
         response={
@@ -45,38 +49,90 @@ class Login(ObtainAuthToken):
         devuelve. En caso de ya existir la sesión, se lo cerrará y se creará
         otro.
         """
-        login_serializer = self.serializer_class(data = request.data, context = {'request':request})
-        if login_serializer.is_valid():
-            user = login_serializer.validated_data['user']
-            if user.is_active:
-                token, created = Token.objects.get_or_create(user = user)
-                user_serializer = UserAuthSerializer(user)
-                if created:
+        # login_serializer = self.serializer_class(data = request.data, context = {'request':request})
+        # if login_serializer.is_valid():
+        #     user = login_serializer.validated_data['user']
+        #     if user.is_active:
+        #         token, created = Token.objects.get_or_create(user = user)
+        #         user_serializer = UserAuthSerializer(user)
+        #         if created:
+        #             return Response({
+        #                 'token': token.key,
+        #                 'user': user_serializer.data,
+        #                 'message': 'Ingreso Exitoso!'
+        #             }, status = status.HTTP_200_OK)
+
+        #         sessions = Session.objects.filter(expire_date__gte = datetime.now())
+        #         if sessions.exists():
+        #             for session in sessions:
+        #                 session_data = session.get_decoded()
+        #                 if int(session_data.get('_auth_user_id')) == user.id:
+        #                     session.delete()
+        #         token.delete()
+        #         token = Token.objects.create(user = user)
+        #         return Response({
+        #             'token': token.key,
+        #             'user': user_serializer.data,
+        #             'message': 'Ingreso Exitoso!'
+        #         }, status = status.HTTP_200_OK)
+
+        #     return Response({'mensaje':'El usuario no se encuentra autorizado'},
+        #                     status = status.HTTP_401_UNAUTHORIZED)
+
+        # return Response({'mensaje':'Los datos no son válidos'},
+        #                 status = status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            user = auth.authenticate(
+                username=serializer.validated_data['username'],
+                password=serializer.validated_data['password']
+            )
+            print('user: ', user)
+            if user is not None:
+                if user.is_active:
+                    # Contraseña correcta y usuario activo
+                    auth.login(request,user)
+                    
+                    print(request.user)
+                    print('session: ',request.session.session_key)
+                    session = Session.objects.get(pk = request.session.session_key)
+                    print('data: ',session.session_data)
+                    print('expire_date: ',session.expire_date)
+                    print('get_decode: ',session.get_decoded())
+
+                    # Busco los datos restantes del usuario según el tipo de usuario
+                    group = user.groups.first()
+                    if group.id == 1:
+                        # El usuario es un donante
+                        id_group = 1
+                    
+                    elif group.id == 2:
+                        # El usuario es una institución
+                        id_group = 2
+
+                    elif group.id == 3:
+                        # El usuario es un cadete
+                        id_group = 3
+
+                    else:
+                        id_group = 0
+
                     return Response({
-                        'token': token.key,
-                        'user': user_serializer.data,
-                        'message': 'Ingreso Exitoso!'
+                        'token': request.session.session_key,
+                        'user': user.username,
+                        'group': id_group
                     }, status = status.HTTP_200_OK)
 
-                sessions = Session.objects.filter(expire_date__gte = datetime.now())
-                if sessions.exists():
-                    for session in sessions:
-                        session_data = session.get_decoded()
-                        if int(session_data.get('_auth_user_id')) == user.id:
-                            session.delete()
-                token.delete()
-                token = Token.objects.create(user = user)
-                return Response({
-                    'token': token.key,
-                    'user': user_serializer.data,
-                    'message': 'Ingreso Exitoso!'
-                }, status = status.HTTP_200_OK)
+                return Response({'mensaje':'El usuario no se encuentra autorizado'},
+                                status = status.HTTP_401_UNAUTHORIZED)
 
-            return Response({'mensaje':'El usuario no se encuentra autorizado'},
-                            status = status.HTTP_401_UNAUTHORIZED)
+            return Response({'mensaje':'Los datos no son válidos'},
+                            status = status.HTTP_400_BAD_REQUEST)
 
         return Response({'mensaje':'Los datos no son válidos'},
-                        status = status.HTTP_400_BAD_REQUEST)
+                            status = status.HTTP_400_BAD_REQUEST)
 
 class Logout(APIView):
     """Cierre de sesión de un usuario del sistema."""
@@ -105,17 +161,27 @@ class Logout(APIView):
         Se recibe el token asociado a la sesión de un usuario. Si el token y la
         sesión asociada existen, entonces se borra la sesión y el token.
         """
-        token = request.data['token']
-        token = Token.objects.filter(key = token).first()
-        if token:
-            user = token.user
-            sessions = Session.objects.filter(expire_date__gte = datetime.now())
-            if sessions.exists():
-                for session in sessions:
-                    session_data = session.get_decoded()
-                    if int(session_data.get('_auth_user_id')) == user.id:
-                        session.delete()
-            token.delete()
+        # token = request.data['token']
+        # token = Token.objects.filter(key = token).first()
+        # if token:
+        #     user = token.user
+        #     sessions = Session.objects.filter(expire_date__gte = datetime.now())
+        #     if sessions.exists():
+        #         for session in sessions:
+        #             session_data = session.get_decoded()
+        #             if int(session_data.get('_auth_user_id')) == user.id:
+        #                 session.delete()
+        #     token.delete()
+
+        #     return Response({'mensage':'Cierre exitoso!'},
+        #                     status = status.HTTP_200_OK)
+
+        # return Response({'message':'Ocurrió un error al cerrar la sesión'},
+        #                 status = status.HTTP_400_BAD_REQUEST)
+        print(request.user)
+        if not request.user.is_anonymous:
+            auth.logout(request)
+            print(request.user)
 
             return Response({'mensage':'Cierre exitoso!'},
                             status = status.HTTP_200_OK)
