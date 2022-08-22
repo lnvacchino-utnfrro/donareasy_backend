@@ -104,19 +104,23 @@ class Login(APIView):
 
                     # Busco los datos restantes del usuario según el tipo de usuario
                     group = user.groups.first()
-                    if group.id == 1:
-                        # El usuario es un donante
-                        id_group = 1
-                    
-                    elif group.id == 2:
-                        # El usuario es una institución
-                        id_group = 2
+                    if group:
+                        if group.id == 1:
+                            # El usuario es un donante
+                            id_group = 1
+                        
+                        elif group.id == 2:
+                            # El usuario es una institución
+                            id_group = 2
 
-                    elif group.id == 3:
-                        # El usuario es un cadete
-                        id_group = 3
+                        elif group.id == 3:
+                            # El usuario es un cadete
+                            id_group = 3
+                        else:
+                            id_group = 0
 
                     else:
+                        # El usuario no tiene definido ningún rol
                         id_group = 0
 
                     return Response({

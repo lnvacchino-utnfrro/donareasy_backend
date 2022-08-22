@@ -2,7 +2,7 @@
 from datetime import date, datetime
 
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
@@ -18,6 +18,8 @@ class NoticiaGeneralListTestCase(APITestCase):
     """
     Pruebas realizadas sobre el listado de la clase Noticia.
     """
+    fixtures = ['group.json']
+
     def setUp(self):
         """
         Preparo algunas variables utilizadas en las pruebas de la clase.
@@ -25,11 +27,11 @@ class NoticiaGeneralListTestCase(APITestCase):
         de Donante) y genero la url.
         """
         self.client = APIClient()
-        self.user = User.objects.create_user('john',
-                                             'lennon@thebeatles.com',
-                                             'johnpassword',
-                                             first_name='john',
-                                             last_name='lennon')
+        # self.user = User.objects.create_user('john',
+        #                                      'lennon@thebeatles.com',
+        #                                      'johnpassword',
+        #                                      first_name='john',
+        #                                      last_name='lennon')
         self.user_institucion = User.objects.create_user(
             'unainstitucion',
             'institucion@gmail.com',
@@ -37,6 +39,7 @@ class NoticiaGeneralListTestCase(APITestCase):
             first_name='Steve',
             last_name='Caprinne'
         )
+        self.user_institucion.groups.set(Group.objects.filter(id=2))
         self.institucion = Institucion.objects.create(
             nombre='UnaInstitucion',
             director='Steve Caprinne',
@@ -46,7 +49,7 @@ class NoticiaGeneralListTestCase(APITestCase):
         self.etiqueta2 = Etiqueta.objects.create(nombre='etiqueta2')
         self.url = reverse('lista-noticias-generales')
 
-    def test_no_listar_noticias_generales(self):
+    def test_no_listar_noticias_generales_vacias(self):
         """
         Valido que, cuando no existen noticias creadas, al realizar un GET me
         devuelva una lista vacía.
@@ -153,6 +156,7 @@ class NoticiaDetailTestCase(APITestCase):
             first_name='Steve',
             last_name='Caprinne'
         )
+        self.user_institucion.groups.set(Group.objects.filter(id=2))
         self.institucion = Institucion.objects.create(
             nombre='UnaInstitucion',
             director='Steve Caprinne',
@@ -183,8 +187,8 @@ class NoticiaDetailTestCase(APITestCase):
         """
         Valido que el GET me devuelva un error si la noticia no existe
         """
-        self.url = reverse('detalle-noticia', args=[99])
-        response = self.client.get(self.url)
+        url_erroneo = reverse('detalle-noticia', args=[99])
+        response = self.client.get(url_erroneo)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)        
 
 
@@ -203,6 +207,7 @@ class CreateComentarioPublicacionTestCase(APITestCase):
                                              'johnpassword',
                                              first_name='john',
                                              last_name='lennon')
+        self.user.groups.set(Group.objects.filter(name='donante'))
         self.user_institucion = User.objects.create_user(
             'unainstitucion',
             'institucion@gmail.com',
@@ -210,6 +215,7 @@ class CreateComentarioPublicacionTestCase(APITestCase):
             first_name='Steve',
             last_name='Caprinne'
         )
+        self.user_institucion.groups.set(Group.objects.filter(id=2))
         self.institucion = Institucion.objects.create(
             nombre='UnaInstitucion',
             director='Steve Caprinne',
@@ -229,15 +235,28 @@ class CreateComentarioPublicacionTestCase(APITestCase):
         self.noticia.save()
         self.url = reverse('crear-comentario')
 
+    def test_no_crear_comentario_sin_autenticacion(self):
+        """
+        Valido que al realizar un POST cuando el usuario no se autentico,
+        me devuelva un error de usuario no autenticado
+        """
+        data = {
+            'texto_comentario':'Esto es un texto',
+            'noticia':self.noticia.id
+        }
+        response = self.client.post(self.url,data)
+        cantidad = ComentarioPublicacion.objects.count()
+        self.assertEqual(cantidad,0)
+        self.assertEqual(response.status_code, status.)
+
     def test_crear_comentario_noticia(self):
         """
         Valido que al realizar un POST con todos los datos se genere una
         instancia de la clase ComentarioPublicacion
         """
+        self.client.login(username=self.user.username, password=self.user.password)
         data = {
             'texto_comentario':'Esto es un texto',
-            'fecha_publicacion':datetime.now(),
-            'usuario':self.user.id,
             'noticia':self.noticia.id
         }
         response = self.client.post(self.url,data)
@@ -246,6 +265,6 @@ class CreateComentarioPublicacionTestCase(APITestCase):
             comentario = ComentarioPublicacion.objects.get(id=response.data['id'])
         self.assertEqual(cantidad,1)
         self.assertEqual(comentario.texto_comentario, data['texto_comentario'])
-        self.assertEqual(comentario.fecha_publicacion, data['fecha_publicacion'])
-        self.assertEqual(comentario.usuario.id, data['usuraio'])
+        self.assertEqual(comentario.fecha_publicacion.date(), datetime.now().date())
+        self.assertEqual(comentario.usuario.id, self.user.id)
         self.assertEqual(comentario.noticia.id, data['noticia'])
