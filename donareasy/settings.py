@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'baseApp',
     'Recoleccion',
     'DonacionesApp',
+    'noticias',
+    'ApadrinamientoApp',
     'rest_framework',
     'rest_framework.authtoken',
 ]

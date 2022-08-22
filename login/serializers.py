@@ -1,4 +1,5 @@
 """docstring"""
+from unittest.util import _MAX_LENGTH
 from django.contrib.auth.models import User, UserManager, Group
 from django.contrib.auth.password_validation import validate_password
 
@@ -19,20 +20,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id','username','first_name','last_name','email','password','groups']
 
 
-class UserSinGroupSerializer(serializers.ModelSerializer):
-    """docstring"""
-    class Meta:
-        # pylint: disable=missing-class-docstring
-        model = User
-        fields = ['username','first_name','last_name','email','password']
-
-
-class UserAuthSerializer(serializers.ModelSerializer):
-    """docstring"""
-    class Meta:
-        # pylint: disable=missing-class-docstring
-        model = User
-        fields = ['username','email','first_name','last_name']
+class UserAuthSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=255)
+    password = serializers.CharField(max_length=255)
 
 
 class EmailSerializer(serializers.Serializer):
@@ -248,6 +238,15 @@ class GroupSerializer(serializers.ModelSerializer):
         model = Group
         fields = ['id','name']
 
+
 class TokenSerializer(serializers.Serializer):
     """docstring"""
     token = serializers.CharField(max_length=255)
+
+
+class PublicUserSerializer(serializers.ModelSerializer):
+    """docstring""" 
+    class Meta:
+        # pylint: disable=missing-class-docstring
+        model = User
+        fields = ['id','username','first_name','last_name']

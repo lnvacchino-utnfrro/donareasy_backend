@@ -95,6 +95,7 @@ class RecoleccionList(generics.ListAPIView):
     def get_queryset(self):
         return Recoleccion.objects.filter(estado_recoleccion = 2)
 
+
 class EstadoRecoleccionUpdate(generics.UpdateAPIView):
     serializer_class = CambiaEstadoRecoleccionSerializer
     def get_queryset(self):
