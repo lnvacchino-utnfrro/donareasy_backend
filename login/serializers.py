@@ -21,7 +21,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserAuthSerializer(serializers.Serializer):
-    """docstring"""
     username = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=255)
 
@@ -82,6 +81,31 @@ class CambioContraseniaSerializer(serializers.Serializer):
         return value
 
 
+class LogupDonanteUserSerializer(serializers.ModelSerializer):
+    usuario = UserSinGroupSerializer()
+
+    class Meta:
+        model = Donante
+        fields = ['usuario','nombre','apellido','fecha_nacimiento','dni','domicilio','localidad','provincia',
+        'pais','telefono','estado_civil','genero','ocupacion']
+
+    def create(self, validated_data):
+        usuario_data = validated_data.pop('usuario', None)
+        usuario = User.objects.create_user(
+            username=usuario_data['username'],
+            email=usuario_data['email'],
+            password=usuario_data['password'],
+            first_name=usuario_data['first_name'],
+            last_name=usuario_data['last_name']
+        )
+        usuario.groups.set([1])
+        donante = Donante.objects.create(
+            usuario=usuario,
+            **validated_data
+        )
+        return donante
+
+
 class DonanteUserSerializer(serializers.ModelSerializer):
     usuario = UserSerializer()
 
@@ -105,6 +129,32 @@ class DonanteUserSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return donante
+
+
+class LogupInstitucionUserSerializer(serializers.ModelSerializer):
+    usuario = UserSinGroupSerializer()
+
+    class Meta:
+        model = Institucion
+        fields = ['usuario','nombre','director','fecha_fundacion','domicilio',
+                    'localidad','provincia','pais','telefono','cant_empleados',
+                    'descripcion','cbu','cuenta_bancaria']
+
+    def create(self, validated_data):
+        usuario_data = validated_data.pop('usuario', None)
+        usuario = User.objects.create_user(
+            username=usuario_data['username'],
+            email=usuario_data['email'],
+            password=usuario_data['password'],
+            first_name=usuario_data['first_name'],
+            last_name=usuario_data['last_name']
+        )
+        usuario.groups.set([2])
+        institucion = Institucion.objects.create(
+            usuario=usuario,
+            **validated_data
+        ) 
+        return institucion
 
 
 class InstitucionUserSerializer(serializers.ModelSerializer):
@@ -131,6 +181,31 @@ class InstitucionUserSerializer(serializers.ModelSerializer):
             **validated_data
         ) 
         return institucion
+
+
+class LogupCadeteUserSerializer(serializers.ModelSerializer):
+    usuario = UserSinGroupSerializer()
+
+    class Meta:
+        model = Cadete
+        fields = ['usuario','nombre','apellido','fecha_nacimiento','dni','domicilio','localidad','provincia',
+        'pais','telefono','estado_civil','genero','ocupacion','medio_transporte']
+
+    def create(self, validated_data):
+        usuario_data = validated_data.pop('usuario', None)
+        usuario = User.objects.create_user(
+            username=usuario_data['username'],
+            email=usuario_data['email'],
+            password=usuario_data['password'],
+            first_name=usuario_data['first_name'],
+            last_name=usuario_data['last_name']
+        )
+        usuario.groups.set([3])
+        cadete = Cadete.objects.create(
+            usuario=usuario,
+            **validated_data
+        )
+        return cadete
 
 
 class CadeteUserSerializer(serializers.ModelSerializer):

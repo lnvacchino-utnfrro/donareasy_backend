@@ -8,7 +8,8 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 
 from login.serializers import UserSerializer, DonanteUserSerializer, InstitucionUserSerializer, \
-                              GroupSerializer, CadeteUserSerializer
+                              GroupSerializer, CadeteUserSerializer, LogupDonanteUserSerializer, \
+                              LogupInstitucionUserSerializer, LogupCadeteUserSerializer
 
 from baseApp.models import Cadete, Donante, Institucion
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
@@ -42,19 +43,19 @@ class InstitucionCreate(generics.CreateAPIView):
 class DonanteUserCreate(generics.CreateAPIView):
     """docstring"""
     queryset = Donante.objects.all()
-    serializer_class = DonanteUserSerializer
+    serializer_class = LogupDonanteUserSerializer
 
 
 class InstitucionUserCreate(generics.CreateAPIView):
     """docstring"""
     queryset = Institucion.objects.all()
-    serializer_class = InstitucionUserSerializer
+    serializer_class = LogupInstitucionUserSerializer
 
 
 class CadeteUserCreate(generics.CreateAPIView):
     """docstring"""
     queryset = Cadete.objects.all()
-    serializer_class = CadeteUserSerializer
+    serializer_class = LogupCadeteUserSerializer
 
 
 class groupLinkList(APIView):
