@@ -24,7 +24,15 @@ class UserAuthSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=255)
 
-
+    
+class UserSinGroupSerializer(serializers.ModelSerializer):
+    """docstring"""
+    class Meta:
+        # pylint: disable=missing-class-docstring
+        model = User
+        fields = ['username','first_name','last_name','email','password']
+    
+    
 class EmailSerializer(serializers.Serializer):
     """docstring"""
     email = serializers.EmailField(max_length=255)
