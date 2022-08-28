@@ -1,10 +1,9 @@
-# Create your tests here.
 """Pruebas de integración"""
 from datetime import date, datetime
 #from queue import Empty
 
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 #from faker import Faker  #--Librería para generar datos fakes, pero no funciona bien
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
@@ -19,6 +18,8 @@ class DonanacionBienesListCreateTestCase(APITestCase):
     Pruebas realizadas sobre el listado y la creación de instancias de la
     clase DonacionBienes.
     """
+    fixtures = ['group.json']
+
     def setUp(self):
         """
         Preparo algunas variables utilizadas en las pruebas de la clase.
@@ -36,6 +37,8 @@ class DonanacionBienesListCreateTestCase(APITestCase):
                                              'paulpassword',
                                              first_name='Paul',
                                              last_name='McCartney')
+        self.user1.groups.set(Group.objects.filter(id=1))
+        self.user2.groups.set(Group.objects.filter(id=2))
         self.user1.save()
         self.user2.save()
         self.donante = Donante.objects.create(nombre= self.user1.first_name,
@@ -65,7 +68,7 @@ class DonanacionBienesListCreateTestCase(APITestCase):
                                                         cuenta_bancaria= "",
                                                         usuario= self.user2)
         self.url = reverse('donacion_bienes')
-        
+        self.client.force_login(self.user1)
 
     def test_crear_donacion_bienes(self):
         """
@@ -73,10 +76,9 @@ class DonanacionBienesListCreateTestCase(APITestCase):
         se genere una instancia Donacion de bienes en la Base de Datos.
         """
         data = {
-            'donante': self.donante.id,
             'institucion': self.institucion.id,
-            'cod_estado': 1,
-            'fecha_creacion': datetime.now(),
+            # 'cod_estado': 1,
+            # 'fecha_creacion': datetime.now(),
             # 'fecha_retiro': 'null',
             # 'fecha_cancelacion': 'null',
             # 'fecha_aceptacion': 'null',
@@ -91,13 +93,19 @@ class DonanacionBienesListCreateTestCase(APITestCase):
                 }]           
         }
         response = self.client.post(self.url, data, format='json') #No funcionaba porque no tenía puesto el format
-        cantidad = DonacionBienes.objects.count()
-        donante = Donante.objects.get(id=self.donante.id) #Aca me trae solo el nombre del donante y no el objeto
-        #print(donante)   
-        donacion = DonacionBienes.objects.get(donante=response.data['donante']) #Aca me trae todo el objeto
-        #print(donacion.donante)
-        self.assertEqual(cantidad, 1)
-        self.assertEqual(donacion.donante, donante)
+        cantidad_donacion = DonacionBienes.objects.count()
+        self.assertEqual(cantidad_donacion, 1)
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_bienes,1)
+        donacion = DonacionBienes.objects.get(donante=response.data['donante']) 
+        bien = Bien.objects.first()
+        self.assertEqual(donacion.donante, self.donante)
+        self.assertEqual(donacion.institucion.id, response.data['institucion'])
+        self.assertEqual(bien.tipo, 1)
+        self.assertEqual(bien.nombre, 'hrd')
+        self.assertEqual(bien.descripcion, 'fsdg')
+        self.assertEqual(bien.cantidad, 8)
+        self.assertEqual(bien.donacion, donacion)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_no_crear_donacion_bienes_todos_nulos(self): #Funciona
@@ -106,21 +114,22 @@ class DonanacionBienesListCreateTestCase(APITestCase):
         HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
         """
         data = {
-            "donante": 'null',
             "institucion": 'null',
-            "cod_estado": 'null',
-            "fecha_creacion": 'null',
-            "fecha_retiro":'null',
-            "fecha_creacion":'null',
-            "fecha_cancelacion":'null',
-            "fecha_aceptacion":'null',
-            "motivo_cancelacion":'null',
-            "fecha_entrega_real":'null',
+            # "cod_estado": 'null',
+            # "fecha_creacion": 'null',
+            # "fecha_retiro":'null',
+            # "fecha_creacion":'null',
+            # "fecha_cancelacion":'null',
+            # "fecha_aceptacion":'null',
+            # "motivo_cancelacion":'null',
+            # "fecha_entrega_real":'null',
             "bienes":'null'       
         }
         response = self.client.post(self.url, data, format='json')
-        cantidad = DonacionBienes.objects.count()
-        self.assertEqual(cantidad, 0)
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_no_crear_donacion_bienes_todos_enblanco(self): #Funciona
@@ -129,21 +138,22 @@ class DonanacionBienesListCreateTestCase(APITestCase):
         HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
         """
         data = {
-            "donante": '',
             "institucion": '',
-            "cod_estado": '',
-            "fecha_creacion": '',
-            "fecha_retiro":'',
-            "fecha_creacion":'',
-            "fecha_cancelacion":'',
-            "fecha_aceptacion":'',
-            "motivo_cancelacion":'',
-            "fecha_entrega_real":'',
+            # "cod_estado": '',
+            # "fecha_creacion": '',
+            # "fecha_retiro":'',
+            # "fecha_creacion":'',
+            # "fecha_cancelacion":'',
+            # "fecha_aceptacion":'',
+            # "motivo_cancelacion":'',
+            # "fecha_entrega_real":'',
             "bienes":''       
         }
         response = self.client.post(self.url, data, format='json')
-        cantidad = DonacionBienes.objects.count()
-        self.assertEqual(cantidad, 0)
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_listar_instituciones(self):
@@ -157,6 +167,7 @@ class DonanacionBienesListCreateTestCase(APITestCase):
                                              'leodan222',
                                              first_name='Leo',
                                              last_name='Dan')
+        self.user3.groups.set(Group.objects.filter(id=2))
         self.user3.save()
         self.institucion2 = Institucion.objects.create(nombre= self.user3.first_name,
                                                         director= "Leoncito",
@@ -190,6 +201,7 @@ class DonanacionBienesListCreateTestCase(APITestCase):
                                              'leodan222',
                                              first_name='Leo',
                                              last_name='Dan')
+        self.user3.groups.set(Group.objects.filter(id=2))
         self.user3.save()
         self.institucion2 = Institucion.objects.create(nombre= self.user3.first_name,
                                                         director= "Leoncito",
@@ -243,6 +255,7 @@ class DonanacionBienesListCreateTestCase(APITestCase):
         self.bien1.save()
         self.bien2.save()
         self.bien3.save()
+        self.client.force_login(self.institucion)
         response = self.client.get(self.url)
         #print(response.data)
         cantidad = len(response.data['results'])

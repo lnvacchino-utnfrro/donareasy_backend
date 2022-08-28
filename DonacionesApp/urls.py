@@ -14,11 +14,11 @@ urlpatterns = [
         views.DonacionBienesCreate.as_view(),
         name='donacion_bienes'),
 
-    path('InstitucionConCBU/',
+    path('eligeInstitucionConCBU/',
        views.InstitucionesListConCBU.as_view(),
        name='instituciones_list_cbu'),
 
-    path('InstitucionConCBU/elegida/<int:pk>/',
+    path('eligeInstitucionConCBU/<int:pk>/',
        views.EligeInstitucionConCBU.as_view(),
        name='institucion_elegida_cbu'),
 

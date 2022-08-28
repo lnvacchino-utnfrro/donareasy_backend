@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from DonacionesApp.models import DonacionBienes, Bien, DonacionMonetaria
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
-from baseApp.models import Institucion
+from baseApp.models import Donante, Institucion
 from datetime import datetime,date
 
 class BienesSerializer(serializers.ModelSerializer):
@@ -11,26 +11,30 @@ class BienesSerializer(serializers.ModelSerializer):
 
 
 class DonacionBienesSerializer(serializers.ModelSerializer):
-    donante = DonanteSerializer()
-    institucion = InstitucionSerializer()  
+    # donante = DonanteSerializer()
+    # institucion = InstitucionSerializer(read_only=True)
+    institucion = serializers.PrimaryKeyRelatedField(queryset=Institucion.objects.all(),read_only=False)
     bienes = BienesSerializer(many=True)
+
     class Meta:
         model = DonacionBienes
-        fields = ['donante','institucion','bienes']
+        fields = ['institucion','bienes']
         read_only_fields = ['cod_estado','fecha_creacion']
 
     def create(self,validated_data):
-         bienes_data = validated_data.pop('bienes')
-         donacion = DonacionBienes.objects.create(
-             donante = validated_data['donante'],
-             institucion = validated_data['institucion'],
-             cod_estado = 1,
-             fecha_creacion = datetime.now()
-         )
-         for bien_data in bienes_data:
+        user = self.context['request'].user
+        donante = Donante.objects.get(usuario=user)
+        bienes_data = validated_data.pop('bienes')
+        donacion = DonacionBienes.objects.create(
+            donante = donante,
+            institucion = validated_data['institucion'],
+            cod_estado = 1,
+            fecha_creacion = datetime.now()
+        )
+        for bien_data in bienes_data:
             Bien.objects.create(donacion=donacion, **bien_data)
-        #  donacion.save()          
-         return donacion
+
+        return donacion
 
 
 class ActualizarEstadoDonacionSerializer(serializers.ModelSerializer):
@@ -39,6 +43,7 @@ class ActualizarEstadoDonacionSerializer(serializers.ModelSerializer):
         model = DonacionBienes
         fields = ['cod_estado','motivo_cancelacion']
         read_only_fields = ['fecha_aceptacion','fecha_cancelacion']
+        
     def update(self,donacion,validated_data):
         if validated_data['cod_estado'] == 2:
             donacion.cod_estado = validated_data.get('cod_estado',donacion.cod_estado)
@@ -76,22 +81,38 @@ class DonacionesSerializer(serializers.ModelSerializer):
 class DonacionMonetariaSerializer(serializers.ModelSerializer):
     class Meta:
         model = DonacionMonetaria
-        fields = ['donante','institucion','monto']
+        fields = ['institucion','monto']
         read_only_fields = ['cod_estado','fecha_transferencia','fecha_creacion']
+    
+    def validate_monto(self,value):
+        """
+        Valida que el monto sea mayor a 0.
+        """
+        if value <= 0:
+            raise serializers.ValidationError("El monto debe ser un valor mayor a 0")
+        return value
+
+    def validate_institucion(self,value):
+        if value is None:
+            raise serializers.ValidationError("El campo institución no puede ser nulo")
+        if value.cbu is None or value.cbu <= 0:
+            raise serializers.ValidationError("La institución ingresada no posee CBU")
+        if value.cuenta_bancaria is None or value.cuenta_bancaria == '':
+            raise serializers.ValidationError("La institución ingresada no posee cuenta bancaria")
+        return value
+
     def create(self,validated_data):
-        #if validated_data['institucion']['cbu'] is not None: 
-        #! Ver como hacer para no permitir que elija instituciones no bancarizadas, #Lo hace frontend?
+        user = self.context['request'].user
+        donante = Donante.objects.get(usuario=user)
         if (validated_data['monto'] > 0):
             donacion = DonacionMonetaria.objects.create(
-             donante = validated_data['donante'],
+             donante = donante,
              institucion = validated_data['institucion'],
              monto = validated_data['monto'],
              cod_estado = 3,
              fecha_transferencia = date.today(),
              fecha_creacion = datetime.now()
             )
-        #else:
-        #    print("La institución no posee CBU")
         return donacion
 
 class DatosBancariosInstitucion(serializers.ModelSerializer):

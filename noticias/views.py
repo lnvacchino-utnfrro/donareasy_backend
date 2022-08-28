@@ -1,31 +1,19 @@
 """Vistas para módulo Noticias"""
-
 from requests import Response
 
 from rest_framework import generics
 from rest_framework import status
-from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS, \
+from rest_framework.permissions import IsAuthenticated, SAFE_METHODS, \
                                         AllowAny, IsAdminUser
 
 from baseApp.models import Institucion
+from baseApp.permissions import IsInstitucionPermission
 
 from noticias.models import ComentarioPublicacion, Noticia
 from noticias.serializers import NoticiaSerializer, NoticiaConComentariosSerializer, ComentarioPublicacionSerializer, \
                                  CreateNoticiaInstitucionSerializer
 
 # pylint: disable=no-member
-
-class IsInstitucionPermission(BasePermission):
-    """Permiso global que valida si el usuario es una institución"""
-    message = 'Esta página sólo es permitida para las institucines'
-
-    def has_permission(self,request,view):
-        print('entro par la validacion')
-        group = request.user.groups.first()
-        print(group)
-        print(group is not None and group.id == 1)
-        return group is not None and group.id == 1
-
 
 class NoticiaGeneralList(generics.ListAPIView):
     """APIView para listar y crear instancias de la clase Noticia"""
