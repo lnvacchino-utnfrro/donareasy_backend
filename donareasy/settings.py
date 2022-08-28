@@ -152,7 +152,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'donareasy'
-EMAIL_HOST_PASSWORD = 'utnfrro2022'
+EMAIL_HOST_PASSWORD = 'xhkwhhrfqnupjoiw'
 
 # Si se quiere mostrar los mails por consola, comentar todo lo anterior y usar la 
 # siguiente línea

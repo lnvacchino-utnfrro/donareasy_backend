@@ -1,6 +1,5 @@
 """docstring"""
 from datetime import datetime
-from secrets import token_hex
 
 from django.contrib.sessions.models import Session
 from django.contrib.auth.models import User
@@ -17,17 +16,57 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.views import APIView
 
 from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
+from drf_yasg.utils import swagger_auto_schema, no_body
 
 from login.serializers import CodigoRecuperacionSerializer, EmailSerializer, \
                                 UserAuthSerializer, TokenSerializer, \
                                 CambioContraseniaSerializer, CodigoSerializer, \
-                                RecuperacionContraseniaSerializer, UserSerializer
+                                RecuperacionContraseniaSerializer, UserSerializer, \
+                                LoginResponseSerializer
 from login.models import CodigoRecuperacion
+from baseApp.models import Donante, Institucion, Cadete
 
 # pylint: disable:no-member
 
-# class Login(ObtainAuthToken):
+def obtenerDatosUsuario(user):
+    group = user.groups.first()
+    if group:
+        if group.id == 1:
+            # El usuario es un donante
+            grupo = group.name
+            donante = Donante.objects.get(usuario=user.id)
+            nombre = donante.nombre + ' ' + donante.apellido
+        
+        elif group.id == 2:
+            # El usuario es una institución
+            grupo = group.name
+            institucion = Institucion.objects.get(usuario=user.id)
+            nombre = institucion.nombre
+
+        elif group.id == 3:
+            # El usuario es un cadete
+            grupo = group.name
+            cadete = Cadete.objects.get(usuario=user.id)
+            nombre = cadete.nombre + ' ' + cadete.apellido
+
+        else:
+            grupo = 'Undefined'
+            nombre = user.username
+
+    else:
+        # El usuario no tiene definido ningún rol
+        grupo = 'Undefined'
+        nombre = user.username
+
+    response = {
+        'id': user.id,
+        'username': user.username,
+        'group': grupo,
+        'nombre': nombre
+    }
+
+    return response
+
 class Login(APIView):
     """
     Ingreso de un usuario al sistema. Al recibir el usuario y contraseña, 
@@ -36,8 +75,10 @@ class Login(APIView):
     serializer_class = UserAuthSerializer
 
     @swagger_auto_schema(
+        request_body=UserAuthSerializer,
         operation_summary='Login',
-        response={
+        responses={
+            200: LoginResponseSerializer,
             400: 'Los datos no son válidos',
             401: 'El usuario no se encuentra autorizado',
         }
@@ -49,39 +90,6 @@ class Login(APIView):
         devuelve. En caso de ya existir la sesión, se lo cerrará y se creará
         otro.
         """
-        # login_serializer = self.serializer_class(data = request.data, context = {'request':request})
-        # if login_serializer.is_valid():
-        #     user = login_serializer.validated_data['user']
-        #     if user.is_active:
-        #         token, created = Token.objects.get_or_create(user = user)
-        #         user_serializer = UserAuthSerializer(user)
-        #         if created:
-        #             return Response({
-        #                 'token': token.key,
-        #                 'user': user_serializer.data,
-        #                 'message': 'Ingreso Exitoso!'
-        #             }, status = status.HTTP_200_OK)
-
-        #         sessions = Session.objects.filter(expire_date__gte = datetime.now())
-        #         if sessions.exists():
-        #             for session in sessions:
-        #                 session_data = session.get_decoded()
-        #                 if int(session_data.get('_auth_user_id')) == user.id:
-        #                     session.delete()
-        #         token.delete()
-        #         token = Token.objects.create(user = user)
-        #         return Response({
-        #             'token': token.key,
-        #             'user': user_serializer.data,
-        #             'message': 'Ingreso Exitoso!'
-        #         }, status = status.HTTP_200_OK)
-
-        #     return Response({'mensaje':'El usuario no se encuentra autorizado'},
-        #                     status = status.HTTP_401_UNAUTHORIZED)
-
-        # return Response({'mensaje':'Los datos no son válidos'},
-        #                 status = status.HTTP_400_BAD_REQUEST)
-
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
@@ -89,45 +97,23 @@ class Login(APIView):
                 username=serializer.validated_data['username'],
                 password=serializer.validated_data['password']
             )
-            print('user: ', user)
             if user is not None:
                 if user.is_active:
                     # Contraseña correcta y usuario activo
                     auth.login(request,user)
                     
-                    print(request.user)
-                    print('session: ',request.session.session_key)
-                    session = Session.objects.get(pk = request.session.session_key)
-                    print('data: ',session.session_data)
-                    print('expire_date: ',session.expire_date)
-                    print('get_decode: ',session.get_decoded())
+                    #? Formas de acceder a los datos de la sesión
+                    # print(request.user)
+                    # print('session: ',request.session.session_key)
+                    # session = Session.objects.get(pk = request.session.session_key)
+                    # print('data: ',session.session_data)
+                    # print('expire_date: ',session.expire_date)
+                    # print('get_decode: ',session.get_decoded())
 
                     # Busco los datos restantes del usuario según el tipo de usuario
-                    group = user.groups.first()
-                    if group:
-                        if group.id == 1:
-                            # El usuario es un donante
-                            id_group = 1
-                        
-                        elif group.id == 2:
-                            # El usuario es una institución
-                            id_group = 2
+                    response = obtenerDatosUsuario(user)
 
-                        elif group.id == 3:
-                            # El usuario es un cadete
-                            id_group = 3
-                        else:
-                            id_group = 0
-
-                    else:
-                        # El usuario no tiene definido ningún rol
-                        id_group = 0
-
-                    return Response({
-                        'token': request.session.session_key,
-                        'user': user.username,
-                        'group': id_group
-                    }, status = status.HTTP_200_OK)
+                    return Response(response, status = status.HTTP_200_OK)
 
                 return Response({'mensaje':'El usuario no se encuentra autorizado'},
                                 status = status.HTTP_401_UNAUTHORIZED)
@@ -140,20 +126,8 @@ class Login(APIView):
 
 class Logout(APIView):
     """Cierre de sesión de un usuario del sistema."""
-    # token_schema = openapi.Schema(
-    #     title='token',
-    #     description='esto es una descripcion',
-    #     type=openapi.TYPE_STRING
-    # )
-    # token_param = openapi.Parameter(
-    #     'token',
-    #     openapi.IN_BODY,
-    #     # type=openapi.TYPE_STRING,
-    #     schema=token_schema,
-    #     required=True,
-    # )
     @swagger_auto_schema(
-        request_body=TokenSerializer,
+        request_body=no_body,
         operation_summary='Logout',
         responses={
             200: 'Cierre Exitoso',
@@ -165,27 +139,8 @@ class Logout(APIView):
         Se recibe el token asociado a la sesión de un usuario. Si el token y la
         sesión asociada existen, entonces se borra la sesión y el token.
         """
-        # token = request.data['token']
-        # token = Token.objects.filter(key = token).first()
-        # if token:
-        #     user = token.user
-        #     sessions = Session.objects.filter(expire_date__gte = datetime.now())
-        #     if sessions.exists():
-        #         for session in sessions:
-        #             session_data = session.get_decoded()
-        #             if int(session_data.get('_auth_user_id')) == user.id:
-        #                 session.delete()
-        #     token.delete()
-
-        #     return Response({'mensage':'Cierre exitoso!'},
-        #                     status = status.HTTP_200_OK)
-
-        # return Response({'message':'Ocurrió un error al cerrar la sesión'},
-        #                 status = status.HTTP_400_BAD_REQUEST)
-        print(request.user)
         if not request.user.is_anonymous:
             auth.logout(request)
-            print(request.user)
 
             return Response({'mensage':'Cierre exitoso!'},
                             status = status.HTTP_200_OK)
@@ -222,6 +177,7 @@ class GenerarCodigoRecuperacionContrasenia(APIView):
             email = serializer.data['email']
             try:
                 usuario = User.objects.get(email=email)
+                print(usuario)
                 #* DESACTIVAR TODOS LOS CODIGOS DE RECUPERACIÓN EXISTENTES EN
                 #* BASE DE DATOS PARA ESE USUARIO
                 try:
@@ -276,8 +232,8 @@ class GenerarCodigoRecuperacionContrasenia(APIView):
                                 status=status.HTTP_401_UNAUTHORIZED)
 
             except User.DoesNotExist:
-                return Response({'mensaje':'El usuario no es válido'},
-                                status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'mensaje':'El correo ingresado es incorrecto'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         else:
             return Response(serializer.errors,
@@ -297,7 +253,7 @@ class ValidarCodigoRecuperacionContrasenia(APIView):
         request_body=CodigoSerializer,
         operation_summary='Recuperación 2: Ingreso de Código',
         responses={
-            200: user_response,
+            200: LoginResponseSerializer,
             400: 'El código es incorrecto o se ha ingresado incorrectamente los datos',
             401: 'El código no se encuentra activo o se encuentra caducado',
         }
@@ -329,9 +285,11 @@ class ValidarCodigoRecuperacionContrasenia(APIView):
                 return Response({'mensaje':'El código se encuentra caducado'},
                                 status=status.HTTP_401_UNAUTHORIZED)
 
-            usuario_serializer = UserSerializer(cod_rec.usuario)
-            return Response({'user':usuario_serializer.data},
-                            status=status.HTTP_200_OK)
+            # usuario_serializer = UserSerializer(cod_rec.usuario)
+            response = obtenerDatosUsuario(cod_rec.usuario)
+
+            return Response(response, status = status.HTTP_200_OK)
+
         else:
             return Response(rec_password_serializer.errors,
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -376,7 +334,8 @@ class CambioContrasenia(APIView):
         operation_summary='Cambio de Contraseña',
         responses={
             200: 'La contraseña fue actualizada con éxito',
-            400: 'La contraseña y/o el token ingresados no son correctos',
+            400: 'La contraseña ingresada no es correcta',
+            403: 'Usuario no ha iniciado sesión',
             406: 'Error en el ingreso de datos',
         }
     )
@@ -387,30 +346,22 @@ class CambioContrasenia(APIView):
         o la contraseña actual no coincide al usuario o la nueva contraseña no
         es correcta según los patrones de seguridad, se retorna error. 
         """
-        token = request.POST.get('token')
-        token = Token.objects.filter(key=token).first()
-        if token:
-            user = token.user
-            sessions = Session.objects.all()
-            if sessions.exists():
-                for session in sessions:
-                    session_data = session.get_decoded()
-                    if int(session_data.get('_auth_user_id')) == user.id:
-                        serializer = CambioContraseniaSerializer(data = request.data)
-                        if serializer.is_valid():
-                            if user.check_password(serializer.validated_data['old_password']):
-                                user.set_password(serializer.validated_data['new_password'])
-                                user.save()
-                                return Response({'mensaje':'La contraseña fue actualizada con éxito'},
-                                                status=status.HTTP_200_OK)
-                            
-                            return Response({'mensaje':'La contraseña ingresada no es correcta'},
-                                            status=status.HTTP_400_BAD_REQUEST)
-                        return Response({'mensaje':serializer.errors},
-                                        status=status.HTTP_406_NOT_ACCEPTABLE)
-                return Response({'mensaje':'La sesión del usuario se encuentra cerrada'},
-                            status=status.HTTP_401_UNAUTHORIZED)
-            return Response({'mensaje':'La sesión del usuario se encuentra cerrada'},
-                            status=status.HTTP_401_UNAUTHORIZED)
-        return Response({'mensaje':'Token inválido'},
-                        status=status.HTTP_400_BAD_REQUEST)
+        user = request.user
+        if not user.is_anonymous:
+            serializer = CambioContraseniaSerializer(data = request.data)
+            if serializer.is_valid():
+                if user.check_password(serializer.validated_data['old_password']):
+                    user.set_password(serializer.validated_data['new_password'])
+                    user.save()
+
+                    return Response({'mensaje':'La contraseña fue actualizada con éxito'},
+                                    status=status.HTTP_200_OK)
+                
+                return Response({'mensaje':'La contraseña ingresada no es correcta'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'mensaje':serializer.errors},
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        return Response({'mensaje':'Usuario no ha iniciado sesión'},
+                        status=status.HTTP_403_FORBIDDEN)

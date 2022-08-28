@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta
 from django.core import mail
 from django.urls import reverse
 from django.contrib.auth.models import User, Group
+from django.contrib.sessions.models import Session
 
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
@@ -27,7 +28,7 @@ class LogupUsuarioTestCase(APITestCase):
         self.group_institucion = Group.objects.create(name='instituciones')
         self.group_cadete = Group.objects.create(name='cadetes')
         self.client = APIClient()
-        self.url = reverse('logup')
+        # self.url = reverse('logup')
         self.url_donante = reverse('donante-create')
         self.url_institucion = reverse('institucion-create')
         self.url_cadete = reverse('cadete-create')
@@ -226,8 +227,9 @@ class LoginUsuarioTestCase(APITestCase):
             'password': self.password
         }
         response = self.client.post(self.url,data)
-        usuario = User.objects.get(username=response.data['user']['username'])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.usuario.id,response.data['id'])
+        self.assertEqual(self.usuario.username,response.data['username'])
 
     def test_login_usuario_inexistente(self):
         """valido falla de login de un usuario que no existe"""
@@ -266,8 +268,9 @@ class LoginUsuarioTestCase(APITestCase):
         }
         self.client.post(self.url, data)
         response = self.client.post(self.url, data)
-        usuario = User.objects.get(username=response.data['user']['username'])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.usuario.id,response.data['id'])
+        self.assertEqual(self.usuario.username,response.data['username'])
 
 
 class LoguotUsuarioTestCase(APITestCase):
@@ -285,16 +288,15 @@ class LoguotUsuarioTestCase(APITestCase):
 
     def test_logout_usuario(self):
         """Valida la salida del usuario"""
-        login_user = self.client.login(username=self.username,
-                                       password=self.password)
-        self.assertTrue(login_user)
-        if login_user is not None:
-            token, created = Token.objects.get_or_create(user = self.usuario)
-            self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
-            data = {'token':token.key}
-            response = self.client.post(self.url,data)
+        self.client.force_login(self.usuario)
+        session = Session.objects.get(pk = self.client.session.session_key)
+        user_id = int(session.get_decoded()['_auth_user_id'])
+        self.assertEqual(user_id, self.usuario.id)
+        if user_id:
+            response = self.client.post(self.url)
+            cantidad = Session.objects.filter(pk = self.client.session.session_key).count()
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.assertEqual(Token.objects.filter(user=self.usuario).count(),0)
+            self.assertEqual(cantidad,0)
 
     def test_logout_doble_usuario(self):
         """
@@ -486,7 +488,6 @@ class CambioContraseniaTestCase(APITestCase):
 
     def test_cambiar_contrasenia(self):
         data = {
-            'token':self.token,
             'old_password':self.password,
             'new_password':self.nueva_contrasenia
         }
@@ -498,38 +499,35 @@ class CambioContraseniaTestCase(APITestCase):
     def test_no_cambiar_contra_con_logout(self):
         self.client.logout()
         data = {
-            'token':self.token,
             'old_password':self.password,
             'new_password':self.nueva_contrasenia
         }
         response = self.client.post(self.url, data)
         usuario = User.objects.get(username=self.usuario.username)
-        # self.assertEqual(usuario.password,self.password)
         self.assertTrue(usuario.check_password(self.password))
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_no_cambiar_contra_con_token_incorrecto(self):
-        token_incorrecto='II94xdu7frt8idb8fb'
+    def test_no_cambiar_contra_sin_session(self):
+
+        session = Session.objects.get(pk = self.client.session.session_key)
+        self.assertIsNotNone(session)
+        session.delete()
         data = {
-            'token':token_incorrecto,
             'old_password':self.password,
             'new_password':self.nueva_contrasenia
         }
         response = self.client.post(self.url, data)
         usuario = User.objects.get(username=self.usuario.username)
-        # self.assertEqual(usuario.password,self.password)
         self.assertTrue(usuario.check_password(self.password))
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_no_cambiar_contra_con_password_incorrecto(self):
         password_incorrecto='contraIncorrecta'
         data = {
-            'token':self.token,
             'old_password':password_incorrecto,
             'new_password':self.nueva_contrasenia
         }
         response = self.client.post(self.url, data)
         usuario = User.objects.get(username=self.usuario.username)
-        # self.assertEqual(usuario.password,self.password)
         self.assertTrue(usuario.check_password(self.password))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

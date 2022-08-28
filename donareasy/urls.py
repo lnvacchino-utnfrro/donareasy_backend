@@ -41,7 +41,7 @@ urlpatterns = [
         name='schema-swagger-ui'
     ),
     path('admin/', admin.site.urls),
-    path('login/', include('login.urls')),
+    path('home/', include('login.urls')),
     path('home/models/', include('baseApp.urls')),
     path('donaciones/',include('DonacionesApp.urls')),
     path('cadete/',include('Recoleccion.urls')),

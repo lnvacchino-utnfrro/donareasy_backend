@@ -114,7 +114,7 @@ class ComentarioPublicacionSerializer(serializers.ModelSerializer):
     class Meta:
         # pylint: disable=missing-class-docstring
         model = ComentarioPublicacion
-        fields = ['texto_comentario','noticia','comentario_comentario']
+        fields = ['texto_comentario','noticia','comentario_comentario','id']
 
     def create(self,validated_data):
         user = self.context['request'].user

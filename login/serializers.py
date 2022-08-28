@@ -256,3 +256,11 @@ class PublicUserSerializer(serializers.ModelSerializer):
         # pylint: disable=missing-class-docstring
         model = User
         fields = ['id','username','first_name','last_name']
+
+
+class LoginResponseSerializer(serializers.Serializer):
+    """docstring"""
+    id = serializers.IntegerField()
+    username = serializers.CharField(max_length=255)
+    group = serializers.CharField(max_length=255)
+    nombre = serializers.CharField(max_length=255)

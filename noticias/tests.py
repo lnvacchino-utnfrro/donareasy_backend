@@ -247,14 +247,14 @@ class CreateComentarioPublicacionTestCase(APITestCase):
         response = self.client.post(self.url,data)
         cantidad = ComentarioPublicacion.objects.count()
         self.assertEqual(cantidad,0)
-        self.assertEqual(response.status_code, status.)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_crear_comentario_noticia(self):
         """
         Valido que al realizar un POST con todos los datos se genere una
         instancia de la clase ComentarioPublicacion
         """
-        self.client.login(username=self.user.username, password=self.user.password)
+        self.client.force_login(self.user)
         data = {
             'texto_comentario':'Esto es un texto',
             'noticia':self.noticia.id
@@ -268,3 +268,65 @@ class CreateComentarioPublicacionTestCase(APITestCase):
         self.assertEqual(comentario.fecha_publicacion.date(), datetime.now().date())
         self.assertEqual(comentario.usuario.id, self.user.id)
         self.assertEqual(comentario.noticia.id, data['noticia'])
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+# class NoticiaInstitucionListTestCase(APITestCase):
+#     """
+#     Pruebas realizadas sobre el listado de las noticias publicadas por la
+#     institución que se encuentra logueada.
+#     """
+#     def setUp(self):
+#         """
+#         docstring
+#         """
+#         self.client = APIClient()
+#         self.user_donante = User.objects.create_user('john',
+#                                              'lennon@thebeatles.com',
+#                                              'johnpassword',
+#                                              first_name='john',
+#                                              last_name='lennon')
+#         self.user_donante.groups.set(Group.objects.filter(name='donante'))
+#         self.donante = Donante.objects.create(
+
+#         )
+#         self.user_institucion = User.objects.create_user(
+#             'unainstitucion',
+#             'institucion@gmail.com',
+#             'password',
+#             first_name='Steve',
+#             last_name='Caprinne'
+#         )
+#         self.user_institucion.groups.set(Group.objects.filter(id=2))
+#         self.institucion = Institucion.objects.create(
+#             nombre='UnaInstitucion',
+#             director='Steve Caprinne',
+#             usuario=self.user_institucion
+#         )
+#         self.noticia = Noticia.objects.create(
+#             titulo='Titulo',
+#             descripcion='Descripcion',
+#             fecha_publicacion=datetime.now(),
+#             autores='Autores',
+#             institucion=self.institucion,
+#             usuario=self.user_institucion
+#         )
+#         self.etiqueta1 = Etiqueta.objects.create(nombre='etiqueta1')
+#         self.etiqueta2 = Etiqueta.objects.create(nombre='etiqueta2')
+#         self.noticia.etiquetas.set([self.etiqueta1,self.etiqueta2])
+#         self.noticia.save()
+#         self.url = reverse('crear-comentario')
+
+#     def test_no_crear_comentario_sin_autenticacion(self):
+#         """
+#         Valido que al realizar un POST cuando el usuario no se autentico,
+#         me devuelva un error de usuario no autenticado
+#         """
+#         data = {
+#             'texto_comentario':'Esto es un texto',
+#             'noticia':self.noticia.id
+#         }
+#         response = self.client.post(self.url,data)
+#         cantidad = ComentarioPublicacion.objects.count()
+#         self.assertEqual(cantidad,0)
+#         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
