@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -158,6 +159,14 @@ EMAIL_HOST_PASSWORD = 'xhkwhhrfqnupjoiw'
 # siguiente línea
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Seteo que si lo URL dirijida no coincide con ninguna de las que se listan en el backend,
-# Django agregue automáticamente una barra al final y vuelva a buscar la URL
+# Cuando se establece en True, si la URL de solicitud no coincide con ninguno
+# de los patrones en URLconf y no termina en una barra inclinada, se emite una
+# redirección HTTP a la misma URL con una barra inclinada adjunta
+# https://docs.djangoproject.com/en/4.1/ref/settings/#append-slash
 APPEND_SLASH = True
+
+# Ruta absoluta del sistema de archivos al directorio que contendrá los archivos
+# subidos por el usuario
+# https://docs.djangoproject.com/en/4.1/ref/settings/#media-root
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/') # 'data' is my media folder
+MEDIA_URL = '/media/'
