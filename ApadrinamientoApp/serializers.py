@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from rest_framework import serializers
 from ApadrinamientoApp.models import *
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
@@ -23,10 +24,9 @@ class ChicosCreateSerializer(serializers.ModelSerializer):
                 descripcion = validated_data['descripcion'],
                 institucion = validated_data['institucion'],
             )
-        return chico
-        # else:
-        #     mensaje = print("La edad debe ser entre 0 y 17 años")
-        #     return mensaje
+            return chico
+        else:
+            raise serializers.ValidationError({'name': "El niño/a debe ser menor de edad."})
 
 #!Editar luego el create a gusto
 class SolicitudCreateSerializer(serializers.ModelSerializer):
@@ -66,22 +66,27 @@ class AceptaSolicitudSerializer(serializers.ModelSerializer):
         fields = ['cod_estado','motivo_cancelacion']
         read_only_fields = ['fecha_cancelacion','fecha_aceptacion']
     def update(self, solicitud, validated_data):
-        if validated_data['cod_estado'] == 2:
-            solicitud.cod_estado = validated_data.get('cod_estado',solicitud.cod_estado)
-            solicitud.fecha_aceptacion = datetime.now()
-            solicitud.fecha_cancelacion = None
-            solicitud.motivo_cancelacion = None          
-            solicitud.save()           
-        elif validated_data['cod_estado'] == 0:
-            solicitud.cod_estado = validated_data.get('cod_estado',solicitud.cod_estado)
-            solicitud.fecha_aceptacion = None 
-            solicitud.fecha_cancelacion = datetime.now()
-            solicitud.motivo_cancelacion = validated_data.get('motivo_cancelacion',solicitud.motivo_cancelacion)
-            solicitud.save()
-        else:
-            solicitud.cod_estado = 1
-            solicitud.fecha_aceptacion = None 
-            solicitud.fecha_cancelacion = None
-            solicitud.motivo_cancelacion = None
-            solicitud.save()       
-        return solicitud
+        # soliApa = self.request.query_params.get('solicitud')
+        # soliApa2 = SolicitudApadrinamiento.objects.get(id = soliApa) #self.context.get('pk')
+        # if soliApa2.cod_estado != 1:
+        #     raise serializers.ValidationError({'mensaje': "La solicitud ya está aceptada o cancelada"})
+        # else:
+            if validated_data['cod_estado'] == 2:
+                solicitud.cod_estado = validated_data.get('cod_estado',solicitud.cod_estado)
+                solicitud.fecha_aceptacion = datetime.now()
+                solicitud.fecha_cancelacion = None
+                solicitud.motivo_cancelacion = None          
+                solicitud.save()           
+            elif validated_data['cod_estado'] == 0:
+                solicitud.cod_estado = validated_data.get('cod_estado',solicitud.cod_estado)
+                solicitud.fecha_aceptacion = None 
+                solicitud.fecha_cancelacion = datetime.now()
+                solicitud.motivo_cancelacion = validated_data.get('motivo_cancelacion',solicitud.motivo_cancelacion)
+                solicitud.save()
+            else:
+                solicitud.cod_estado = 1
+                solicitud.fecha_aceptacion = None 
+                solicitud.fecha_cancelacion = None
+                solicitud.motivo_cancelacion = None
+                solicitud.save()       
+            return solicitud

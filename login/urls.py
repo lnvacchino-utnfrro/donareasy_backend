@@ -8,7 +8,7 @@ from login import auth, views
 
 urlpatterns = [
     # CASO BÁSICO
-    path('',
+    path('login/',
         auth.Login.as_view(),
         name='login'),
     # EXTRA
@@ -39,9 +39,9 @@ urlpatterns = [
     path('logup/cadete/',
         views.CadeteUserCreate.as_view(),
         name='cadete-create'),
-    path('logup/',
-        views.groupLinkList.as_view(),
-        name='logup'),    
+    # path('logup/',
+    #     views.groupLinkList.as_view(),
+    #     name='logup'),    
 ]   
 
 # urlpatterns = format_suffix_patterns(urlpatterns)

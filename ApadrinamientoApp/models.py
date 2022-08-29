@@ -18,9 +18,8 @@ class Chicos(models.Model):
                               verbose_name='descripcion',
                               null=True)
     institucion = models.ForeignKey(Institucion,
-                                on_delete=models.SET_NULL,
-                                verbose_name='institucion',
-                                null=True
+                                on_delete=models.CASCADE,
+                                verbose_name='institucion'
                                 )
     fotografia = models.ImageField(blank=True,
                                    verbose_name='fotografia',

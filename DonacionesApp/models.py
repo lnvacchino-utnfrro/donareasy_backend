@@ -47,7 +47,6 @@ class Donacion(models.Model):
     cod_estado = models.SmallIntegerField(blank = True, 
                                     verbose_name='estado'
                                     )
-  
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
@@ -55,6 +54,7 @@ class Donacion(models.Model):
         verbose_name = 'Donación'
         verbose_name_plural = 'Donaciones'
     
+
 class DonacionMonetaria(Donacion):
     """docstring"""
     monto = models.FloatField(blank=True,
@@ -69,6 +69,7 @@ class DonacionMonetaria(Donacion):
         ordering = ['fecha_creacion']
         verbose_name = 'Donación monetaria'
         verbose_name_plural = 'Donaciones monetarias'
+
 
 class DonacionBienes(Donacion):
     """docstring""" 
@@ -88,6 +89,7 @@ class DonacionBienes(Donacion):
         verbose_name = 'Donación de bienes'
         verbose_name_plural = 'Donaciones de bienes'
 
+
 class Bien(models.Model):
     """Objetos que va adonar el Donante a una institucion"""
     TIPOS_BIEN = [
@@ -105,7 +107,7 @@ class Bien(models.Model):
                               max_length=100,
                               verbose_name='nombre')
     descripcion = models.CharField(blank=True,
-                                   max_length=100,
+                                   max_length=500,
                                    verbose_name='descripcion')
     cantidad = models.IntegerField(blank=True,
                                    verbose_name='cantidad')
