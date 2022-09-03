@@ -104,12 +104,18 @@ class DonacionMonetariaCreate(generics.CreateAPIView):
 class VerDonacionMonetaria(generics.ListAPIView):
     """docstring"""   
     serializer_class = VerTransferenciaSerializer
+    permission_classes = [IsInstitucionPermission|IsAdminUser]
     def get_queryset(self):
-        return DonacionMonetaria.objects.filter(cod_estado = 3) #(Q(cod_estado = 1) | Q(cod_estado = 3))
+        user = self.request.user
+        if user.groups.filter(pk=2).exists():
+            institucion = Institucion.objects.get(usuario=user)
+            queryset = DonacionMonetaria.objects.filter(cod_estado = 3).filter(institucion=institucion)
+        return queryset
 
 
 class AceptarTransferencia(generics.UpdateAPIView):
     """docstring"""
     serializer_class = AceptarTransferenciaSerializer
+    permission_classes = [IsInstitucionPermission|IsAdminUser]
     def get_queryset(self):
         return DonacionMonetaria.objects.filter(cod_estado = 3)
