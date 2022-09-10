@@ -24,7 +24,9 @@ class Chicos(models.Model):
     fotografia = models.ImageField(blank=True,
                                    verbose_name='fotografia',
                                    null=True)
-
+    def __str__(self):
+        return str(self.nombre)
+        
 class SolicitudApadrinamiento(models.Model):
 
     cod_estado = models.SmallIntegerField(blank=True,
@@ -83,7 +85,7 @@ class SolicitudApadrinamiento(models.Model):
                                     null=True
                                     )
     chico_apadrinado = models.OneToOneField(Chicos,
-                                   verbose_name=("id_chico"),
+                                   verbose_name=("chico"),
                                    on_delete=models.CASCADE,
                                    related_name='chico_apadrinado'
                                    )
