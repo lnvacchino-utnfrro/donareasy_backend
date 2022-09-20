@@ -27,22 +27,37 @@ urlpatterns = [
         name='donacion_monetaria'),
 
 #Usuario: Institucion
-    path('eligeDonacion/',
+    path('donacionesPendientes/',
         views.TodasDonacionesList.as_view(),
+        name='ver_donaciones'),
+
+    path('donacionesPendientes/<int:pk>/',
+        views.DonacionDetail.as_view(),
         name='ver_donacion'),
 
-    path('eligeDonacion/detalle/<int:pk>/',
-        views.DonacionDetail.as_view(),
+    path('donacionesPendientes/<int:pk>/aceptar/',
+        views.AceptarDonacion.as_view(),
         name='aceptar_donacion'),
     
-    path('verTransferencia/',
-        views.VerDonacionMonetaria.as_view(),
-        name='ver_transferencia'),
-    
-    path('verTransferencia/aceptar/<int:pk>/',
-        views.AceptarTransferencia.as_view(),
-        name='aceptar_transferencia'),
+    path('donacionesPendientes/<int:pk>/rechazar/',
+        views.RechazarDonacion.as_view(),
+        name='rechazar_donacion'),
 
+    path('transferenciasPendientes/',
+        views.VerDonacionMonetaria.as_view(),
+        name='ver_transferencias'),
+    
+    path('transferenciasPendientes/<int:pk>/',
+        views.TransferenciaDetail.as_view(),
+        name='ver_transferencia'),
+
+    path('transferenciasPendientes/<int:pk>/aceptar/',
+        views.AceptarTransferencia.as_view(),
+        name='aceptar_donacion'),
+    
+    path('transferenciasPendientes/<int:pk>/rechazar/',
+        views.RechazarTransferencia.as_view(),
+        name='rechazar_donacion'),
 ]
 
 # urlpatterns = format_suffix_patterns(urlpatterns)

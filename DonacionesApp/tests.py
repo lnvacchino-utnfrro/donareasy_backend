@@ -13,6 +13,948 @@ from DonacionesApp.models import DonacionBienes,Bien
 from DonacionesApp.models import DonacionMonetaria
 
 #fake = Faker()
+############# nuevo #####################
+class ListarInstitucionesParaDonacionTestCase(APITestCase):
+
+    fixtures = ['group.json']# ,'user.json','donante.json','institucion.json']
+
+    def setUp(self):
+        """
+        Preparo algunas variables utilizadas en las pruebas de la clase.
+        Inicio el cliente, creo 3 usuarios (que será el que tenga el rol
+        de Donante) y genero la url .../InstitucionConCBU/.
+        """
+        self.client = APIClient()
+        self.user_donante = User.objects.create_user('john',
+                                             'lennon@thebeatles.com',
+                                             'johnpassword',
+                                             first_name='john',
+                                             last_name='lennon')
+        # self.user2 = User.objects.create_user('Paul',
+        #                                      'paul@thebeatles.com',
+        #                                      'paulpassword',
+        #                                      first_name='Paul',
+        #                                      last_name='McCartney')
+        # self.user3 = User.objects.create_user('Ringo',
+        #                                      'ringostarr@thebeatles.com',
+        #                                      'ringopassword',
+        #                                      first_name='Ringo',
+        #                                      last_name='Starr')
+        self.user_donante.groups.set(Group.objects.filter(id=1))
+        self.user_donante.save()
+        # self.user2.save()
+        # self.user3.save()
+        self.donante = Donante.objects.create(nombre= self.user_donante.first_name,
+                                            apellido= self.user_donante.last_name,
+                                            fecha_nacimiento= date(1983,7,19),
+                                            dni= '87654321',
+                                            domicilio= 'Calle falsa 789',
+                                            localidad= 'local',
+                                            provincia= 'prov',
+                                            pais= 'pais',
+                                            telefono= '1675-138745',
+                                            estado_civil= 'soltere',
+                                            genero= 'masculine',
+                                            ocupacion='reportero deportivo',
+                                            usuario= self.user_donante)
+        # self.institucion1 = Institucion.objects.create(nombre= self.user2.first_name,
+        #                                                 director= "Ramón",
+        #                                                 fecha_fundacion= date(1980,1,1),
+        #                                                 domicilio= "",
+        #                                                 localidad= "",
+        #                                                 provincia= "",
+        #                                                 pais= "",
+        #                                                 telefono= "",
+        #                                                 cant_empleados=0,
+        #                                                 descripcion= "",
+        #                                                 cbu= 256000,
+        #                                                 cuenta_bancaria= "123-555555/8",
+        #                                                 usuario= self.user2)
+        # self.institucion2 = Institucion.objects.create(nombre= self.user3.first_name,
+        #                                                 director= "Ringo",
+        #                                                 fecha_fundacion= date(1999,1,1),
+        #                                                 domicilio= "a",
+        #                                                 localidad= "b",
+        #                                                 provincia= "c",
+        #                                                 pais= "d",
+        #                                                 telefono= "",
+        #                                                 cant_empleados=10,
+        #                                                 descripcion= "",
+        #                                                 cbu= None,
+        #                                                 cuenta_bancaria= None,
+        #                                                 usuario= self.user3)
+        self.url = reverse('instituciones_list')
+
+    def test_no_listar_sin_instituciones(self):
+        """
+        Valido que, si no existen instituciones, al realizar un GET devuelva
+        una lista vacía
+        """
+        self.client.force_login(self.user_donante)
+        response = self.client.get(self.url)
+        cantidad = Institucion.objects.count()
+        self.assertEqual(cantidad,0)
+        self.assertEqual(response.data['count'], 0)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_listar_una_institucion(self):
+        """
+        Valido que al realizar un GET se obtengan todas las instituciones
+        """
+        user_institucion = User.objects.create_user('Leonardo',
+                                             'leo@dan.com',
+                                             'leodan222',
+                                             first_name='Leo',
+                                             last_name='Dan')
+        user_institucion.groups.set(Group.objects.filter(id=2))
+        user_institucion.save()
+        institucion1 = Institucion.objects.create(nombre=user_institucion.first_name,
+                                                        director= "Leoncito",
+                                                        fecha_fundacion= date(1999,8,4),
+                                                        domicilio= "aaa123",
+                                                        localidad= "stafe",
+                                                        provincia= "stafe",
+                                                        pais= "arg",
+                                                        telefono= "341000000",
+                                                        cant_empleados=20,
+                                                        descripcion= "leo dan",
+                                                        cbu= 88888888,
+                                                        cuenta_bancaria= "",
+                                                        usuario= user_institucion)
+        self.client.force_login(self.user_donante)
+        response = self.client.get(self.url)
+        cantidad = Institucion.objects.count()
+        self.assertEqual(cantidad,1)
+        self.assertEqual(response.data['count'],1)
+        
+        institucion_response = response.data['results'][0]
+        self.assertEqual(institucion.id,institucion_response['id'])
+        self.assertEqual(institucion.nombre,institucion_response['nombre'])
+        #* Se puede seguir validando los demas campos, no le veo mucho sentido
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_listar_muchas_instituciones(self):
+        """
+        Valido que al realizar un GET se obtengan todas las instituciones
+        """
+        user_institucion1 = User.objects.create_user('Leonardo',
+                                             'leo@dan.com',
+                                             'leodan222',
+                                             first_name='Leo',
+                                             last_name='Dan')
+        user_institucion1.groups.set(Group.objects.filter(id=2))
+        user_institucion1.save()
+        institucion1 = Institucion.objects.create(nombre=user_institucion1.first_name,
+                                                        director= "Leoncito",
+                                                        fecha_fundacion= date(1999,8,4),
+                                                        domicilio= "aaa123",
+                                                        localidad= "stafe",
+                                                        provincia= "stafe",
+                                                        pais= "arg",
+                                                        telefono= "341000000",
+                                                        cant_empleados=20,
+                                                        descripcion= "leo dan",
+                                                        cbu= 88888888,
+                                                        cuenta_bancaria= "",
+                                                        usuario= user_institucion1)
+        self.user_institucion2 = User.objects.create_user('Paul',
+                                             'paul@thebeatles.com',
+                                             'paulpassword',
+                                             first_name='Paul',
+                                             last_name='McCartney')
+        user_institucion2.groups.set(Group.objects.filter(id=2))
+        user_institucion2.save()
+        self.institucion2 = Institucion.objects.create(nombre= user_institucion2.first_name,
+                                                        director= "Ramón",
+                                                        fecha_fundacion= date(1980,1,1),
+                                                        domicilio= "",
+                                                        localidad= "",
+                                                        provincia= "",
+                                                        pais= "",
+                                                        telefono= "",
+                                                        cant_empleados=0,
+                                                        descripcion= "",
+                                                        cbu= 256000,
+                                                        cuenta_bancaria= "123-555555/8",
+                                                        usuario= user_institucion2)        
+        self.client.force_login(self.user_donante)
+        response = self.client.get(self.url)
+        cantidad = Institucion.objects.count()
+        self.assertEqual(cantidad,2)
+        self.assertEqual(response.data['count'],2)
+        
+        institucion1_response = response.data['results'][1]
+        institucion2_response = response.data['results'][0]
+        self.assertEqual(institucion1.id,institucion1_response['id'])
+        self.assertEqual(institucion1.nombre,institucion1_response['nombre'])
+        self.assertEqual(institucion2.id,institucion2_response['id'])
+        self.assertEqual(institucion2.nombre,institucion2_response['nombre'])
+        #* Se puede seguir validando los demas campos, no le veo mucho sentido
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_no_listar_para_no_donante(self):
+        """
+        Valido que devuelva error si el usuario que ingresa no es un donante
+        """
+        self.client.force_login(self.user_donante)
+        reponse = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class CreaDonacionBienesTestCase(APITestCase):
+    """Caso de Prueba para crear donaciones de bienes"""
+    def setUp(self):
+        """docstring"""
+        self.client = APIClient()
+        self.user_donante = User.objects.create_user('john',
+                                             'lennon@thebeatles.com',
+                                             'johnpassword',
+                                             first_name='john',
+                                             last_name='lennon')
+        self.user_donante.groups.set(Group.objects.filter(id=1))
+        self.user_donante.save()
+        self.donante = Donante.objects.create(nombre= self.user_donante.first_name,
+                                            apellido= self.user_donante.last_name,
+                                            fecha_nacimiento= date(1983,7,19),
+                                            dni= '87654321',
+                                            domicilio= 'Calle falsa 789',
+                                            localidad= 'local',
+                                            provincia= 'prov',
+                                            pais= 'pais',
+                                            telefono= '1675-138745',
+                                            estado_civil= 'soltere',
+                                            genero= 'masculine',
+                                            ocupacion='reportero deportivo',
+                                            usuario= self.user_donante)
+        self.user_institucion = User.objects.create_user('Leonardo',
+                                             'leo@dan.com',
+                                             'leodan222',
+                                             first_name='Leo',
+                                             last_name='Dan')
+        self.user_institucion.groups.set(Group.objects.filter(id=2))
+        self.user_institucion.save()
+        self.institucion = Institucion.objects.create(nombre=self.user_institucion.first_name,
+                                                        director= "Leoncito",
+                                                        fecha_fundacion= date(1999,8,4),
+                                                        domicilio= "aaa123",
+                                                        localidad= "stafe",
+                                                        provincia= "stafe",
+                                                        pais= "arg",
+                                                        telefono= "341000000",
+                                                        cant_empleados=20,
+                                                        descripcion= "leo dan",
+                                                        cbu= 88888888,
+                                                        cuenta_bancaria= "",
+                                                        usuario= self.user_institucion)
+        self.url = reverse('donacion_bienes')
+
+    def test_crear_donacion_un_bien(self):
+        """
+        Valido que al realizar un POST con todos los datos de una donacion,
+        se genere una instancia Donacion de bienes en la Base de Datos.
+        """
+        tipo_bien = 1
+        nombre_bien = 'hrd'
+        descripcion_bien = 'fsdg'
+        cantidad_bien = 8
+        data = {
+            'institucion': self.institucion.id,
+            'bienes': 
+            [{
+                'tipo': tipo_bien,
+                'nombre': nombre_bien,
+                'descripcion': descripcion_bien,
+                'cantidad': cantidad_bien
+                }]
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json') #No funcionaba porque no tenía puesto el format
+        cantidad_donacion = DonacionBienes.objects.count()
+        self.assertEqual(cantidad_donacion, 1)
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_bienes,1)
+        donacion = DonacionBienes.objects.first()
+        bien = Bien.objects.first()
+        self.assertEqual(donacion.donante, self.donante)
+        self.assertEqual(donacion.institucion.id, response.data['institucion'])
+        self.assertEqual(bien.tipo, tipo_bien)
+        self.assertEqual(bien.nombre, nombre_bien)
+        self.assertEqual(bien.descripcion, descripcion_bien)
+        self.assertEqual(bien.cantidad, cantidad_bien)
+        self.assertEqual(bien.donacion, donacion)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_crear_donacion_muchos_bienes(self):
+        """
+        Valido que al realizar un POST con todos los datos de una donacion,
+        se genere una instancia Donacion de bienes en la Base de Datos.
+        """
+        tipo_bien1 = 1
+        nombre_bien1 = 'hrd'
+        descripcion_bien1 = 'fsdg'
+        cantidad_bien1 = 8
+        tipo_bien2 = 2
+        nombre_bien2 = 'aoe'
+        descripcion_bien2 = 'drtn'
+        cantidad_bien2 = 13
+        data = {
+            'institucion': self.institucion.id,
+            'bienes': 
+            [{
+                'tipo': tipo_bien1,
+                'nombre': nombre_bien1,
+                'descripcion': descripcion_bien1,
+                'cantidad': cantidad_bien1
+                },
+            {
+                'tipo': tipo_bien2,
+                'nombre': nombre_bien2,
+                'descripcion': descripcion_bien2,
+                'cantidad': cantidad_bien2
+                }]
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json') #No funcionaba porque no tenía puesto el format
+        cantidad_donacion = DonacionBienes.objects.count()
+        self.assertEqual(cantidad_donacion, 1)
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_bienes,2)
+        donacion = DonacionBienes.objects.first()
+        bien1 = Bien.objects.get(nombre=nombre_bien1)
+        bien2 = Bien.objects.get(nombre=nombre_bien2)
+        self.assertEqual(donacion.donante, self.donante)
+        self.assertEqual(donacion.institucion.id, response.data['institucion'])
+        self.assertEqual(bien1.tipo, tipo_bien1)
+        self.assertEqual(bien1.nombre, nombre_bien1)
+        self.assertEqual(bien1.descripcion, descripcion_bien1)
+        self.assertEqual(bien1.cantidad, cantidad_bien1)
+        self.assertEqual(bien1.donacion, donacion1)
+        self.assertEqual(bien2.tipo, tipo_bien2)
+        self.assertEqual(bien2.nombre, nombre_bien2)
+        self.assertEqual(bien2.descripcion, descripcion_bien2)
+        self.assertEqual(bien2.cantidad, cantidad_bien2)
+        self.assertEqual(bien2.donacion, donacion2)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+    def test_no_crear_donacion_bienes_todos_nulos(self):
+        """
+        Valido que al realizar un POST sin ningún dato, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        data = {
+            "institucion": None,
+            "bienes": None
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_bienes_todos_enblanco(self):
+        """
+        Valido que al realizar un POST sin ningún dato, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        data = {
+            "institucion": '',
+            "bienes":''       
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_bienes_sin_institucion(self):
+        """
+        Valido que al realizar un POST sin a institucion, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        tipo_bien = 1
+        nombre_bien = 'hrd'
+        descripcion_bien = 'fsdg'
+        cantidad_bien = 8
+        data = {
+            "institucion": None,
+            "bienes":
+            [{
+                'tipo': tipo_bien,
+                'nombre': nombre_bien,
+                'descripcion': descripcion_bien,
+                'cantidad': cantidad_bien
+                }]
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_bienes_con_institucion_inexistente(self):
+        """
+        Valido que al realizar un POST con una institucion inexistente, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        tipo_bien = 1
+        nombre_bien = 'hrd'
+        descripcion_bien = 'fsdg'
+        cantidad_bien = 8
+        data = {
+            "institucion": 12,
+            "bienes":
+            [{
+                'tipo': tipo_bien,
+                'nombre': nombre_bien,
+                'descripcion': descripcion_bien,
+                'cantidad': cantidad_bien
+                }]
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_bienes_sin_bienes(self):
+        """
+        Valido que al realizar un POST sin por lo menos un bien, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        data = {
+            "institucion": self.institucion.id,
+            "bienes":
+            []
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_bienes_con_bien_sin_valores(self):
+        """
+        Valido que al realizar un POST sin por lo menos un bien, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        data = {
+            "institucion": self.institucion.id,
+            "bienes":
+            [{
+                'tipo': None,
+                'nombre': None,
+                'descripcion': None,
+                'cantidad': None
+                }]
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_bienes_con_bien_sin_valores(self):
+        """
+        Valido que al realizar un POST sin por lo menos un bien, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        data = {
+            "institucion": self.institucion.id,
+            "bienes":
+            [{
+                'tipo': None,
+                'nombre': None,
+                'descripcion': None,
+                'cantidad': None
+                }]
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_bienes_con_bien_mal_cargado_1(self):
+        """
+        Valido que al realizar un POST sin por lo menos un bien, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        tipo_bien = 1
+        nombre_bien = 'hrd'
+        descripcion_bien = 'fsdg'
+        cantidad_bien = 8
+        data = {
+            "institucion": self.institucion.id,
+            "bienes":
+            [{
+                'tipo': tipo_bien,
+                'nombre': nombre_bien,
+                'descripcion': descripcion_bien,
+                'cantidad': -1
+                }]
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_bienes_con_usuario_anonimo(self):
+        """
+        Valido que al realizar un POST sin por lo menos un bien, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        tipo_bien = 1
+        nombre_bien = 'hrd'
+        descripcion_bien = 'fsdg'
+        cantidad_bien = 8
+        data = {
+            "institucion": self.institucion.id,
+            "bienes":
+            [{
+                'tipo': tipo_bien,
+                'nombre': nombre_bien,
+                'descripcion': descripcion_bien,
+                'cantidad': cantidad_bien
+                }]
+        }
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_bienes_con_usuario_no_donante(self):
+        """
+        Valido que al realizar un POST sin por lo menos un bien, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        tipo_bien = 1
+        nombre_bien = 'hrd'
+        descripcion_bien = 'fsdg'
+        cantidad_bien = 8
+        data = {
+            "institucion": self.institucion.id,
+            "bienes":
+            [{
+                'tipo': tipo_bien,
+                'nombre': nombre_bien,
+                'descripcion': descripcion_bien,
+                'cantidad': cantidad_bien
+                }]
+        }
+        self.client.force_login(self.user_institucion)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class ListarInstitucionesConCBUParaDonacionTestCase(APITestCase):
+
+    fixtures = ['group.json']# ,'user.json','donante.json','institucion.json']
+
+    def setUp(self):
+        """
+        Preparo algunas variables utilizadas en las pruebas de la clase.
+        Inicio el cliente, creo 3 usuarios (que será el que tenga el rol
+        de Donante) y genero la url .../InstitucionConCBU/.
+        """
+        self.client = APIClient()
+        self.user_donante = User.objects.create_user('john',
+                                             'lennon@thebeatles.com',
+                                             'johnpassword',
+                                             first_name='john',
+                                             last_name='lennon')
+        # self.user2 = User.objects.create_user('Paul',
+        #                                      'paul@thebeatles.com',
+        #                                      'paulpassword',
+        #                                      first_name='Paul',
+        #                                      last_name='McCartney')
+        # self.user3 = User.objects.create_user('Ringo',
+        #                                      'ringostarr@thebeatles.com',
+        #                                      'ringopassword',
+        #                                      first_name='Ringo',
+        #                                      last_name='Starr')
+        self.user_donante.groups.set(Group.objects.filter(id=1))
+        self.user_donante.save()
+        # self.user2.save()
+        # self.user3.save()
+        self.donante = Donante.objects.create(nombre= self.user_donante.first_name,
+                                            apellido= self.user_donante.last_name,
+                                            fecha_nacimiento= date(1983,7,19),
+                                            dni= '87654321',
+                                            domicilio= 'Calle falsa 789',
+                                            localidad= 'local',
+                                            provincia= 'prov',
+                                            pais= 'pais',
+                                            telefono= '1675-138745',
+                                            estado_civil= 'soltere',
+                                            genero= 'masculine',
+                                            ocupacion='reportero deportivo',
+                                            usuario= self.user_donante)
+        # self.institucion1 = Institucion.objects.create(nombre= self.user2.first_name,
+        #                                                 director= "Ramón",
+        #                                                 fecha_fundacion= date(1980,1,1),
+        #                                                 domicilio= "",
+        #                                                 localidad= "",
+        #                                                 provincia= "",
+        #                                                 pais= "",
+        #                                                 telefono= "",
+        #                                                 cant_empleados=0,
+        #                                                 descripcion= "",
+        #                                                 cbu= 256000,
+        #                                                 cuenta_bancaria= "123-555555/8",
+        #                                                 usuario= self.user2)
+        # self.institucion2 = Institucion.objects.create(nombre= self.user3.first_name,
+        #                                                 director= "Ringo",
+        #                                                 fecha_fundacion= date(1999,1,1),
+        #                                                 domicilio= "a",
+        #                                                 localidad= "b",
+        #                                                 provincia= "c",
+        #                                                 pais= "d",
+        #                                                 telefono= "",
+        #                                                 cant_empleados=10,
+        #                                                 descripcion= "",
+        #                                                 cbu= None,
+        #                                                 cuenta_bancaria= None,
+        #                                                 usuario= self.user3)
+        self.url = reverse('instituciones_list_cbu')
+
+    def test_no_listar_sin_instituciones(self):
+        """
+        Valido que, si no existen instituciones, al realizar un GET devuelva
+        una lista vacía
+        """
+        self.client.force_login(self.user_donante)
+        response = self.client.get(self.url)
+        cantidad = Institucion.objects.count()
+        self.assertEqual(cantidad,0)
+        self.assertEqual(response.data['count'], 0)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_no_listar_una_institucion_sin_CBU(self):
+        """
+        Valido que al realizar un GET se obtengan todas las instituciones
+        """
+        user_institucion = User.objects.create_user('Leonardo',
+                                             'leo@dan.com',
+                                             'leodan222',
+                                             first_name='Leo',
+                                             last_name='Dan')
+        user_institucion.groups.set(Group.objects.filter(id=2))
+        user_institucion.save()
+        institucion1 = Institucion.objects.create(nombre=user_institucion.first_name,
+                                                        director= "Leoncito",
+                                                        fecha_fundacion= date(1999,8,4),
+                                                        domicilio= "aaa123",
+                                                        localidad= "stafe",
+                                                        provincia= "stafe",
+                                                        pais= "arg",
+                                                        telefono= "341000000",
+                                                        cant_empleados=20,
+                                                        descripcion= "leo dan",
+                                                        cuenta_bancaria= "",
+                                                        usuario= user_institucion)
+        self.client.force_login(self.user_donante)
+        response = self.client.get(self.url)
+        cantidad = Institucion.objects.count()
+        self.assertEqual(cantidad,1)
+        self.assertEqual(response.data['count'],0)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_listar_una_institucion_con_CBU(self):
+        """
+        Valido que al realizar un GET se obtengan todas las instituciones
+        """
+        user_institucion = User.objects.create_user('Leonardo',
+                                             'leo@dan.com',
+                                             'leodan222',
+                                             first_name='Leo',
+                                             last_name='Dan')
+        user_institucion.groups.set(Group.objects.filter(id=2))
+        user_institucion.save()
+        institucion1 = Institucion.objects.create(nombre=user_institucion.first_name,
+                                                        director= "Leoncito",
+                                                        fecha_fundacion= date(1999,8,4),
+                                                        domicilio= "aaa123",
+                                                        localidad= "stafe",
+                                                        provincia= "stafe",
+                                                        pais= "arg",
+                                                        telefono= "341000000",
+                                                        cant_empleados=20,
+                                                        descripcion= "leo dan",
+                                                        cbu= 88888888,
+                                                        cuenta_bancaria= "",
+                                                        usuario= user_institucion)
+        self.client.force_login(self.user_donante)
+        response = self.client.get(self.url)
+        cantidad = Institucion.objects.count()
+        self.assertEqual(cantidad,1)
+        self.assertEqual(response.data['count'],1)
+        
+        institucion_response = response.data['results'][0]
+        self.assertEqual(institucion.id,institucion_response['id'])
+        self.assertEqual(institucion.nombre,institucion_response['nombre'])
+        #* Se puede seguir validando los demas campos, no le veo mucho sentido
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_listar_muchas_instituciones(self):
+        """
+        Valido que al realizar un GET se obtengan todas las instituciones
+        """
+        user_institucion1 = User.objects.create_user('Leonardo',
+                                             'leo@dan.com',
+                                             'leodan222',
+                                             first_name='Leo',
+                                             last_name='Dan')
+        user_institucion1.groups.set(Group.objects.filter(id=2))
+        user_institucion1.save()
+        institucion1 = Institucion.objects.create(nombre=user_institucion1.first_name,
+                                                        director= "Leoncito",
+                                                        fecha_fundacion= date(1999,8,4),
+                                                        domicilio= "aaa123",
+                                                        localidad= "stafe",
+                                                        provincia= "stafe",
+                                                        pais= "arg",
+                                                        telefono= "341000000",
+                                                        cant_empleados=20,
+                                                        descripcion= "leo dan",
+                                                        cbu= 88888888,
+                                                        cuenta_bancaria= "",
+                                                        usuario= user_institucion1)
+        self.user_institucion2 = User.objects.create_user('Paul',
+                                             'paul@thebeatles.com',
+                                             'paulpassword',
+                                             first_name='Paul',
+                                             last_name='McCartney')
+        user_institucion2.groups.set(Group.objects.filter(id=2))
+        user_institucion2.save()
+        self.institucion2 = Institucion.objects.create(nombre= user_institucion2.first_name,
+                                                        director= "Ramón",
+                                                        fecha_fundacion= date(1980,1,1),
+                                                        domicilio= "",
+                                                        localidad= "",
+                                                        provincia= "",
+                                                        pais= "",
+                                                        telefono= "",
+                                                        cant_empleados=0,
+                                                        descripcion= "",
+                                                        cbu= 256000,
+                                                        cuenta_bancaria= "123-555555/8",
+                                                        usuario= user_institucion2)        
+        self.client.force_login(self.user_donante)
+        response = self.client.get(self.url)
+        cantidad = Institucion.objects.count()
+        self.assertEqual(cantidad,2)
+        self.assertEqual(response.data['count'],2)
+        
+        institucion1_response = response.data['results'][1]
+        institucion2_response = response.data['results'][0]
+        self.assertEqual(institucion1.id,institucion1_response['id'])
+        self.assertEqual(institucion1.nombre,institucion1_response['nombre'])
+        self.assertEqual(institucion2.id,institucion2_response['id'])
+        self.assertEqual(institucion2.nombre,institucion2_response['nombre'])
+        #* Se puede seguir validando los demas campos, no le veo mucho sentido
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_no_listar_para_no_donante(self):
+        """
+        Valido que devuelva error si el usuario que ingresa no es un donante
+        """
+        self.client.force_login(self.user_donante)
+        reponse = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class CrearDonacionMonetariaTestCase(APITestCase):
+    """Caso de Prueba para crear donaciones monetarias"""
+    fixtures = ['group.json']# ,'user.json','donante.json','institucion.json']
+
+    def setUp(self):
+        """docstring"""
+        self.client = APIClient()
+        self.user_donante = User.objects.create_user('john',
+                                             'lennon@thebeatles.com',
+                                             'johnpassword',
+                                             first_name='john',
+                                             last_name='lennon')
+        self.user_donante.groups.set(Group.objects.filter(id=1))
+        self.user_donante.save()
+        self.donante = Donante.objects.create(nombre= self.user_donante.first_name,
+                                            apellido= self.user_donante.last_name,
+                                            fecha_nacimiento= date(1983,7,19),
+                                            dni= '87654321',
+                                            domicilio= 'Calle falsa 789',
+                                            localidad= 'local',
+                                            provincia= 'prov',
+                                            pais= 'pais',
+                                            telefono= '1675-138745',
+                                            estado_civil= 'soltere',
+                                            genero= 'masculine',
+                                            ocupacion='reportero deportivo',
+                                            usuario= self.user_donante)
+        self.user_institucion = User.objects.create_user('Leonardo',
+                                             'leo@dan.com',
+                                             'leodan222',
+                                             first_name='Leo',
+                                             last_name='Dan')
+        self.user_institucion.groups.set(Group.objects.filter(id=2))
+        self.user_institucion.save()
+        self.institucion = Institucion.objects.create(nombre=self.user_institucion.first_name,
+                                                        director= "Leoncito",
+                                                        fecha_fundacion= date(1999,8,4),
+                                                        domicilio= "aaa123",
+                                                        localidad= "stafe",
+                                                        provincia= "stafe",
+                                                        pais= "arg",
+                                                        telefono= "341000000",
+                                                        cant_empleados=20,
+                                                        descripcion= "leo dan",
+                                                        cbu= 88888888,
+                                                        cuenta_bancaria= "",
+                                                        usuario= self.user_institucion)
+        self.url = reverse('donacion_monetaria')
+
+    def test_crear_donacion_monetaria(self):
+        """
+        Valido que al realizar un POST con todos los datos de una donacion,
+        se genere una instancia Donacion de bienes en la Base de Datos.
+        """
+        monto = 19375
+        data = {
+            'institucion': self.institucion.id,
+            'monto': monto
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json') #No funcionaba porque no tenía puesto el format
+        cantidad_donacion = DonacionMonetaria.objects.count()
+        self.assertEqual(cantidad_donacion, 1)
+        donacion = DonacionMonetaria.objects.first()
+
+        self.assertEqual(donacion.donante, self.donante)
+        self.assertEqual(donacion.institucion.id, response.data['institucion'])
+        self.assertEqual(donacion.monto, monto)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_no_crear_donacion_monetaria_institucion_incorrecto(self):
+        """
+        Valido que al realizar un POST con todos los datos de una donacion,
+        se genere una instancia Donacion de bienes en la Base de Datos.
+        """
+        monto = 19375
+        data = {
+            'institucion': 7,
+            'monto': monto
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_monetaria_sin_monto(self):
+        """
+        Valido que al realizar un POST con todos los datos de una donacion,
+        se genere una instancia Donacion de bienes en la Base de Datos.
+        """
+        data = {
+            'institucion': self.institucion.id,
+            'monto': 0
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_monetaria_todos_nulos(self):
+        """
+        Valido que al realizar un POST sin ningún dato, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        data = {
+            "institucion": None,
+            "monto": None
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_monetaria_todos_enblanco(self):
+        """
+        Valido que al realizar un POST sin ningún dato, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        data = {
+            "institucion": '',
+            "monto":0       
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_crear_donacion_bienes_sin_institucion(self):
+        """
+        Valido que al realizar un POST sin a institucion, devuelva un mensaje
+        HTTP_400 sin generar una instancia Donacion_bienes en la Base de Datos.
+        """
+        tipo_bien = 1
+        nombre_bien = 'hrd'
+        descripcion_bien = 'fsdg'
+        cantidad_bien = 8
+        data = {
+            "institucion": None,
+            "bienes":
+            [{
+                'tipo': tipo_bien,
+                'nombre': nombre_bien,
+                'descripcion': descripcion_bien,
+                'cantidad': cantidad_bien
+                }]
+        }
+        self.client.force_login(self.user_donante)
+        response = self.client.post(self.url, data, format='json')
+        cantidad_donaciones = DonacionBienes.objects.count()
+        cantidad_bienes = Bien.objects.count()
+        self.assertEqual(cantidad_donaciones, 0)
+        self.assertEqual(cantidad_bienes,0)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+######################################################
+
+
 class DonanacionBienesListCreateTestCase(APITestCase):
     """
     Pruebas realizadas sobre el listado y la creación de instancias de la
@@ -156,43 +1098,6 @@ class DonanacionBienesListCreateTestCase(APITestCase):
         self.assertEqual(cantidad_bienes,0)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_listar_instituciones(self):
-        """
-        Valido que al realizar un GET se obtengan todas las instituciones
-        """
-        #Creo usuario3 y la institución numero 2...
-        self.url = reverse('instituciones_list')
-        self.user3 = User.objects.create_user('Leonardo',
-                                             'leo@dan.com',
-                                             'leodan222',
-                                             first_name='Leo',
-                                             last_name='Dan')
-        self.user3.groups.set(Group.objects.filter(id=2))
-        self.user3.save()
-        self.institucion2 = Institucion.objects.create(nombre= self.user3.first_name,
-                                                        director= "Leoncito",
-                                                        fecha_fundacion= date(1999,8,4),
-                                                        domicilio= "aaa123",
-                                                        localidad= "stafe",
-                                                        provincia= "stafe",
-                                                        pais= "arg",
-                                                        telefono= "341000000",
-                                                        cant_empleados=20,
-                                                        descripcion= "leo dan",
-                                                        cbu= 88888888,
-                                                        cuenta_bancaria= "",
-                                                        usuario= self.user3)
-        self.institucion2.save()
-        response = self.client.get(self.url)
-        #print(response.data)
-        cantidad = len(response.data['results'])
-        institucion_response = response.data['results'][1] 
-        #Toma la posición 1 ya que a medida que se agrega un objeto nuevo se coloca en posición 0, metodo pila (el primero se coloca encima)
-        institucion2_response = response.data['results'][0] 
-        self.assertEqual(cantidad,2)
-        self.assertEqual(self.institucion.nombre,institucion_response['nombre']) #valido nombre institucion1
-        self.assertEqual(self.institucion2.nombre,institucion2_response['nombre']) #valido nombre institucion2
-        #* Se puede seguir validando los demas campos, no le veo mucho sentido
 
     def test_listar_donaciones(self):
         self.url = reverse('ver_donacion')
