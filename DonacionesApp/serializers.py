@@ -37,6 +37,44 @@ class DonacionBienesSerializer(serializers.ModelSerializer):
         return donacion
 
 
+class AceptarDonacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DonacionBienes
+        fields = []
+
+    def update(self,donacion,validated_data):
+        donacion.cod_estado = 2
+        donacion.fecha_aceptacion = datetime.now()
+        donacion.fecha_cancelacion = None
+        donacion.motivo_cancelacion = None          
+        donacion.save()
+        return donacion  
+
+class RecogerDonacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DonacionBienes
+        fields = []
+
+    def update(self,donacion,validated_data):
+        donacion.cod_estado = 6
+        donacion.fecha_retiro = datetime.now()         
+        donacion.save()
+        return donacion           
+
+
+class RechazarDonacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DonacionBienes
+        fields = ['motivo_cancelacion']
+
+    def update(self,donacion,validated_data):
+        donacion.cod_estado = 0
+        donacion.fecha_aceptacion = None 
+        donacion.fecha_cancelacion = datetime.now()
+        donacion.motivo_cancelacion = validated_data.get('motivo_cancelacion',donacion.motivo_cancelacion)
+        donacion.save()
+        return donacion           
+
 class ActualizarEstadoDonacionSerializer(serializers.ModelSerializer):
     #bienes = BienesSerializer(many=True)
     class Meta:

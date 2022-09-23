@@ -1,7 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 from baseApp.models import Donante, Institucion, Cadete
-# Create your models here.
+
+# from rest_framework_gis import *
+
+# class Location(models.Model):
+#     """
+#     A model which holds information about a particular location
+#     """
+#     address = models.CharField(max_length=255)
+#     city = models.CharField(max_length=100)
+#     state = models.CharField(max_length=100)
+#     point = models.PointField() #Revisar esto 
 
 class Recoleccion(models.Model):
     """
@@ -36,10 +46,12 @@ class Recoleccion(models.Model):
     fecha_recoleccion = models.DateField(blank=True,
                                    verbose_name='fecha_recoleccion',
                                    null=True)
-    #Falta agregar el campo de Ruta, ver si necesitamos ejes de coordenadas
+    fecha_inicio_recoleccion = models.DateTimeField(blank=True,
+                                   verbose_name='fecha_inicio_recoleccion',
+                                   null=True)
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
-        #ordering = ['fecha_recoleccion']
+        ordering = ['fecha_recoleccion']
         verbose_name = 'Recolección'
         verbose_name_plural = 'Recolecciones'
