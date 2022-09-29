@@ -123,13 +123,11 @@ class Institucion(models.Model):
                                    verbose_name='descripción',
                                    null=True)
     #En caso de que el CBU sea null no se podrán realizar donaciones por transferencia
-    cbu = models.BigIntegerField(blank=True,
+    cbu = models.CharField(blank=True,
+                                max_length=50,
                                  verbose_name='CBU',
                                  null=True)
-    #! Formato cuenta bancaria: xxx-xxxxxx/x
-    cuenta_bancaria = models.CharField(blank=True,
-                                       max_length=12,
-                                       null=True)
+
     usuario = models.OneToOneField(User,
                                    verbose_name=("id_usuario"),
                                    on_delete=models.CASCADE,
