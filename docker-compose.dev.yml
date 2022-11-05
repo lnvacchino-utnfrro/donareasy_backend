@@ -6,6 +6,8 @@ services:
       context: .
     ports:
       - 8000:8000
+    depends_on:
+      - db
   
   db:
     image: mysql
@@ -15,8 +17,6 @@ services:
       - .env
     volumes:
       - dbdata:/var/lib/mysql
-    depends_on:
-      - backend
     ports:
       - 33060:3306
 

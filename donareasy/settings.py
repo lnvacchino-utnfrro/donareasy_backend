@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-@yvzqm^ln_ebz$sv=cnh*^5w@=f^e6_b$nnu$(m7-vtm8pf4fx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", default="False")
 
 ALLOWED_HOSTS = []
 
@@ -79,6 +79,8 @@ TEMPLATES = [
         },
     },
 ]
+
+DJANGO_LOG_LEVEL = config('DJANGO_LOG_LEVEL', default="WARNING")
 
 WSGI_APPLICATION = 'donareasy.wsgi.application'
 
@@ -155,7 +157,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'donareasy'
 EMAIL_HOST_PASSWORD = 'xhkwhhrfqnupjoiw'
 
-# Si se quiere mostrar los mails por consola, comentar todo lo anterior y usar la 
+# Si se quiere mostrar los mails por consola, comentar todo lo anterior y usar la
 # siguiente línea
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -168,5 +170,5 @@ APPEND_SLASH = True
 # Ruta absoluta del sistema de archivos al directorio que contendrá los archivos
 # subidos por el usuario
 # https://docs.djangoproject.com/en/4.1/ref/settings/#media-root
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/') # 'data' is my media folder
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')  # 'data' is my media folder
 MEDIA_URL = '/media/'

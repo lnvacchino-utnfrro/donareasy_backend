@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
+import logging
 import os
 import sys
+from time import sleep
 
+
+MAX_RETRIES_NUM = 10
 
 def main():
     """Run administrative tasks."""
@@ -15,6 +19,29 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+
+    from django.db import connections
+    conn = connections['default']
+    no_host_available = True
+    retry_count = 0
+    sleep_time = 1
+
+    while no_host_available:
+        try:
+            logging.warning("Conectando a la base de datos...")
+            conn.connect()
+            logging.warning("Conexión exitosa a la base de datos!")
+        except Exception:
+            if retry_count == MAX_RETRIES_NUM:
+                sys.exit()
+            logging.warning(f'Error de conexión con la base de datos. Reintentando conexión en {sleep_time}s')
+            sleep(sleep_time)
+        else:
+            no_host_available = False
+
+        sleep_time *= 1.5
+        retry_count += 1
+
     execute_from_command_line(sys.argv)
 
 
