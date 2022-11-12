@@ -21,16 +21,16 @@ def main():
         ) from exc
 
     from django.db import connections
+
     conn = connections['default']
     no_host_available = True
     retry_count = 0
     sleep_time = 1
 
+    logging.info("Conectando a la base de datos...")
     while no_host_available:
         try:
-            logging.warning("Conectando a la base de datos...")
             conn.connect()
-            logging.warning("Conexión exitosa a la base de datos!")
         except Exception:
             if retry_count == MAX_RETRIES_NUM:
                 sys.exit()
@@ -41,6 +41,8 @@ def main():
 
         sleep_time *= 1.5
         retry_count += 1
+    
+    logging.info("Conexión exitosa a la base de datos!")
 
     execute_from_command_line(sys.argv)
 
