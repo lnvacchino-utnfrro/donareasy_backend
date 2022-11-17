@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from DonacionesApp.models import DonacionBienes, Bien, DonacionMonetaria
+from DonacionesApp.models import DonacionBienes, Bien, DonacionMonetaria, Donacion
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
 from baseApp.models import Donante, Institucion
 from datetime import datetime,date
@@ -198,3 +198,11 @@ class RechazarTransferenciaSerializer(serializers.ModelSerializer):
         donacion.motivo_cancelacion = validated_data.get('motivo_cancelacion',donacion.motivo_cancelacion)
         donacion.save()
         return donacion
+
+
+class DonacionesGeneralesDonanteSeralizer(serializers.ModelSerializer):
+    institucion = InstitucionSerializer()
+
+    class Meta:
+        model = Donacion
+        exclude = ['donante']

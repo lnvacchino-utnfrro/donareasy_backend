@@ -26,6 +26,11 @@ urlpatterns = [
         views.DonacionMonetariaCreate.as_view(),
         name='donacion_monetaria'),
 
+# Informes
+    path('listadoDonaciones/',
+    views.DonacionesDonanteList.as_view(),
+    name='listado_donaciones_realizadas'),
+
 #Usuario: Institucion
     path('donacionesPendientes/',
         views.TodasDonacionesList.as_view(),
