@@ -37,12 +37,53 @@ class DonacionBienesSerializer(serializers.ModelSerializer):
         return donacion
 
 
-class ActualizarEstadoDonacionSerializer(serializers.ModelSerializer):
-    #bienes = BienesSerializer(many=True)
+class AceptarDonacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = DonacionBienes
-        fields = ['cod_estado','motivo_cancelacion']
-        read_only_fields = ['fecha_aceptacion','fecha_cancelacion']
+        fields = []
+
+    def update(self,donacion,validated_data):
+        donacion.cod_estado = 2
+        donacion.fecha_aceptacion = datetime.now()
+        donacion.fecha_cancelacion = None
+        donacion.motivo_cancelacion = None          
+        donacion.save()
+        return donacion  
+
+class RecogerDonacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DonacionBienes
+        fields = []
+
+    def update(self,donacion,validated_data):
+        donacion.cod_estado = 6
+        donacion.fecha_retiro = datetime.now()         
+        donacion.save()
+        return donacion           
+
+
+class RechazarDonacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DonacionBienes
+        fields = ['motivo_cancelacion']
+
+    def update(self,donacion,validated_data):
+        donacion.cod_estado = 0
+        donacion.fecha_aceptacion = None 
+        donacion.fecha_cancelacion = datetime.now()
+        donacion.motivo_cancelacion = validated_data.get('motivo_cancelacion',donacion.motivo_cancelacion)
+        donacion.save()
+        return donacion           
+
+
+class ActualizarEstadoDonacionSerializer(serializers.ModelSerializer):
+    bienes = BienesSerializer(many=True,read_only=True)
+    donante = DonanteSerializer(read_only=True)
+    
+    class Meta:
+        model = DonacionBienes
+        fields = ['donante','bienes','cod_estado','motivo_cancelacion']
+        read_only_fields = ['id','fecha_aceptacion','fecha_cancelacion']
         
     def update(self,donacion,validated_data):
         if validated_data['cod_estado'] == 2:
@@ -74,6 +115,7 @@ class ActualizarEstadoDonacionSerializer(serializers.ModelSerializer):
 class DonacionesSerializer(serializers.ModelSerializer):
     bienes = BienesSerializer(many=True)
     donante = DonanteSerializer()
+    
     class Meta:
         model = DonacionBienes
         fields = ['id','donante','cod_estado','bienes']
@@ -117,33 +159,42 @@ class DonacionMonetariaSerializer(serializers.ModelSerializer):
 
 class DatosBancariosInstitucion(serializers.ModelSerializer):
     #mensaje = serializers.CharField(max_length=100)
+    
     class Meta:
         model = Institucion
         fields = ['id','nombre','cbu','cuenta_bancaria']
 
 class VerTransferenciaSerializer(serializers.ModelSerializer):
     donante = DonanteSerializer()
+    
     class Meta:
         model = DonacionMonetaria
         fields = ['id','donante','cod_estado','monto','fecha_transferencia']
 
+
 class AceptarTransferenciaSerializer(serializers.ModelSerializer):
-    #bienes = BienesSerializer(many=True)
     class Meta:
         model = DonacionMonetaria
-        fields = ['cod_estado','motivo_cancelacion']
-        read_only_fields = ['fecha_aceptacion','fecha_cancelacion']
+        fields = []
+    
     def update(self,donacion,validated_data):
-        if validated_data['cod_estado'] == 4:
-            donacion.cod_estado = validated_data.get('cod_estado',donacion.cod_estado)
-            donacion.fecha_aceptacion = datetime.now()
-            donacion.fecha_cancelacion = None
-            donacion.motivo_cancelacion = None          
-            donacion.save()           
-        else:
-            donacion.cod_estado = validated_data.get('cod_estado',donacion.cod_estado)
-            donacion.fecha_aceptacion = None 
-            donacion.fecha_cancelacion = datetime.now()
-            donacion.motivo_cancelacion = validated_data.get('motivo_cancelacion',donacion.motivo_cancelacion)
-            donacion.save()         
+        donacion.cod_estado = 4
+        donacion.fecha_aceptacion = datetime.now()
+        donacion.fecha_cancelacion = None
+        donacion.motivo_cancelacion = None          
+        donacion.save()                  
+        return donacion
+        
+
+class RechazarTransferenciaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DonacionMonetaria
+        fields = ['motivo_cancelacion']
+
+    def update(self,donacion,validated_data):
+        donacion.cod_estado = 0
+        donacion.fecha_aceptacion = None 
+        donacion.fecha_cancelacion = datetime.now()
+        donacion.motivo_cancelacion = validated_data.get('motivo_cancelacion',donacion.motivo_cancelacion)
+        donacion.save()
         return donacion

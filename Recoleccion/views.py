@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from requests import Response
 from rest_framework import generics, status, mixins
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAdminUser
 
 from rest_framework import viewsets
 from rest_framework import permissions
@@ -10,35 +11,65 @@ from DonacionesApp.serializers import *
 from DonacionesApp.models import Donacion, DonacionBienes, DonacionMonetaria, Bien, Recoleccion
 from baseApp.models import Donante, Institucion
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
+from baseApp.permissions import IsInstitucionPermission, IsDonantePermission, IsCadetePermission
 from Recoleccion.serializers import *
 
 
 class DonacionesSinRecoleccionList(generics.ListAPIView):
     """
-    Me traigo las donaciones que tienen estado "creadas" o "aceptadas y que no
+    Me traigo las donaciones que tienen estado "aceptadas" y que no
     tienen asociada niguna recolección previamente creada por algún cadete
     """
     serializer_class = DonacionesSerializer
-    queryset = DonacionBienes.objects.filter(cod_estado = 1).filter(recoleccion__isnull=True)
-
+    queryset = DonacionBienes.objects.filter(cod_estado = 2).filter(recoleccion__isnull=True)
+    permission_classes = [IsCadetePermission|IsAdminUser]
+    
 
 class RecoleccionesCreate(generics.CreateAPIView):
     """docstring"""
     serializer_class = RecoleccionesCreateSerializer
     queryset = Recoleccion.objects.all()
+    permission_classes = [IsCadetePermission|IsAdminUser]
 
 
 class RecoleccionList(generics.ListAPIView):
     """APIView para listar las recolecciones creadas"""
-    queryset = Recoleccion.objects.all()
+    #queryset = Recoleccion.objects.all()
     serializer_class = RecoleccionSerializer
+    permission_classes = [IsCadetePermission|IsAdminUser]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=3).exists():
+            cadete = Cadete.objects.get(usuario=user)
+            queryset = Recoleccion.objects.filter(estado_recoleccion = 1).filter(cadete=cadete)
+        return queryset
+
 
 
 class RecoleccionDetail(generics.RetrieveUpdateDestroyAPIView):
     """APIView para recuperar, actualizar y destruir una instancia de la clase Recoleccion"""
-    queryset = Recoleccion.objects.all()
+    #queryset = Recoleccion.objects.all()
     serializer_class = RecoleccionSerializer
+    permission_classes = [IsCadetePermission|IsAdminUser]
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=3).exists():
+            cadete = Cadete.objects.get(usuario=user)
+            queryset = Recoleccion.objects.filter(estado_recoleccion = 1).filter(cadete=cadete)
+        return queryset
 
+#Actualizo el estado de la recolección a 2 cuando la quiero comenzar a realizar
+class RecoleccionComenzarUpdate(generics.UpdateAPIView):
+    """Actualizo el estado de la recolección a 2 cuando la quiero comenzar a realizar y generar la ruta"""
+    serializer_class = RecoleccionComenzarSerializer
+    permission_classes = [IsCadetePermission|IsAdminUser]
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=3).exists():
+            cadete = Cadete.objects.get(usuario=user)
+            queryset = Recoleccion.objects.filter(estado_recoleccion = 1).filter(cadete=cadete)
+        return queryset
 
 class GenerarRutaRecoleccion(APIView):
     """docstring"""
@@ -73,30 +104,74 @@ class GenerarRutaRecoleccion(APIView):
 
         return Response({'':''}, status = status.HTTP_200_OK)
 
-
+#Esta vista sirve para ver el detalle de la donación dentro de una recolección para luego cambiar el estado
 class RecoleccionDonacionDetail(generics.RetrieveAPIView): #mixins.ListModelMixin,viewsets.GenericViewSet):
     """docstring"""   
     serializer_class = RecoleccionDonacionDetailSerializer
     #queryset = DonacionBienes.objects.all()
+    permission_classes = [IsCadetePermission|IsAdminUser]
     def get_queryset(self):
-        #recoleccion = Recoleccion.objects.all()
-        donacion = DonacionBienes.objects.all()
-        return donacion
-        # Me traigo las donaciones que tienen estado "creadas" o "aceptadas"
+        user = self.request.user
+        if user.groups.filter(pk=3).exists():
+            cadete = Cadete.objects.get(usuario=user)
+            recoleccion = Recoleccion.objects.filter(estado_recoleccion = 2).filter(cadete=cadete)
+            queryset = DonacionBienes.objects.filter(cod_estado = 5).filter(recoleccion__in=recoleccion)
+        return queryset
 
-class ActualizaEstadoDonacion(generics.UpdateAPIView):
+class ActualizaRecogerDonacion(generics.UpdateAPIView):
     """docstring"""   
-    serializer_class = ActualizarEstadoDonacionSerializer
-    queryset = DonacionBienes.objects.all()
+    serializer_class = RecogerDonacionSerializer
+    permission_classes = [IsCadetePermission|IsAdminUser]
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=3).exists():
+            cadete = Cadete.objects.get(usuario=user)
+            recoleccion = Recoleccion.objects.filter(estado_recoleccion = 2).filter(cadete=cadete)
+            queryset = DonacionBienes.objects.filter(cod_estado = 5).filter(recoleccion__in=recoleccion)
+        return queryset
+
+class ActualizaRechazarDonacion(generics.UpdateAPIView):
+    """docstring"""   
+    serializer_class = RechazarDonacionSerializer
+    permission_classes = [IsCadetePermission|IsAdminUser]
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=3).exists():
+            cadete = Cadete.objects.get(usuario=user)
+            recoleccion = Recoleccion.objects.filter(estado_recoleccion = 2).filter(cadete=cadete)
+            queryset = DonacionBienes.objects.filter(cod_estado = 5).filter(recoleccion__in=recoleccion)
+        return queryset
         
 
-class RecoleccionList(generics.ListAPIView):
+class RecoleccionList2(generics.ListAPIView):
     serializer_class = RecoleccionListSerializer
+    permission_classes = [IsCadetePermission|IsAdminUser]
     def get_queryset(self):
-        return Recoleccion.objects.filter(estado_recoleccion = 2)
+        user = self.request.user
+        if user.groups.filter(pk=3).exists():
+            cadete = Cadete.objects.get(usuario=user)
+            queryset = Recoleccion.objects.filter(estado_recoleccion = 2).filter(cadete=cadete)
+        return queryset
 
 
-class EstadoRecoleccionUpdate(generics.UpdateAPIView):
-    serializer_class = CambiaEstadoRecoleccionSerializer
+class EstadoRecoleccionFinalizadaUpdate(generics.UpdateAPIView):
+    serializer_class = FinalizaRecoleccionSerializer
+    permission_classes = [IsCadetePermission|IsAdminUser]
     def get_queryset(self):
-        return Recoleccion.objects.filter(estado_recoleccion = 2)
+        user = self.request.user
+        if user.groups.filter(pk=3).exists():
+            cadete = Cadete.objects.get(usuario=user)
+            queryset = Recoleccion.objects.filter(estado_recoleccion = 2).filter(cadete=cadete)
+        return queryset
+
+
+class EstadoRecoleccionNoFinalizadaUpdate(generics.UpdateAPIView):
+    serializer_class = NoFinalizaRecoleccionSerializer
+    permission_classes = [IsCadetePermission|IsAdminUser]
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=3).exists():
+            cadete = Cadete.objects.get(usuario=user)
+            queryset = Recoleccion.objects.filter(estado_recoleccion = 2).filter(cadete=cadete)
+        return queryset
+

@@ -43,10 +43,23 @@ class Donacion(models.Model):
                                     verbose_name='fecha_entrega',
                                     null=True
                                     )
-    #! 1:Creada , 2:Aceptada , 3:Enviada , 4:Recibida , 0:Cancelada
-    cod_estado = models.SmallIntegerField(blank = True, 
-                                    verbose_name='estado'
+    #! Donacione bienes: 1:Creada , 2:Aceptada , 5:En Recoleccion , 6:Recogida , 0:Cancelada
+    #! Donacion monetaria: 3:Enviada , 4:Recibida , 0:Cancelada
+    cod_estado = models.SmallIntegerField(blank=True,
+                                    verbose_name='cod_estado'
                                     )
+    # CODIGOS_ESTADO = [
+    #     (1,'Creada'),
+    #     (2,'Aceptada'),
+    #     (3,'Enviada'),
+    #     (4,'Recibida'),
+    #     (0,'Cancelada'),
+    # ]
+
+    # cod_estado = models.CharField(max_length=2,
+    #                         verbose_name='estado',
+    #                         choices=CODIGOS_ESTADO
+    #                     )
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
@@ -82,7 +95,8 @@ class DonacionBienes(Donacion):
                                 null=True,
                                 related_name='donaciones'
                                 )
-
+    def __str__(self):
+        return str(self.donante)
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
         ordering = ['fecha_creacion']

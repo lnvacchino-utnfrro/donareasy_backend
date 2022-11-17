@@ -13,8 +13,9 @@ class ChicosSerializer (serializers.ModelSerializer):
 class ChicosCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chicos
-        fields = '__all__'
+        exclude = ['institucion']
     def create(self, validated_data):
+        usuario = self.context['request'].user
         if (validated_data['edad'] < 18 and validated_data['edad'] >= 0):
             chico = Chicos.objects.create(
                 nombre = validated_data['nombre'],
@@ -22,7 +23,7 @@ class ChicosCreateSerializer(serializers.ModelSerializer):
                 edad = validated_data['edad'],
                 fotografia = validated_data['fotografia'],
                 descripcion = validated_data['descripcion'],
-                institucion = validated_data['institucion'],
+                institucion = Institucion.objects.get(usuario = usuario)
             )
             return chico
         else:
@@ -66,11 +67,6 @@ class AceptaSolicitudSerializer(serializers.ModelSerializer):
         fields = ['cod_estado','motivo_cancelacion']
         read_only_fields = ['fecha_cancelacion','fecha_aceptacion']
     def update(self, solicitud, validated_data):
-        # soliApa = self.request.query_params.get('solicitud')
-        # soliApa2 = SolicitudApadrinamiento.objects.get(id = soliApa) #self.context.get('pk')
-        # if soliApa2.cod_estado != 1:
-        #     raise serializers.ValidationError({'mensaje': "La solicitud ya está aceptada o cancelada"})
-        # else:
             if validated_data['cod_estado'] == 2:
                 solicitud.cod_estado = validated_data.get('cod_estado',solicitud.cod_estado)
                 solicitud.fecha_aceptacion = datetime.now()
