@@ -59,3 +59,10 @@ class AceptaSolicitud(generics.UpdateAPIView):
             chico = Chicos.objects.filter(institucion = institucion)
             queryset = SolicitudApadrinamiento.objects.filter(cod_estado = 1).filter(chico_apadrinado__in = chico)
         return queryset
+
+
+class ChicosInstitucionList(generics.RetrieveAPIView):
+    """Listado de Chicos asociados a la intitución pasada como parámetro en la URL"""
+    serializer_class = ChicosInstitucionSerializer
+    # permission_classes = ALL
+    queryset = Institucion.objects.all()
