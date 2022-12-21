@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from DonacionesApp.models import DonacionBienes, Bien, DonacionMonetaria
+from DonacionesApp.models import DonacionBienes, Bien, DonacionMonetaria, Donacion
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
 from baseApp.models import Donante, Institucion
 from datetime import datetime,date
@@ -139,8 +139,6 @@ class DonacionMonetariaSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("El campo institución no puede ser nulo")
         if value.cbu is None or value.cbu <= 0:
             raise serializers.ValidationError("La institución ingresada no posee CBU")
-        if value.cuenta_bancaria is None or value.cuenta_bancaria == '':
-            raise serializers.ValidationError("La institución ingresada no posee cuenta bancaria")
         return value
 
     def create(self,validated_data):
@@ -162,7 +160,7 @@ class DatosBancariosInstitucion(serializers.ModelSerializer):
     
     class Meta:
         model = Institucion
-        fields = ['id','nombre','cbu','cuenta_bancaria']
+        fields = ['id','nombre','cbu']
 
 class VerTransferenciaSerializer(serializers.ModelSerializer):
     donante = DonanteSerializer()
@@ -198,3 +196,11 @@ class RechazarTransferenciaSerializer(serializers.ModelSerializer):
         donacion.motivo_cancelacion = validated_data.get('motivo_cancelacion',donacion.motivo_cancelacion)
         donacion.save()
         return donacion
+
+
+class DonacionesGeneralesDonanteSeralizer(serializers.ModelSerializer):
+    institucion = InstitucionSerializer()
+
+    class Meta:
+        model = Donacion
+        exclude = ['donante']

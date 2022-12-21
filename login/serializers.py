@@ -146,7 +146,7 @@ class LogupInstitucionUserSerializer(serializers.ModelSerializer):
         model = Institucion
         fields = ['usuario','nombre','director','fecha_fundacion','domicilio',
                     'localidad','provincia','pais','telefono','cant_empleados',
-                    'descripcion','cbu','cuenta_bancaria']
+                    'descripcion','cbu']
 
     def create(self, validated_data):
         usuario_data = validated_data.pop('usuario', None)
@@ -172,7 +172,7 @@ class InstitucionUserSerializer(serializers.ModelSerializer):
         model = Institucion
         fields = ['usuario','nombre','director','fecha_fundacion','domicilio',
                     'localidad','provincia','pais','telefono','cant_empleados',
-                    'descripcion','cbu','cuenta_bancaria']
+                    'descripcion','cbu']
 
     def create(self, validated_data):
         usuario_data = validated_data.pop('usuario', None)

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,7 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-@yvzqm^ln_ebz$sv=cnh*^5w@=f^e6_b$nnu$(m7-vtm8pf4fx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = config("DEBUG", default="False")
 
 ALLOWED_HOSTS = []
 
@@ -61,6 +63,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True  
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
+
 ROOT_URLCONF = 'donareasy.urls'
 
 TEMPLATES = [
@@ -79,6 +88,36 @@ TEMPLATES = [
     },
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    }
+}
+
 WSGI_APPLICATION = 'donareasy.wsgi.application'
 
 # Database
@@ -87,14 +126,18 @@ WSGI_APPLICATION = 'donareasy.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'donareasy',
-        'USER': 'root',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        # 'NAME': 'donareasy',
+        # 'USER': 'root',
+        # 'PASSWORD': 'admin',
+        # 'HOST': 'localhost',
+        # 'PORT': '3306',
+        'NAME': config('MYSQL_DATABASE', default='donareasy'),
+        'USER': config('MYSQL_USER', default="donareasy"),
+        'PASSWORD': config('MYSQL_PASSWORD', default='admin'),
+        'HOST': config('MYSQL_HOST', default="localhost"),
+        'PORT': config('MYSQL_PORT', default="3306"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -155,7 +198,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'donareasy'
 EMAIL_HOST_PASSWORD = 'xhkwhhrfqnupjoiw'
 
-# Si se quiere mostrar los mails por consola, comentar todo lo anterior y usar la 
+# Si se quiere mostrar los mails por consola, comentar todo lo anterior y usar la
 # siguiente línea
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -168,5 +211,5 @@ APPEND_SLASH = True
 # Ruta absoluta del sistema de archivos al directorio que contendrá los archivos
 # subidos por el usuario
 # https://docs.djangoproject.com/en/4.1/ref/settings/#media-root
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/') # 'data' is my media folder
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')  # 'data' is my media folder
 MEDIA_URL = '/media/'

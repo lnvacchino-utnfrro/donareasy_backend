@@ -5,10 +5,15 @@ from baseApp.serializers import DonanteSerializer, InstitucionSerializer
 from baseApp.models import Institucion
 from datetime import datetime,date
 
-class ChicosSerializer (serializers.ModelSerializer):
+class ChicosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chicos
         fields = '__all__'
+
+class ChicosUnaInstitucionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Chicos
+        exclude = ['institucion']
 
 class ChicosCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -86,3 +91,11 @@ class AceptaSolicitudSerializer(serializers.ModelSerializer):
                 solicitud.motivo_cancelacion = None
                 solicitud.save()       
             return solicitud
+
+
+class ChicosInstitucionSerializer(serializers.ModelSerializer):
+    chicos = ChicosUnaInstitucionSerializer(many=True)
+    # chicos = serializers.SlugRelatedField(many=True,read_only=True,slug_field='chicos')
+    class Meta:
+        model = Institucion
+        fields = ['chicos']
