@@ -184,3 +184,17 @@ class RechazarTransferencia(generics.UpdateAPIView):
             institucion = Institucion.objects.get(usuario=user)
             queryset = DonacionMonetaria.objects.filter(cod_estado = 3).filter(institucion=institucion)
         return queryset
+
+
+class DonacionesDonanteList(generics.ListAPIView):
+    """Lista todas las donaciones realizadas por un Donante"""
+    serializer_class = DonacionesGeneralesDonanteSeralizer
+    permission_classes = [IsDonantePermission|IsAdminUser]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=1).exists():
+            donante = Donante.objects.get(usuario=user)
+            queryset = DonacionBienes.objects.filter(donante=donante)
+        return queryset
+    

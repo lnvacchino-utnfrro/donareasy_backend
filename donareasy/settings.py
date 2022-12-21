@@ -25,6 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-@yvzqm^ln_ebz$sv=cnh*^5w@=f^e6_b$nnu$(m7-vtm8pf4fx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = True
 DEBUG = config("DEBUG", default="False")
 
 ALLOWED_HOSTS = []
@@ -125,6 +126,11 @@ WSGI_APPLICATION = 'donareasy.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'donareasy',
+        # 'USER': 'root',
+        # 'PASSWORD': 'admin',
+        # 'HOST': 'localhost',
+        # 'PORT': '3306',
         'NAME': config('MYSQL_DATABASE', default='donareasy'),
         'USER': config('MYSQL_USER', default="donareasy"),
         'PASSWORD': config('MYSQL_PASSWORD', default='admin'),

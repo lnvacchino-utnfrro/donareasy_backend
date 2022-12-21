@@ -33,5 +33,9 @@ urlpatterns = [
         views.AceptaSolicitud.as_view(),
         name='acepta_solicitud'),
 
+        #* Listado de chicos pertenecientes a una institucion en particular
+        path('institucion/<int:pk>/chicos/',
+        views.ChicosInstitucionList.as_view(),
+        name='chicos_institucion'),
 
 ]
