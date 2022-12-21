@@ -139,7 +139,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -199,7 +198,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'donareasy'
 EMAIL_HOST_PASSWORD = 'xhkwhhrfqnupjoiw'
 
-# Si se quiere mostrar los mails por consola, comentar todo lo anterior y usar la 
+# Si se quiere mostrar los mails por consola, comentar todo lo anterior y usar la
 # siguiente línea
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -212,5 +211,5 @@ APPEND_SLASH = True
 # Ruta absoluta del sistema de archivos al directorio que contendrá los archivos
 # subidos por el usuario
 # https://docs.djangoproject.com/en/4.1/ref/settings/#media-root
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/') # 'data' is my media folder
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')  # 'data' is my media folder
 MEDIA_URL = '/media/'
