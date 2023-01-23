@@ -137,7 +137,7 @@ class DonacionMonetariaSerializer(serializers.ModelSerializer):
     def validate_institucion(self,value):
         if value is None:
             raise serializers.ValidationError("El campo institución no puede ser nulo")
-        if value.cbu is None or value.cbu <= 0:
+        if value.cbu is None or value.cbu == '':
             raise serializers.ValidationError("La institución ingresada no posee CBU")
         return value
 
