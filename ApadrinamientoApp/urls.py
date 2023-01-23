@@ -34,6 +34,11 @@ urlpatterns = [
         name='acepta_solicitud'),
 
         #* Listado de chicos pertenecientes a una institucion en particular
+        path('solicitud/chicos/',
+        views.ChicosList.as_view(),
+        name='chicos_list'),
+
+        #* Listado de chicos pertenecientes a una institucion en particular
         path('institucion/<int:pk>/chicos/',
         views.ChicosInstitucionList.as_view(),
         name='chicos_institucion'),

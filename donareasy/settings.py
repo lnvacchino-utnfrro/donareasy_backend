@@ -63,13 +63,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True  
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-]
-
 ROOT_URLCONF = 'donareasy.urls'
 
 TEMPLATES = [
@@ -157,7 +150,25 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#### CONFIGURACIÓN DE CORS ####
+# configurar CORS_ALLOW_ALL_ORIGIN para Truepermitir que cualquier origen
+# realice solicitudes
+CORS_ALLOW_ALL_ORIGINS = True
+# La configuración CORS_ALLOW_CREDENTIALS para Truepermitir que se envíen
+# cookies junto con solicitudes de origen cruzado.
+CORS_ALLOW_CREDENTIALS = True
+# configurar CORS_ALLOW_ALL_ORIGIN para Truepermitir que cualquier origen
+# realice solicitudes
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
+# https://testdriven.io/blog/django-spa-auth/
+# # CORS_EXPOSE_HEADERSes una lista de encabezados HTTP que están expuestos al
+# # navegador.
+# CORS_EXPOSE_HEADERS = ['Content-Type','X-CSRFToken']
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -213,3 +224,15 @@ APPEND_SLASH = True
 # https://docs.djangoproject.com/en/4.1/ref/settings/#media-root
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')  # 'data' is my media folder
 MEDIA_URL = '/media/'
+
+# # https://testdriven.io/blog/django-spa-auth/
+# # La configuración CSRF_COOKIE_SAMESITEy SESSION_COOKIE_SAMESITEpara Laxnos 
+# # permite enviar cookies CSRF en solicitudes externas.
+# CSRF_COOKIE_SAMESITE = 'Lax'
+# SESSION_COOKIE_SAMESITE = 'Lax'
+
+# # https://testdriven.io/blog/django-spa-auth/
+# # Habilitar CSRF_COOKIE_HTTPONLYy SESSION_COOKIE_HTTPONLYbloquear JavaScript
+# # del lado del cliente para que no acceda a las cookies CSRF y de sesión.
+# CSRF_COOKIE_HTTPONLY = True
+# SESSION_COOKIE_HTTPONLY = True
