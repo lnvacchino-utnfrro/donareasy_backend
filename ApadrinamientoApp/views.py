@@ -12,22 +12,28 @@ from baseApp.models import *
 from baseApp.permissions import IsInstitucionPermission, IsDonantePermission
 from ApadrinamientoApp.serializers import *
 
+from donareasy.utils import CsrfExemptSessionAuthentication
+from rest_framework.authentication import BasicAuthentication 
+
 # Create your views here.
 
 class ChicosCreate(generics.CreateAPIView):
     """Doy de alta un nuevo chico/a dentro de la institución"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = ChicosCreateSerializer
     queryset = Chicos.objects.all()
     permission_classes = [IsInstitucionPermission|IsAdminUser]
 
 class SolicitudCreate(generics.CreateAPIView):
     """Doy de alta una nueva solicitud de apadrinamiento"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = SolicitudCreateSerializer
     queryset = SolicitudApadrinamiento.objects.all()
     permission_classes = [IsDonantePermission|IsAdminUser]
 
 class SolicitudList(generics.ListAPIView):
     """Muestra listado de solicitudes a la institución logueada"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = SolicitudListSerializer
     #queryset = SolicitudApadrinamiento.objects.filter(cod_estado = 1)
     permission_classes = [IsInstitucionPermission|IsAdminUser]
@@ -42,12 +48,14 @@ class SolicitudList(generics.ListAPIView):
 
 class EligeSolicitud(generics.RetrieveAPIView): 
     """Hace como una pre-visualización para luego presionar "continuar" y aceptar la solicitud o cancelarla"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = EligeSolicitudSerializer
     queryset = SolicitudApadrinamiento.objects.filter(cod_estado = 1)
     permission_classes = [IsInstitucionPermission|IsAdminUser]
     
 class AceptaSolicitud(generics.UpdateAPIView): 
     """Aceptación o rechazo de la solicitud enviada"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = AceptaSolicitudSerializer
     #queryset = SolicitudApadrinamiento.objects.all()
     permission_classes = [IsInstitucionPermission|IsAdminUser]
@@ -62,12 +70,14 @@ class AceptaSolicitud(generics.UpdateAPIView):
 
 class ChicosList(generics.ListAPIView):
     """Listado de Chicos asociados a la intitución pasada como parámetro en la URL"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = ChicosSerializer
     # permission_classes = ALL
     queryset = Chicos.objects.all()
 
 class ChicosInstitucionList(generics.RetrieveAPIView):
     """Listado de Chicos asociados a la intitución pasada como parámetro en la URL"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = ChicosInstitucionSerializer
     # permission_classes = ALL
     queryset = Institucion.objects.all()
