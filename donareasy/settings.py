@@ -156,14 +156,15 @@ AUTH_PASSWORD_VALIDATORS = [
 CORS_ALLOW_ALL_ORIGINS = True
 # La configuración CORS_ALLOW_CREDENTIALS para Truepermitir que se envíen
 # cookies junto con solicitudes de origen cruzado.
-CORS_ALLOW_CREDENTIALS = True
+#!CORS_ALLOW_CREDENTIALS = True
 # configurar CORS_ALLOW_ALL_ORIGIN para Truepermitir que cualquier origen
 # realice solicitudes
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-]
+#!CORS_ORIGIN_ALLOW_ALL = True
+
+#!CORS_ALLOWED_ORIGINS = [
+  #!  'http://localhost:3000',
+    #!'http://127.0.0.1:3000',
+#!]
 # https://testdriven.io/blog/django-spa-auth/
 # # CORS_EXPOSE_HEADERSes una lista de encabezados HTTP que están expuestos al
 # # navegador.
