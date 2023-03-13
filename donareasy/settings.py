@@ -156,7 +156,7 @@ AUTH_PASSWORD_VALIDATORS = [
 CORS_ALLOW_ALL_ORIGINS = True
 # La configuración CORS_ALLOW_CREDENTIALS para Truepermitir que se envíen
 # cookies junto con solicitudes de origen cruzado.
-#!CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 # configurar CORS_ALLOW_ALL_ORIGIN para Truepermitir que cualquier origen
 # realice solicitudes
 #!CORS_ORIGIN_ALLOW_ALL = True
