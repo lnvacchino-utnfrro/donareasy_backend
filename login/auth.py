@@ -26,6 +26,9 @@ from login.serializers import CodigoRecuperacionSerializer, EmailSerializer, \
 from login.models import CodigoRecuperacion
 from baseApp.models import Donante, Institucion, Cadete
 
+from donareasy.utils import CsrfExemptSessionAuthentication
+from rest_framework.authentication import BasicAuthentication 
+
 # pylint: disable:no-member
 
 def obtenerDatosUsuario(user):
@@ -72,6 +75,7 @@ class Login(APIView):
     Ingreso de un usuario al sistema. Al recibir el usuario y contraseña, 
     se devuelven los datos del usuario y el token.
     """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = UserAuthSerializer
 
     @swagger_auto_schema(
@@ -126,6 +130,8 @@ class Login(APIView):
 
 class Logout(APIView):
     """Cierre de sesión de un usuario del sistema."""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
     @swagger_auto_schema(
         request_body=no_body,
         operation_summary='Logout',
@@ -155,6 +161,7 @@ class GenerarCodigoRecuperacionContrasenia(APIView):
     recepción de un correo electrónico de un usuario activo del sistema
     """
     serializer_class = EmailSerializer
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     @swagger_auto_schema(
         request_body=EmailSerializer,
@@ -245,6 +252,7 @@ class ValidarCodigoRecuperacionContrasenia(APIView):
     Ingreso de Código de Recuperación para validar la identificación del usuario
     que ha solicitado la recuperación de la contraseña.
     """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = CodigoSerializer
 
     user_response = openapi.Response('Usuario',UserSerializer)
@@ -300,6 +308,7 @@ class RecuperacionContrasenia(APIView):
     Registro de la nueva contraseña a partir de la utilización del Código de
     Recuperación.
     """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = RecuperacionContraseniaSerializer
 
     @swagger_auto_schema(
@@ -328,7 +337,8 @@ class RecuperacionContrasenia(APIView):
 class CambioContrasenia(APIView):
     """Cambio de contraseña"""
     serializer_class = CambioContraseniaSerializer
-
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    
     @swagger_auto_schema(
         request_body=CambioContraseniaSerializer,
         operation_summary='Cambio de Contraseña',

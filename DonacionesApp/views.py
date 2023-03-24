@@ -1,9 +1,11 @@
 
+from rest_framework.authentication import BasicAuthentication 
 from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
 
 from DonacionesApp.serializers import *
 from DonacionesApp.models import Donacion, DonacionBienes, DonacionMonetaria, Bien
+from donareasy.utils import CsrfExemptSessionAuthentication
 
 from baseApp.models import Donante, Institucion
 from baseApp.serializers import InstitucionSerializer
@@ -16,6 +18,7 @@ class InstitucionesList(generics.ListAPIView):
     Se devuelven todas las instituciones que existen para elegir uno para la
     donación a realizar
     """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     queryset = Institucion.objects.all()
     serializer_class = InstitucionSerializer
     permission_classes = [IsDonantePermission|IsAdminUser]
@@ -27,6 +30,7 @@ class DonacionBienesCreate(generics.CreateAPIView):
     por el donante en la página anterior.
     En el campo 'institucion' se debe indicar el id de la institución seleccionada.
     """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     queryset = DonacionBienes.objects.all()
     serializer_class = DonacionBienesSerializer
     permission_classes = [IsDonantePermission|IsAdminUser]
@@ -34,18 +38,21 @@ class DonacionBienesCreate(generics.CreateAPIView):
 
 class DonacionBienesDetail(generics.RetrieveUpdateDestroyAPIView):
     """docstring"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     queryset = DonacionBienes.objects.all()
     serializer_class = DonacionBienesSerializer
 
 
 class BienesList(generics.RetrieveAPIView):
     """docstring"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     queryset = Bien.objects.all()
     serializer_class = BienesSerializer
 
 
 class DonacionDetail(generics.RetrieveAPIView):
     """docstring"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     # serializer_class = ActualizarEstadoDonacionSerializer
     serializer_class = DonacionesSerializer
     permission_classes = [IsInstitucionPermission|IsAdminUser]
@@ -64,6 +71,7 @@ class DonacionDetail(generics.RetrieveAPIView):
 
 class AceptarDonacion(generics.UpdateAPIView):
     """Actualizar el estado de la donación como aceptado"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = AceptarDonacionSerializer
     permission_classes = [IsInstitucionPermission|IsAdminUser]
 
@@ -77,6 +85,7 @@ class AceptarDonacion(generics.UpdateAPIView):
 
 class AceptarTransferencia(generics.UpdateAPIView):
     """Actualizar el estado de la donación como aceptado"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = AceptarTransferenciaSerializer
     permission_classes = [IsInstitucionPermission|IsAdminUser]
 
@@ -90,6 +99,7 @@ class AceptarTransferencia(generics.UpdateAPIView):
 
 class RechazarDonacion(generics.UpdateAPIView):
     """Actualizar el estado de la donación como aceptado"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = RechazarDonacionSerializer
     permission_classes = [IsInstitucionPermission|IsAdminUser]
 
@@ -103,6 +113,7 @@ class RechazarDonacion(generics.UpdateAPIView):
 
 class TodasDonacionesList(generics.ListAPIView):
     """Me traigo las donaciones que tienen estado 'creadas' o 'aceptadas'"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = DonacionesSerializer
     # queryset = DonacionBienes.objects.filter(cod_estado = 1) #or DonacionBienes.objects.filter(cod_estado = 2)
     permission_classes = [IsInstitucionPermission|IsAdminUser]
@@ -120,6 +131,7 @@ class InstitucionesListConCBU(generics.ListAPIView):
     Se devuelven todas las instituciones que tienen registrado el CBU bancario
     para elegir uno para la donación monetario a realizar
     """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = InstitucionSerializer
     queryset = Institucion.objects.filter(cbu__isnull=False)
     permission_classes = [IsDonantePermission|IsAdminUser]
@@ -131,6 +143,7 @@ class EligeInstitucionConCBU(generics.RetrieveAPIView):
     parámetro en el GET para que el donante pueda realizar la transferencia
     bancaria a la institución
     """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = DatosBancariosInstitucion
     queryset = Institucion.objects.filter(cbu__isnull=False)
     permission_classes = [IsDonantePermission|IsAdminUser]
@@ -142,6 +155,7 @@ class DonacionMonetariaCreate(generics.CreateAPIView):
     institución elegida por el donante en la página anterior.
     En el campo 'institucion' se debe indicar el id de la institución seleccionada.
     """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     queryset = DonacionMonetaria.objects.all()
     serializer_class = DonacionMonetariaSerializer
     permission_classes = [IsDonantePermission|IsAdminUser]
@@ -149,6 +163,7 @@ class DonacionMonetariaCreate(generics.CreateAPIView):
 
 class VerDonacionMonetaria(generics.ListAPIView):
     """docstring"""   
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = VerTransferenciaSerializer
     permission_classes = [IsInstitucionPermission|IsAdminUser]
     
@@ -162,6 +177,7 @@ class VerDonacionMonetaria(generics.ListAPIView):
 
 class TransferenciaDetail(generics.RetrieveAPIView):
     """Actualizar el estado de la donación como aceptado"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = VerTransferenciaSerializer
     permission_classes = [IsInstitucionPermission|IsAdminUser]
 
@@ -175,6 +191,7 @@ class TransferenciaDetail(generics.RetrieveAPIView):
 
 class RechazarTransferencia(generics.UpdateAPIView):
     """Actualizar el estado de la donación como rechazada"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = RechazarTransferenciaSerializer
     permission_classes = [IsInstitucionPermission|IsAdminUser]
 
@@ -188,6 +205,7 @@ class RechazarTransferencia(generics.UpdateAPIView):
 
 class DonacionesDonanteList(generics.ListAPIView):
     """Lista todas las donaciones realizadas por un Donante"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = DonacionesGeneralesDonanteSeralizer
     permission_classes = [IsDonantePermission|IsAdminUser]
 

@@ -14,12 +14,15 @@ from baseApp.serializers import DonanteSerializer, InstitucionSerializer
 from baseApp.permissions import IsInstitucionPermission, IsDonantePermission, IsCadetePermission
 from Recoleccion.serializers import *
 
+from donareasy.utils import CsrfExemptSessionAuthentication
+from rest_framework.authentication import BasicAuthentication 
 
 class DonacionesSinRecoleccionList(generics.ListAPIView):
     """
     Me traigo las donaciones que tienen estado "aceptadas" y que no
     tienen asociada niguna recolección previamente creada por algún cadete
     """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = DonacionesSerializer
     queryset = DonacionBienes.objects.filter(cod_estado = 2).filter(recoleccion__isnull=True)
     permission_classes = [IsCadetePermission|IsAdminUser]
@@ -27,6 +30,7 @@ class DonacionesSinRecoleccionList(generics.ListAPIView):
 
 class RecoleccionesCreate(generics.CreateAPIView):
     """docstring"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = RecoleccionesCreateSerializer
     queryset = Recoleccion.objects.all()
     permission_classes = [IsCadetePermission|IsAdminUser]
@@ -34,6 +38,7 @@ class RecoleccionesCreate(generics.CreateAPIView):
 
 class RecoleccionList(generics.ListAPIView):
     """APIView para listar las recolecciones creadas"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     #queryset = Recoleccion.objects.all()
     serializer_class = RecoleccionSerializer
     permission_classes = [IsCadetePermission|IsAdminUser]
@@ -49,6 +54,7 @@ class RecoleccionList(generics.ListAPIView):
 
 class RecoleccionDetail(generics.RetrieveUpdateDestroyAPIView):
     """APIView para recuperar, actualizar y destruir una instancia de la clase Recoleccion"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     #queryset = Recoleccion.objects.all()
     serializer_class = RecoleccionSerializer
     permission_classes = [IsCadetePermission|IsAdminUser]
@@ -62,6 +68,7 @@ class RecoleccionDetail(generics.RetrieveUpdateDestroyAPIView):
 #Actualizo el estado de la recolección a 2 cuando la quiero comenzar a realizar
 class RecoleccionComenzarUpdate(generics.UpdateAPIView):
     """Actualizo el estado de la recolección a 2 cuando la quiero comenzar a realizar y generar la ruta"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = RecoleccionComenzarSerializer
     permission_classes = [IsCadetePermission|IsAdminUser]
     def get_queryset(self):
@@ -73,6 +80,8 @@ class RecoleccionComenzarUpdate(generics.UpdateAPIView):
 
 class GenerarRutaRecoleccion(APIView):
     """docstring"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
     def get(self,request,pk_recoleccion):
         """docstring"""
         # Busco la Recolección según el código ingresado. Si no existe, retorno error
@@ -107,9 +116,11 @@ class GenerarRutaRecoleccion(APIView):
 #Esta vista sirve para ver el detalle de la donación dentro de una recolección para luego cambiar el estado
 class RecoleccionDonacionDetail(generics.RetrieveAPIView): #mixins.ListModelMixin,viewsets.GenericViewSet):
     """docstring"""   
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = RecoleccionDonacionDetailSerializer
     #queryset = DonacionBienes.objects.all()
     permission_classes = [IsCadetePermission|IsAdminUser]
+
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(pk=3).exists():
@@ -120,8 +131,10 @@ class RecoleccionDonacionDetail(generics.RetrieveAPIView): #mixins.ListModelMixi
 
 class ActualizaRecogerDonacion(generics.UpdateAPIView):
     """docstring"""   
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = RecogerDonacionSerializer
     permission_classes = [IsCadetePermission|IsAdminUser]
+
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(pk=3).exists():
@@ -132,8 +145,10 @@ class ActualizaRecogerDonacion(generics.UpdateAPIView):
 
 class ActualizaRechazarDonacion(generics.UpdateAPIView):
     """docstring"""   
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = RechazarDonacionSerializer
     permission_classes = [IsCadetePermission|IsAdminUser]
+
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(pk=3).exists():
@@ -144,8 +159,10 @@ class ActualizaRechazarDonacion(generics.UpdateAPIView):
         
 
 class RecoleccionList2(generics.ListAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = RecoleccionListSerializer
     permission_classes = [IsCadetePermission|IsAdminUser]
+
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(pk=3).exists():
@@ -155,8 +172,10 @@ class RecoleccionList2(generics.ListAPIView):
 
 
 class EstadoRecoleccionFinalizadaUpdate(generics.UpdateAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = FinalizaRecoleccionSerializer
     permission_classes = [IsCadetePermission|IsAdminUser]
+
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(pk=3).exists():
@@ -166,8 +185,10 @@ class EstadoRecoleccionFinalizadaUpdate(generics.UpdateAPIView):
 
 
 class EstadoRecoleccionNoFinalizadaUpdate(generics.UpdateAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = NoFinalizaRecoleccionSerializer
     permission_classes = [IsCadetePermission|IsAdminUser]
+    
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(pk=3).exists():
