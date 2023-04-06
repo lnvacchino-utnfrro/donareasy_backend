@@ -21,7 +21,7 @@ class InstitucionesList(generics.ListAPIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     queryset = Institucion.objects.all()
     serializer_class = InstitucionSerializer
-    permission_classes = [IsDonantePermission|IsAdminUser]
+    # # permission_classes = [IsDonantePermission|IsAdminUser]
 
 
 class DonacionBienesCreate(generics.CreateAPIView):
@@ -33,7 +33,7 @@ class DonacionBienesCreate(generics.CreateAPIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     queryset = DonacionBienes.objects.all()
     serializer_class = DonacionBienesSerializer
-    permission_classes = [IsDonantePermission|IsAdminUser]
+    # permission_classes = [IsDonantePermission|IsAdminUser]
 
 
 class DonacionBienesDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -55,7 +55,7 @@ class DonacionDetail(generics.RetrieveAPIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     # serializer_class = ActualizarEstadoDonacionSerializer
     serializer_class = DonacionesSerializer
-    permission_classes = [IsInstitucionPermission|IsAdminUser]
+    # permission_classes = [IsInstitucionPermission|IsAdminUser]
     # def retrieve(self,request):
     #     queryset = self.get_object()
     #     serializer = DonacionBienesSerializer(queryset)
@@ -73,7 +73,7 @@ class AceptarDonacion(generics.UpdateAPIView):
     """Actualizar el estado de la donación como aceptado"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = AceptarDonacionSerializer
-    permission_classes = [IsInstitucionPermission|IsAdminUser]
+    # permission_classes = [IsInstitucionPermission|IsAdminUser]
 
     def get_queryset(self):
         user = self.request.user
@@ -87,7 +87,7 @@ class AceptarTransferencia(generics.UpdateAPIView):
     """Actualizar el estado de la donación como aceptado"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = AceptarTransferenciaSerializer
-    permission_classes = [IsInstitucionPermission|IsAdminUser]
+    # permission_classes = [IsInstitucionPermission|IsAdminUser]
 
     def get_queryset(self):
         user = self.request.user
@@ -101,7 +101,7 @@ class RechazarDonacion(generics.UpdateAPIView):
     """Actualizar el estado de la donación como aceptado"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = RechazarDonacionSerializer
-    permission_classes = [IsInstitucionPermission|IsAdminUser]
+    # permission_classes = [IsInstitucionPermission|IsAdminUser]
 
     def get_queryset(self):
         user = self.request.user
@@ -116,7 +116,7 @@ class TodasDonacionesList(generics.ListAPIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = DonacionesSerializer
     # queryset = DonacionBienes.objects.filter(cod_estado = 1) #or DonacionBienes.objects.filter(cod_estado = 2)
-    permission_classes = [IsInstitucionPermission|IsAdminUser]
+    # permission_classes = [IsInstitucionPermission|IsAdminUser]
 
     def get_queryset(self):
         user = self.request.user
@@ -134,7 +134,7 @@ class InstitucionesListConCBU(generics.ListAPIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = InstitucionSerializer
     queryset = Institucion.objects.filter(cbu__isnull=False)
-    permission_classes = [IsDonantePermission|IsAdminUser]
+    # permission_classes = [IsDonantePermission|IsAdminUser]
 
 
 class EligeInstitucionConCBU(generics.RetrieveAPIView):
@@ -146,7 +146,7 @@ class EligeInstitucionConCBU(generics.RetrieveAPIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = DatosBancariosInstitucion
     queryset = Institucion.objects.filter(cbu__isnull=False)
-    permission_classes = [IsDonantePermission|IsAdminUser]
+    # permission_classes = [IsDonantePermission|IsAdminUser]
 
 
 class DonacionMonetariaCreate(generics.CreateAPIView):
@@ -158,14 +158,14 @@ class DonacionMonetariaCreate(generics.CreateAPIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     queryset = DonacionMonetaria.objects.all()
     serializer_class = DonacionMonetariaSerializer
-    permission_classes = [IsDonantePermission|IsAdminUser]
+    # permission_classes = [IsDonantePermission|IsAdminUser]
 
 
 class VerDonacionMonetaria(generics.ListAPIView):
     """docstring"""   
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = VerTransferenciaSerializer
-    permission_classes = [IsInstitucionPermission|IsAdminUser]
+    # permission_classes = [IsInstitucionPermission|IsAdminUser]
     
     def get_queryset(self):
         user = self.request.user
@@ -179,7 +179,7 @@ class TransferenciaDetail(generics.RetrieveAPIView):
     """Actualizar el estado de la donación como aceptado"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = VerTransferenciaSerializer
-    permission_classes = [IsInstitucionPermission|IsAdminUser]
+    # permission_classes = [IsInstitucionPermission|IsAdminUser]
 
     def get_queryset(self):
         user = self.request.user
@@ -193,7 +193,7 @@ class RechazarTransferencia(generics.UpdateAPIView):
     """Actualizar el estado de la donación como rechazada"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = RechazarTransferenciaSerializer
-    permission_classes = [IsInstitucionPermission|IsAdminUser]
+    # permission_classes = [IsInstitucionPermission|IsAdminUser]
 
     def get_queryset(self):
         user = self.request.user
@@ -207,7 +207,7 @@ class DonacionesDonanteList(generics.ListAPIView):
     """Lista todas las donaciones realizadas por un Donante"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = DonacionesGeneralesDonanteSeralizer
-    permission_classes = [IsDonantePermission|IsAdminUser]
+    # permission_classes = [IsDonantePermission|IsAdminUser]
 
     def get_queryset(self):
         user = self.request.user
