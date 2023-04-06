@@ -73,14 +73,12 @@ class AceptarDonacion(generics.UpdateAPIView):
     """Actualizar el estado de la donación como aceptado"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = AceptarDonacionSerializer
-    # permission_classes = [IsInstitucionPermission|IsAdminUser]
+    permission_classes = [IsInstitucionPermission|IsAdminUser]
 
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(pk=2).exists():
-            institucion = Institucion.objects.get(usuario=user)
-            queryset = DonacionBienes.objects.filter(cod_estado = 1).filter(institucion=institucion)
-        return queryset
+            return DonacionBienes.objects.filter(cod_estado=1).filter(institucion=user.usuario_institucion)
 
 
 class AceptarTransferencia(generics.UpdateAPIView):
