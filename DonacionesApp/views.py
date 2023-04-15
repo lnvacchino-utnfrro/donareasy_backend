@@ -210,6 +210,7 @@ class DonacionesDonanteList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(pk=1).exists():
-            donante = Donante.objects.get(usuario=user)
-            queryset = Donacion.objects.filter(donante=donante)
+            queryset = DonacionBienes.objects.filter(donante=user.usuario_donante)
+        elif user.groups.filter(pk=2).exists():
+            queryset = DonacionBienes.objects.filter(institucion=user.usuario_institucion)
         return queryset

@@ -200,7 +200,15 @@ class RechazarTransferenciaSerializer(serializers.ModelSerializer):
 
 class DonacionesGeneralesDonanteSeralizer(serializers.ModelSerializer):
     institucion = InstitucionSerializer()
+    bienes = BienesSerializer(many=True)
+    donante = DonanteSerializer()
 
     class Meta:
-        model = Donacion
-        exclude = ['donante']
+        model = DonacionBienes #Donacion
+        #exclude = ['donante']
+        fields = '__all__'
+
+
+
+
+
