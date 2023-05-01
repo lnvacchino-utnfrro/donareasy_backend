@@ -164,10 +164,11 @@ class DatosBancariosInstitucion(serializers.ModelSerializer):
 
 class VerTransferenciaSerializer(serializers.ModelSerializer):
     donante = DonanteSerializer()
+    institucion = InstitucionSerializer()
     
     class Meta:
         model = DonacionMonetaria
-        fields = ['id','donante','cod_estado','monto','fecha_transferencia']
+        fields = ['id','donante','institucion','cod_estado','monto','fecha_transferencia']
 
 
 class AceptarTransferenciaSerializer(serializers.ModelSerializer):

@@ -154,6 +154,8 @@ class VerDonacionMonetaria(generics.ListAPIView):
     
     def get_queryset(self):
         user = self.request.user
+        if user.groups.filter(pk=1).exists(): #institucion = Institucion.objects.get(usuario=user)
+            return DonacionMonetaria.objects.filter(donante=user.usuario_donante)#.filter(cod_estado = 3)
         if user.groups.filter(pk=2).exists(): #institucion = Institucion.objects.get(usuario=user)
             return DonacionMonetaria.objects.filter(institucion=user.usuario_institucion)#.filter(cod_estado = 3)
         #return queryset
