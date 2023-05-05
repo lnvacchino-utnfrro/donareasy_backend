@@ -26,6 +26,10 @@ urlpatterns = [
         views.DonacionMonetariaCreate.as_view(),
         name='donacion_monetaria'),
 
+    path('cancelarDonacion/<int:pk>/',
+        views.CancelarDonacion.as_view(),
+        name='cancelar_donacion'),
+
 # Informes
     path('listadoDonaciones/',
     views.DonacionesDonanteList.as_view(),

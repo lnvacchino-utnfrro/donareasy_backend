@@ -210,6 +210,15 @@ class DonacionesGeneralesDonanteSeralizer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CancelarDonacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Donacion
+        fields = []
 
-
-
+    def update(self,donacion,validated_data):
+        donacion.cod_estado = 0
+        donacion.fecha_cancelacion = datetime.now()
+        donacion.fecha_aceptacion = None
+        donacion.motivo_cancelacion = 'Cancelación por parte del usuario'          
+        donacion.save()
+        return donacion
