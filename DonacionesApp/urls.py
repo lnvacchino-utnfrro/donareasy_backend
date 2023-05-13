@@ -30,6 +30,10 @@ urlpatterns = [
         views.CancelarDonacion.as_view(),
         name='cancelar_donacion'),
 
+    path('cancelarTransferencia/<int:pk>/',
+        views.CancelarTransferencia.as_view(),
+        name='cancelar_transferencia'),
+
 # Informes
     path('listadoDonaciones/',
     views.DonacionesDonanteList.as_view(),

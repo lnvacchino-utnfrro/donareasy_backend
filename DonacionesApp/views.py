@@ -224,7 +224,17 @@ class CancelarDonacion(generics.UpdateAPIView):
         if user.groups.filter(pk=1).exists():
             donante = Donante.objects.get(usuario=user)
             queryset = Donacion.objects.filter(cod_estado=1).filter(donante=donante)
-            queryset2 = Donacion.objects.filter(cod_estado=3).filter(donante=donante)
-            queryset.union(queryset2)
         return queryset
 
+class CancelarTransferencia(generics.UpdateAPIView):
+    """Actualizar el estado de la donación como cancelada"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    serializer_class = CancelarDonacionSerializer
+    # permission_classes = [IsInstitucionPermission|IsAdminUser]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=1).exists():
+            donante = Donante.objects.get(usuario=user)
+            queryset = Donacion.objects.filter(cod_estado=3).filter(donante=donante)
+        return queryset
