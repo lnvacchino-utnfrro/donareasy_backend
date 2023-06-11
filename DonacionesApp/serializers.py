@@ -253,7 +253,7 @@ class ModificarNecesidadSerializer(serializers.ModelSerializer):
         model = Necesidad
         fields = ['cantidad','descripcion','fecha_vigencia']
 
-class NecesidadSerializer(serializers.ModelSerializer):
+class ListaNecesidadSerializer(serializers.ModelSerializer):
 
     #institucion = InstitucionSerializer()
     #institucion = serializers.PrimaryKeyRelatedField(queryset=Institucion.objects.all(),read_only=False)

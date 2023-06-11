@@ -266,7 +266,7 @@ class NecesidadUpdate(generics.UpdateAPIView):
 class NecesidadesList(generics.ListAPIView):
     """Lista todas las donaciones realizadas por un Donante"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    serializer_class = NecesidadSerializer
+    serializer_class = ListaNecesidadSerializer
     # permission_classes = [IsDonantePermission|IsAdminUser]
 
     def get_queryset(self):
