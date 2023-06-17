@@ -238,3 +238,41 @@ class CancelarTransferencia(generics.UpdateAPIView):
             donante = Donante.objects.get(usuario=user)
             queryset = Donacion.objects.filter(cod_estado=3).filter(donante=donante)
         return queryset
+
+#? Necesidades en desarrollo
+
+class NecesidadCreate(generics.CreateAPIView):
+    """
+    Creacion de necesidades para la institucion
+    """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    queryset = Necesidad.objects.all()
+    serializer_class = NecesidadSerializer
+    # permission_classes = [IsDonantePermission|IsAdminUser]
+
+class NecesidadUpdate(generics.UpdateAPIView):
+    """
+    Actualizacion de necesidades para la institucion
+    """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    queryset = Necesidad.objects.all()
+    serializer_class = ModificarNecesidadSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=2).exists():
+            return Necesidad.objects.filter(institucion=user.usuario_institucion)
+        
+class NecesidadesList(generics.ListAPIView):
+    """Lista todas las donaciones realizadas por un Donante"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    serializer_class = ListaNecesidadSerializer
+    # permission_classes = [IsDonantePermission|IsAdminUser]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=1).exists():
+            queryset = Necesidad.objects.all()
+        elif user.groups.filter(pk=2).exists():
+            queryset = Necesidad.objects.filter(institucion=user.usuario_institucion)
+        return queryset

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from DonacionesApp.models import DonacionBienes, Bien, DonacionMonetaria, Donacion
+from DonacionesApp.models import DonacionBienes, Bien, DonacionMonetaria, Donacion, Necesidad
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
 from baseApp.models import Donante, Institucion
 from datetime import datetime,date
@@ -222,3 +222,42 @@ class CancelarDonacionSerializer(serializers.ModelSerializer):
         donacion.motivo_cancelacion = 'Cancelación por parte del usuario'          
         donacion.save()
         return donacion
+    
+
+class NecesidadSerializer(serializers.ModelSerializer):
+
+    #institucion = InstitucionSerializer()
+    #institucion = serializers.PrimaryKeyRelatedField(queryset=Institucion.objects.all(),read_only=False)
+
+    class Meta:
+        model = Necesidad
+        exclude = ['institucion','fecha_baja','fecha_alta']
+
+    def create(self,validated_data):
+        usuario = self.context['request'].user
+        necesidad = Necesidad.objects.create(
+            tipo = validated_data['tipo'],
+            cantidad = validated_data['cantidad'],
+            titulo = validated_data['titulo'],
+            descripcion = validated_data['descripcion'],
+            fecha_baja = None,
+            fecha_vigencia = validated_data['fecha_vigencia'],
+            institucion = Institucion.objects.get(usuario = usuario),
+            fecha_alta = datetime.now()
+        )
+        return necesidad
+
+class ModificarNecesidadSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Necesidad
+        fields = ['cantidad','descripcion','fecha_vigencia']
+
+class ListaNecesidadSerializer(serializers.ModelSerializer):
+
+    #institucion = InstitucionSerializer()
+    #institucion = serializers.PrimaryKeyRelatedField(queryset=Institucion.objects.all(),read_only=False)
+
+    class Meta:
+        model = Necesidad
+        fields = '__all__'

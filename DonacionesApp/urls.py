@@ -71,6 +71,20 @@ urlpatterns = [
     path('transferenciasPendientes/<int:pk>/rechazar/',
         views.RechazarTransferencia.as_view(),
         name='rechazar_donacion'),
+
+## Necesidades de las instituciones
+
+    path('crearNecesidad/',
+         views.NecesidadCreate.as_view(),
+         name='crear_necesidad'),
+
+    path('modificarNecesidad/<int:pk>/',
+         views.NecesidadUpdate.as_view(),
+         name='modificar_necesidad'),
+
+    path('necesidades/',
+         views.NecesidadesList.as_view(),
+         name='necesidades'),
 ]
 
 # urlpatterns = format_suffix_patterns(urlpatterns)
