@@ -272,7 +272,7 @@ class NecesidadesList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(pk=1).exists():
-            queryset = Necesidad.objects.filter(donante=user.usuario_donante)
+            queryset = Necesidad.objects.all()
         elif user.groups.filter(pk=2).exists():
             queryset = Necesidad.objects.filter(institucion=user.usuario_institucion)
         return queryset
