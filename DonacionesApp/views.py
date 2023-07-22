@@ -250,7 +250,7 @@ class NecesidadCreate(generics.CreateAPIView):
     serializer_class = NecesidadSerializer
     # permission_classes = [IsDonantePermission|IsAdminUser]
 
-class NecesidadUpdate(generics.UpdateAPIView):
+class NecesidadUpdate(generics.RetrieveUpdateDestroyAPIView):
     """
     Actualizacion de necesidades para la institucion
     """
@@ -263,6 +263,7 @@ class NecesidadUpdate(generics.UpdateAPIView):
         if user.groups.filter(pk=2).exists():
             return Necesidad.objects.filter(institucion=user.usuario_institucion)
         
+
 class NecesidadesList(generics.ListAPIView):
     """Lista todas las donaciones realizadas por un Donante"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
@@ -272,7 +273,7 @@ class NecesidadesList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(pk=1).exists():
-            queryset = Necesidad.objects.all()
+            queryset = Necesidad.objects.filter(isDelete=False)
         elif user.groups.filter(pk=2).exists():
-            queryset = Necesidad.objects.filter(institucion=user.usuario_institucion)
+            queryset = Necesidad.objects.filter(institucion=user.usuario_institucion).filter(isDelete=False)
         return queryset

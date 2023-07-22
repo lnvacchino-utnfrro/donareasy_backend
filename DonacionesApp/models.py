@@ -152,14 +152,18 @@ class Necesidad(models.Model):
                         )
     # puede ser tipo alimentos, utiles, prendas u otros.
     titulo = models.CharField(blank=True,
+                              null=True,
                               max_length=100,
                               verbose_name='titulo')
     descripcion = models.CharField(blank=True,
+                                   null=True,
                                    max_length=500,
                                    verbose_name='descripcion')
     cantidad = models.IntegerField(blank=True,
+                                   null=True,
                                    verbose_name='cantidad')
     fecha_alta = models.DateTimeField(blank=True,
+                                    null=True,
                                     verbose_name='fecha_alta')
     fecha_vigencia = models.DateTimeField(blank=True,
                                     verbose_name='fecha_vigencia',
@@ -172,6 +176,16 @@ class Necesidad(models.Model):
                                 null=True,
                                 related_name='necesidad'
                                 )
+    isDelete = models.BooleanField(blank=True,
+                                null=True,
+                                verbose_name='isDelete',
+                                default=False)
+
+    def delete(self, using=None, keep_parents=False):
+        """docstring"""
+        self.isDelete = True
+        self.save()
+
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
         ordering = ['fecha_alta']

@@ -222,7 +222,7 @@ class CancelarDonacionSerializer(serializers.ModelSerializer):
         donacion.motivo_cancelacion = 'Cancelación por parte del usuario'          
         donacion.save()
         return donacion
-    
+
 
 class NecesidadSerializer(serializers.ModelSerializer):
 
@@ -231,7 +231,7 @@ class NecesidadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Necesidad
-        exclude = ['institucion','fecha_baja','fecha_alta']
+        exclude = ['institucion','fecha_baja','fecha_alta','isDelete']
 
     def create(self,validated_data):
         usuario = self.context['request'].user
