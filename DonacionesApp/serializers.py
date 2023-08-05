@@ -260,3 +260,9 @@ class ListaNecesidadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Necesidad
         exclude = ['cantidad']
+
+    # def validate_fecha_vigencia(self,value):
+    #     if value >= datetime.now():
+    #         raise serializers.ValidationError("El monto debe ser un valor mayor a 0")
+    #     return value
+    

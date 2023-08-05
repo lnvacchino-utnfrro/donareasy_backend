@@ -4,7 +4,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
 
 from DonacionesApp.serializers import *
-from DonacionesApp.models import Donacion, DonacionBienes, DonacionMonetaria, Bien
+from DonacionesApp.models import Donacion, DonacionBienes, DonacionMonetaria, Bien, Necesidad
 from donareasy.utils import CsrfExemptSessionAuthentication
 
 from baseApp.models import Donante, Institucion
@@ -273,7 +273,7 @@ class NecesidadesList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(pk=1).exists():
-            queryset = Necesidad.objects.filter(isDelete=False)
+            queryset = Necesidad.objects.filter(fecha_vigencia__gte = datetime.now()).filter(isDelete=False)
         elif user.groups.filter(pk=2).exists():
-            queryset = Necesidad.objects.filter(institucion=user.usuario_institucion).filter(isDelete=False)
+            queryset = Necesidad.objects.filter(institucion=user.usuario_institucion).filter(isDelete=False).filter(fecha_vigencia__gte = datetime.now())
         return queryset
