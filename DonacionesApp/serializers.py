@@ -231,13 +231,12 @@ class NecesidadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Necesidad
-        exclude = ['institucion','fecha_baja','fecha_alta','isDelete']
+        exclude = ['institucion','fecha_baja','fecha_alta','isDelete','cantidad']
 
     def create(self,validated_data):
         usuario = self.context['request'].user
         necesidad = Necesidad.objects.create(
             tipo = validated_data['tipo'],
-            cantidad = validated_data['cantidad'],
             titulo = validated_data['titulo'],
             descripcion = validated_data['descripcion'],
             fecha_baja = None,
@@ -251,7 +250,7 @@ class ModificarNecesidadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Necesidad
-        fields = ['cantidad','descripcion','fecha_vigencia']
+        fields = ['descripcion','fecha_vigencia']
 
 class ListaNecesidadSerializer(serializers.ModelSerializer):
 
@@ -260,4 +259,4 @@ class ListaNecesidadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Necesidad
-        fields = '__all__'
+        exclude = ['cantidad']
