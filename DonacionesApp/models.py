@@ -48,6 +48,11 @@ class Donacion(models.Model):
     cod_estado = models.SmallIntegerField(blank=True,
                                     verbose_name='cod_estado'
                                     )
+    #Se agrega campo observación para que el donante pueda decir que va a donar
+    observacion = models.CharField(blank=True,
+                                   null=True,
+                                   max_length=500,
+                                   verbose_name='observacion')
     # CODIGOS_ESTADO = [
     #     (1,'Creada'),
     #     (2,'Aceptada'),

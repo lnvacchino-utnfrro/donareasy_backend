@@ -10,7 +10,7 @@ urlpatterns = [
         views.InstitucionesList.as_view(), #Muestra la lista de instituciones para seleccionar 1 
         name='instituciones_list'),
 
-    path('eligeInstitucion/donarBienes/',
+    path('eligeInstitucion/donarBienes/', #####se agrega observación
         views.DonacionBienesCreate.as_view(),
         name='donacion_bienes'),
 
@@ -22,7 +22,7 @@ urlpatterns = [
        views.EligeInstitucionConCBU.as_view(),
        name='institucion_elegida_cbu'),
 
-    path('donarDinero/',
+    path('donarDinero/',                #####se agrega observación
         views.DonacionMonetariaCreate.as_view(),
         name='donacion_monetaria'),
 
@@ -35,16 +35,16 @@ urlpatterns = [
         name='cancelar_transferencia'),
 
 # Informes
-    path('listadoDonaciones/',
+    path('listadoDonaciones/',          #####se agrega observación
     views.DonacionesDonanteList.as_view(),
     name='listado_donaciones_realizadas'),
 
 #Usuario: Institucion
-    path('donacionesPendientes/',
+    path('donacionesPendientes/',       #####se agrega observación
         views.TodasDonacionesList.as_view(),
         name='ver_donaciones'),
 
-    path('donacionesPendientes/<int:pk>/',
+    path('donacionesPendientes/<int:pk>/', #####se agrega observación
         views.DonacionDetail.as_view(),
         name='ver_donacion'),
 
@@ -56,11 +56,11 @@ urlpatterns = [
         views.RechazarDonacion.as_view(),
         name='rechazar_donacion'),
 
-    path('transferenciasPendientes/',
+    path('transferenciasPendientes/',   #####se agrega observación
         views.VerDonacionMonetaria.as_view(),
         name='ver_transferencias'),
     
-    path('transferenciasPendientes/<int:pk>/',
+    path('transferenciasPendientes/<int:pk>/', #####se agrega observación
         views.TransferenciaDetail.as_view(),
         name='ver_transferencia'),
 

@@ -18,7 +18,7 @@ class DonacionBienesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DonacionBienes
-        fields = ['institucion','bienes']
+        fields = ['institucion','bienes','observacion']
         read_only_fields = ['cod_estado','fecha_creacion']
 
     def create(self,validated_data):
@@ -29,7 +29,8 @@ class DonacionBienesSerializer(serializers.ModelSerializer):
             donante = donante,
             institucion = validated_data['institucion'],
             cod_estado = 1,
-            fecha_creacion = datetime.now()
+            fecha_creacion = datetime.now(),
+            observacion = validated_data['observacion']
         )
         for bien_data in bienes_data:
             Bien.objects.create(donacion=donacion, **bien_data)
@@ -118,12 +119,12 @@ class DonacionesSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = DonacionBienes
-        fields = ['id','donante','cod_estado','bienes']
+        fields = ['id','donante','cod_estado','bienes','observacion']
     
 class DonacionMonetariaSerializer(serializers.ModelSerializer):
     class Meta:
         model = DonacionMonetaria
-        fields = ['institucion','monto']
+        fields = ['institucion','monto','observacion']
         read_only_fields = ['cod_estado','fecha_transferencia','fecha_creacion']
     
     def validate_monto(self,value):
@@ -151,7 +152,8 @@ class DonacionMonetariaSerializer(serializers.ModelSerializer):
              monto = validated_data['monto'],
              cod_estado = 3,
              fecha_transferencia = date.today(),
-             fecha_creacion = datetime.now()
+             fecha_creacion = datetime.now(),
+             observacion = validated_data['observacion']
             )
         return donacion
 
@@ -168,7 +170,7 @@ class VerTransferenciaSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = DonacionMonetaria
-        fields = ['id','donante','institucion','cod_estado','monto','fecha_transferencia']
+        fields = ['id','donante','institucion','cod_estado','monto','fecha_transferencia','observacion']
 
 
 class AceptarTransferenciaSerializer(serializers.ModelSerializer):
