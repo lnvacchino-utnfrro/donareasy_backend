@@ -134,8 +134,18 @@ class Institucion(models.Model):
                                    related_name='usuario_institucion',
                                    null=True)
 
+    habilitado = models.BooleanField(null=False,
+                                    verbose_name='institucion_habilitada',
+                                    default=False)
+
     def __str__(self):
         return str(self.nombre)
+
+    def get_queryset(self):
+        return super().get_queryset().filter(habilitado=True)
+
+    def instituciones_no_habilitadas(self):
+        return super().get_queryset().filter(habilitado=False)
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods

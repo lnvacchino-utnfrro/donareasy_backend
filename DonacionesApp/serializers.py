@@ -124,7 +124,7 @@ class DonacionesSerializer(serializers.ModelSerializer):
 class DonacionMonetariaSerializer(serializers.ModelSerializer):
     class Meta:
         model = DonacionMonetaria
-        fields = ['institucion','monto','observacion']
+        fields = ['institucion','monto','observacion','comprobante_transaccion']
         read_only_fields = ['cod_estado','fecha_transferencia','fecha_creacion']
     
     def validate_monto(self,value):
@@ -153,7 +153,8 @@ class DonacionMonetariaSerializer(serializers.ModelSerializer):
              cod_estado = 3,
              fecha_transferencia = date.today(),
              fecha_creacion = datetime.now(),
-             observacion = validated_data['observacion']
+             observacion = validated_data['observacion'],
+             comprobante_transaccion = validated_data['comprobante_transaccion'],
             )
         return donacion
 
@@ -170,7 +171,7 @@ class VerTransferenciaSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = DonacionMonetaria
-        fields = ['id','donante','institucion','cod_estado','monto','fecha_transferencia','observacion']
+        fields = ['id','donante','institucion','cod_estado','monto','fecha_transferencia','observacion','comprobante_transaccion']
 
 
 class AceptarTransferenciaSerializer(serializers.ModelSerializer):
@@ -268,3 +269,15 @@ class ListaNecesidadSerializer(serializers.ModelSerializer):
     #         raise serializers.ValidationError("El monto debe ser un valor mayor a 0")
     #     return value
     
+
+class EntregarDonacionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Donacion
+        fields = []
+
+    def update(self,donacion,validated_data):
+        donacion.cod_estado = 4
+        donacion.fecha_entrega_real = datetime.now()    
+        donacion.save()
+        return donacion

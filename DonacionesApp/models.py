@@ -81,6 +81,12 @@ class DonacionMonetaria(Donacion):
     fecha_transferencia = models.DateField(blank=True,
                                     verbose_name='fecha_transferencia'
                                     )
+    comprobante_transaccion = models.FileField(
+                                   blank=True,
+                                   max_length=50,
+                                   verbose_name='comprobante_transaccion',
+                                   null=True
+                                   )
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods

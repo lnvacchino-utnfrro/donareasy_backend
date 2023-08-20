@@ -277,3 +277,15 @@ class NecesidadesList(generics.ListAPIView):
         elif user.groups.filter(pk=2).exists():
             queryset = Necesidad.objects.filter(institucion=user.usuario_institucion).filter(isDelete=False).filter(fecha_vigencia__gte = datetime.now())
         return queryset
+
+
+class EntregarDonacionUpdate(generics.UpdateAPIView):
+    """Lista todas las donaciones que están aceptadas y están pendientes de entrega"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    serializer_class = EntregarDonacionSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=2).exists():
+            queryset = Donacion.objects.filter(institucion=user.usuario_institucion).filter(cod_estado=2)
+        return queryset
