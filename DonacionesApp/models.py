@@ -106,6 +106,15 @@ class DonacionBienes(Donacion):
                                 null=True,
                                 related_name='donaciones'
                                 )
+    FORMA_ENTREGA = [ #Se mira del lado del donante
+        (1,'Retirar'),
+        (2,'Envio'),
+        (3,'Contactar Institución')
+    ]
+
+    tipo = models.CharField(max_length=2,
+                            choices=FORMA_ENTREGA
+                        )
     def __str__(self):
         return str(self.donante)
     class Meta:

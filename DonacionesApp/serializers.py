@@ -18,7 +18,7 @@ class DonacionBienesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DonacionBienes
-        fields = ['institucion','bienes','observacion']
+        fields = ['institucion','bienes','observacion','tipo']
         read_only_fields = ['cod_estado','fecha_creacion']
 
     def create(self,validated_data):
@@ -30,7 +30,8 @@ class DonacionBienesSerializer(serializers.ModelSerializer):
             institucion = validated_data['institucion'],
             cod_estado = 1,
             fecha_creacion = datetime.now(),
-            observacion = validated_data['observacion']
+            observacion = validated_data['observacion'],
+            tipo = validated_data['tipo']
         )
         for bien_data in bienes_data:
             Bien.objects.create(donacion=donacion, **bien_data)
@@ -119,7 +120,7 @@ class DonacionesSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = DonacionBienes
-        fields = ['id','donante','cod_estado','bienes','observacion']
+        fields = ['id','donante','cod_estado','bienes','observacion','tipo']
     
 class DonacionMonetariaSerializer(serializers.ModelSerializer):
     class Meta:

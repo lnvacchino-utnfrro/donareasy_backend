@@ -11,7 +11,7 @@ urlpatterns = [
         views.InstitucionesList.as_view(), #Muestra la lista de instituciones para seleccionar 1 
         name='instituciones_list'),
 
-    path('eligeInstitucion/donarBienes/', #####se agrega observación
+    path('eligeInstitucion/donarBienes/', #####se agrega observación  ###! Se agrega tipo_entrega
         views.DonacionBienesCreate.as_view(),
         name='donacion_bienes'),
 
@@ -36,16 +36,16 @@ urlpatterns = [
         name='cancelar_transferencia'),
 
 # Informes
-    path('listadoDonaciones/',          #####se agrega observación
+    path('listadoDonaciones/',          #####se agrega observación ###! Se agrega tipo_entrega
     views.DonacionesDonanteList.as_view(),
     name='listado_donaciones_realizadas'),
 
 #Usuario: Institucion
-    path('donacionesPendientes/',       #####se agrega observación
+    path('donacionesPendientes/',       #####se agrega observación ###! Se agrega tipo_entrega
         views.TodasDonacionesList.as_view(),
         name='ver_donaciones'),
 
-    path('donacionesPendientes/<int:pk>/', #####se agrega observación
+    path('donacionesPendientes/<int:pk>/', #####se agrega observación ###! Se agrega tipo_entrega
         views.DonacionDetail.as_view(),
         name='ver_donacion'),
 
