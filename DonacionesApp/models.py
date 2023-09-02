@@ -72,8 +72,16 @@ class Donacion(models.Model):
         verbose_name = 'Donación'
         verbose_name_plural = 'Donaciones'
 
+    def get_donaciones_por_institucion(institucion):
+        return Donacion.objects.filter(institucion=institucion)
+
     def get_cantidad_total_donaciones(institucion):
-        return Donacion.objects.filter(institucion=institucion).count()
+        return Donacion.get_donaciones_por_institucion(institucion).count()
+
+    def get_cantidad_por_estado(institucion, cod_estado):
+        return Donacion.get_donaciones_por_institucion(institucion).filter(cod_estado=cod_estado).count()
+
+    
     
 
 class DonacionMonetaria(Donacion):
