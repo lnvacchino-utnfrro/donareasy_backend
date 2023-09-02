@@ -1,7 +1,9 @@
-
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication 
 from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
+from rest_framework import status
 
 from DonacionesApp.serializers import *
 from DonacionesApp.models import Donacion, DonacionBienes, DonacionMonetaria, Bien, Necesidad
@@ -289,3 +291,61 @@ class EntregarDonacionUpdate(generics.UpdateAPIView):
         if user.groups.filter(pk=2).exists():
             queryset = Donacion.objects.filter(institucion=user.usuario_institucion).filter(cod_estado=2)
         return queryset
+
+# class CalculoKpis(generics.ListAPIView):
+#     """ Se muestran todos los calculos de indicadores claves para presentar en un dashboard"""
+#     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+#     serializer_class = CalculoKpisSerializer
+
+#     def get_queryset(self):
+#         user = self.request.user
+#         if user.groups.filter(pk=2).exists():
+#             return Institucion.objects.filter(id=user.usuario_institucion.id)
+
+#     # def list(self, request):
+#     #     queryset = self.get_queryset()
+#     #     serializer = CalculoKpisSerializer(queryset, many=True)
+#     #     return Response(serializer.data)
+
+#     def list(self, request, *args, **kwargs):
+#         result = 153
+        
+#         kpis_serializer = CalculoKpisSerializer(cantidad_total_donaciones=15,total_donaciones_aceptadas=25,total_donaciones_rechazadas=35)
+#         if kpis_serializer.is_valid():
+#             print(kpis_serializer.data)
+#         return Response(result)
+
+
+class CalculoKpis(APIView):
+    """
+    Ingreso de un usuario al sistema. Al recibir el usuario y contraseña, 
+    se devuelven los datos del usuario y el token.
+    """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    serializer_class = CalculoKpisSerializer
+    # @swagger_auto_schema(
+    #     request_body=UserAuthSerializer,
+    #     operation_summary='Login',
+    #     responses={
+    #         200: LoginResponseSerializer,
+    #         400: 'Los datos no son válidos',
+    #         401: 'El usuario no se encuentra autorizado',
+    #     }
+    # )
+    def get(self,request,*args, **kwargs):
+        """
+        
+        """
+        usuario = self.request.user
+        institucion = Institucion.objects.get(usuario=usuario)
+        if institucion is not None:
+            cantidad = Donacion.get_cantidad_total_donaciones(institucion)
+
+            response = {
+                'cantidad': cantidad,
+            }
+
+            return Response(response,status = status.HTTP_200_OK)
+
+        return Response({'mensaje':'Los datos no son válidos'},
+                            status = status.HTTP_400_BAD_REQUEST)

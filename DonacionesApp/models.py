@@ -71,6 +71,9 @@ class Donacion(models.Model):
         ordering = ['fecha_creacion']
         verbose_name = 'Donación'
         verbose_name_plural = 'Donaciones'
+
+    def get_cantidad_total_donaciones(institucion):
+        return Donacion.objects.filter(institucion=institucion).count()
     
 
 class DonacionMonetaria(Donacion):

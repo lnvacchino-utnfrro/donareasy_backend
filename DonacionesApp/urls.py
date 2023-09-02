@@ -90,6 +90,10 @@ urlpatterns = [
     path('necesidades/',
          views.NecesidadesList.as_view(),
          name='necesidades'),
+
+    path('KPIs/',
+         views.CalculoKpis.as_view(),
+         name='KPIs'),
 ]
 
 # urlpatterns = format_suffix_patterns(urlpatterns)
