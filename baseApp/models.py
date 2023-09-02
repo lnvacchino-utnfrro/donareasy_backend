@@ -141,11 +141,8 @@ class Institucion(models.Model):
     def __str__(self):
         return str(self.nombre)
 
-    def get_queryset(self):
-        return super().get_queryset().filter(habilitado=True)
-
-    def instituciones_no_habilitadas(self):
-        return super().get_queryset().filter(habilitado=False)
+    def instituciones_habilitadas():
+        return Institucion.objects.filter(habilitado=True)
 
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods

@@ -43,7 +43,7 @@ class DonanteCreate(generics.CreateAPIView):
 class InstitucionCreate(generics.CreateAPIView):
     """docstring"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    queryset = Institucion.objects.all()
+    queryset = Institucion.instituciones_habilitadas()
     serializer_class = InstitucionSerializer
 
 
@@ -57,7 +57,7 @@ class DonanteUserCreate(generics.CreateAPIView):
 class InstitucionUserCreate(generics.CreateAPIView):
     """docstring"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    queryset = Institucion.objects.all()
+    queryset = Institucion.instituciones_habilitadas()
     serializer_class = LogupInstitucionUserSerializer
 
 

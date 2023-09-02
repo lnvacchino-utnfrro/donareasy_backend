@@ -21,7 +21,7 @@ class InstitucionesList(generics.ListAPIView):
     donación a realizar
     """
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    queryset = Institucion.objects.all()
+    queryset = Institucion.instituciones_habilitadas()
     serializer_class = InstitucionSerializer
     # # permission_classes = [IsDonantePermission|IsAdminUser]
 
@@ -120,7 +120,7 @@ class InstitucionesListConCBU(generics.ListAPIView):
     """
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = InstitucionSerializer
-    queryset = Institucion.objects.filter(cbu__isnull=False)
+    queryset = Institucion.instituciones_habilitadas().filter(cbu__isnull=False)
     # permission_classes = [IsDonantePermission|IsAdminUser]
 
 
@@ -132,7 +132,7 @@ class EligeInstitucionConCBU(generics.RetrieveAPIView):
     """
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = DatosBancariosInstitucion
-    queryset = Institucion.objects.filter(cbu__isnull=False)
+    queryset = Institucion.instituciones_habilitadas().filter(cbu__isnull=False)
     # permission_classes = [IsDonantePermission|IsAdminUser]
 
 
@@ -322,7 +322,7 @@ class CalculoKpis(APIView):
     se devuelven los datos del usuario y el token.
     """
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    serializer_class = CalculoKpisSerializer
+    # serializer_class = CalculoKpisSerializer
     # @swagger_auto_schema(
     #     request_body=UserAuthSerializer,
     #     operation_summary='Login',

@@ -13,7 +13,7 @@ class BienesSerializer(serializers.ModelSerializer):
 class DonacionBienesSerializer(serializers.ModelSerializer):
     # donante = DonanteSerializer()
     # institucion = InstitucionSerializer(read_only=True)
-    institucion = serializers.PrimaryKeyRelatedField(queryset=Institucion.objects.all(),read_only=False)
+    institucion = serializers.PrimaryKeyRelatedField(queryset=Institucion.instituciones_habilitadas(),read_only=False)
     bienes = BienesSerializer(many=True)
 
     class Meta:
