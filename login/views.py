@@ -12,7 +12,8 @@ from donareasy.utils import CsrfExemptSessionAuthentication
 
 from login.serializers import UserSerializer, DonanteUserSerializer, InstitucionUserSerializer, \
                               GroupSerializer, CadeteUserSerializer, LogupDonanteUserSerializer, \
-                              LogupInstitucionUserSerializer, LogupCadeteUserSerializer
+                              LogupInstitucionUserSerializer, LogupCadeteUserSerializer, \
+                              InstitucionNoHabilitadaSerializer
 
 from baseApp.models import Cadete, Donante, Institucion
 from baseApp.serializers import DonanteSerializer, InstitucionSerializer
@@ -85,3 +86,15 @@ class groupLinkList(APIView):
             grupos_data.append(grupo_data)
         return Response({'data':grupos_data},
                         status=status.HTTP_200_OK)
+
+
+class InstitucionesNoHabilitadasList(generics.ListAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    queryset = Institucion.objects.filter(habilitado=False)
+    serializer_class = InstitucionNoHabilitadaSerializer
+
+
+class InstitucionNoHabilitadaUpdate(generics.UpdateAPIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    queryset = Institucion.objects.filter(habilitado=False)
+    serializer_class = InstitucionNoHabilitadaSerializer
