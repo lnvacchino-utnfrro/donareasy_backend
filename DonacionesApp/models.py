@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from baseApp.models import Donante, Institucion
 from Recoleccion.models import Recoleccion
+from django.db.models import Sum
 
 class Donacion(models.Model):
     """
@@ -53,13 +54,15 @@ class Donacion(models.Model):
                                    null=True,
                                    max_length=500,
                                    verbose_name='observacion')
-    # CODIGOS_ESTADO = [
-    #     (1,'Creada'),
-    #     (2,'Aceptada'),
-    #     (3,'Enviada'),
-    #     (4,'Recibida'),
-    #     (0,'Cancelada'),
-    # ]
+
+    CODIGOS_ESTADO = [
+        (1,'Creada'), #Bienes
+        (2,'Aceptada'), #Bienes
+        (3,'Enviada'), #Monetaria
+        (4,'Recibida'), #Monetaria
+        (5,'Entregado'), #Bienes
+        (0,'Cancelada'),
+    ]
 
     # cod_estado = models.CharField(max_length=2,
     #                         verbose_name='estado',
@@ -72,17 +75,42 @@ class Donacion(models.Model):
         verbose_name = 'Donación'
         verbose_name_plural = 'Donaciones'
 
-    def get_donaciones_por_institucion(institucion):
-        return Donacion.objects.filter(institucion=institucion)
-
-    def get_cantidad_total_donaciones(institucion):
-        return Donacion.get_donaciones_por_institucion(institucion).count()
-
-    def get_cantidad_por_estado(institucion, cod_estado):
-        return Donacion.get_donaciones_por_institucion(institucion).filter(cod_estado=cod_estado).count()
-
+    def get_donaciones(**kwargs):
+        if 'tipo' in kwargs:
+            if kwargs['tipo'] == 'bienes':
+                result = DonacionBienes.objects.all()
+            elif kwargs['tipo'] == 'monetarias':
+                result = DonacionMonetaria.objects.all()
+        else:
+            result = Donacion.objects.all()
     
-    
+        if 'institucion' in kwargs:
+            result = result.filter(institucion=kwargs['institucion'])
+        if 'donante' in kwargs:
+            result = result.filter(donante=kwargs['donante'])
+        if 'cod_estado' in kwargs:
+            result = result.filter(cod_estado=kwargs['cod_estado'])
+        
+        return result
+
+    def get_cantidad_total_donaciones(**kwargs):
+        return Donacion.get_donaciones(**kwargs).count()
+
+    def get_donantes(**kwargs):
+        donaciones = Donacion.get_donaciones(**kwargs)
+        donantes = []
+
+        for donacion in donaciones:
+            donante = donacion.donante
+            if donante not in donantes:
+                donantes.append(donante)
+        
+        return donantes
+
+    # def get_monto_total_donaciones_monetarias(**kwargs):
+    #     donaciones = Donacion.get_donaciones(tipo='monetarias',**kwargs)
+    #     total_monto = donaciones.objects.aggregate(Sum('monto'))['monto__sum']
+
 
 class DonacionMonetaria(Donacion):
     """docstring"""
@@ -106,6 +134,7 @@ class DonacionMonetaria(Donacion):
         verbose_name_plural = 'Donaciones monetarias'
 
 
+
 class DonacionBienes(Donacion):
     """docstring""" 
     fecha_retiro = models.DateField(blank=True,
@@ -126,8 +155,10 @@ class DonacionBienes(Donacion):
     tipo = models.CharField(max_length=2,
                             choices=FORMA_ENTREGA
                         )
+
     def __str__(self):
         return str(self.donante)
+
     class Meta:
         # pylint: disable=missing-class-docstring, too-few-public-methods
         ordering = ['fecha_creacion']

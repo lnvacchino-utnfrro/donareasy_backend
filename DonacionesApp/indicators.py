@@ -1,21 +1,90 @@
 from DonacionesApp.models import Donacion
 
-def get_cantidad_total_donaciones(institucion):
-    # Cantidad total de donaciones
-    return Donacion.get_cantidad_total_donaciones(institucion)
-    
-def get_cantidad_donaciones_por_estado(institucion):
-    """Cantidad de donaciones por estado"""
+class IndicadoresInstitucion():
+    def get_cantidad_total_donaciones(institucion):
+        # Cantidad total de donaciones de una institucion
+        return Donacion.get_cantidad_total_donaciones(institucion=institucion)
+        
+    def get_cantidad_donaciones_por_estado(institucion):
+        """Cantidad de donaciones por estado"""
+        result = []
+        codigos_estados = [i[0] for i in Donacion.CODIGOS_ESTADO]
 
-    return {'Creada': Donacion.get_cantidad_por_estado(institucion,1),
-            'Aceptada': Donacion.get_cantidad_por_estado(institucion,2),
-            'Enviada': Donacion.get_cantidad_por_estado(institucion,3),
-            'Recibida': Donacion.get_cantidad_por_estado(institucion,4),
-            'Cancedala': Donacion.get_cantidad_por_estado(institucion,0)
-        }
+        for i in codigos_estados:
+            cantidad_por_estado = (i,Donacion.get_cantidad_total_donaciones(institucion=institucion,cod_estado=i))
+            result.append(cantidad_por_estado)
 
-def get_cantidad_donaciones_por_donante(institucion):
-    """Cantidad de donaciones por donante"""
-    result = {}
-    for i in Donacion.objects.all():
-        result[str(i.donante)] = result[str(i.donante)] + 1
+        return result
+
+    def get_cantidad_donaciones_por_donante(institucion):
+        """Cantidad de donaciones por donante"""
+        result = []
+        donantes = Donacion.get_donantes(institucion=institucion)
+
+        for donante in donantes:
+            cantidad_por_donante = (str(donante),Donacion.get_cantidad_total_donaciones(institucion=institucion,donante=donante))
+            result.append(cantidad_por_donante)
+
+        return result
+
+    def get_cantidad_total_donaciones_bienes(institucion):
+         # Cantidad total de donaciones de una institucion
+        return Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes')
+
+    def get_cantidad_donaciones_bienes_por_estado(institucion):
+        """Cantidad de donaciones por estado"""
+        result = []
+        codigos_estados = [i[0] for i in Donacion.CODIGOS_ESTADO]
+
+        for i in codigos_estados:
+            cantidad_por_estado = (i,Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=i))
+            result.append(cantidad_por_estado)
+
+        return result
+
+    def get_cantidad_donaciones_bienes_por_donante(institucion):
+        """Cantidad de donaciones por donante"""
+        result = []
+        donantes = Donacion.get_donantes(institucion=institucion)
+
+        for donante in donantes:
+            cantidad_por_donante = (str(donante),Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',donante=donante))
+            result.append(cantidad_por_donante)
+
+        return result
+
+    def get_cantidad_total_donaciones_monetarias(institucion):
+         # Cantidad total de donaciones de una institucion
+        return Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias')
+
+    def get_cantidad_donaciones_monetarias_por_estado(institucion):
+        """Cantidad de donaciones por estado"""
+        result = []
+        codigos_estados = [i[0] for i in Donacion.CODIGOS_ESTADO]
+
+        for i in codigos_estados:
+            cantidad_por_estado = (i,Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias',cod_estado=i))
+            result.append(cantidad_por_estado)
+
+        return result
+
+    def get_cantidad_donaciones_monetarias_por_donante(institucion):
+        """Cantidad de donaciones por donante"""
+        result = []
+        donantes = Donacion.get_donantes(institucion=institucion)
+
+        for donante in donantes:
+            cantidad_por_donante = (str(donante),Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias',donante=donante))
+            result.append(cantidad_por_donante)
+
+        return result
+
+    # def get_monto_donaciones_monetarias(institucion):
+    #     """"""
+    #     return Donacion.get_monto_total_donaciones_monetarias(institucion=institucion)
+
+    # def get_monto_donaciones_monetarias_por_estado(institucion):
+    #     """"""
+
+    # def get_monto_donaciones_monetarias_por_donante(institucion):
+    #     """"""

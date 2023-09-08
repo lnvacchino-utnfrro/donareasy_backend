@@ -100,12 +100,12 @@ class ActualizarEstadoDonacionSerializer(serializers.ModelSerializer):
             donacion.fecha_cancelacion = datetime.now()
             donacion.motivo_cancelacion = validated_data.get('motivo_cancelacion',donacion.motivo_cancelacion)
             donacion.save()
-        elif validated_data['cod_estado'] == 5:
-            donacion.cod_estado = validated_data.get('cod_estado',donacion.cod_estado)
-            donacion.fecha_aceptacion = None 
-            donacion.fecha_cancelacion = datetime.now()
-            donacion.motivo_cancelacion = "La donación no fue entregada al cadete"
-            donacion.save()
+        # elif validated_data['cod_estado'] == 5:
+        #     donacion.cod_estado = validated_data.get('cod_estado',donacion.cod_estado)
+        #     donacion.fecha_aceptacion = None 
+        #     donacion.fecha_cancelacion = datetime.now()
+        #     donacion.motivo_cancelacion = "La donación no fue entregada al cadete"
+        #     donacion.save()
         else:
             donacion.cod_estado = 1
             donacion.fecha_aceptacion = None 
@@ -278,7 +278,7 @@ class EntregarDonacionSerializer(serializers.ModelSerializer):
         fields = []
 
     def update(self,donacion,validated_data):
-        donacion.cod_estado = 4
+        donacion.cod_estado = 5
         donacion.fecha_entrega_real = datetime.now()    
         donacion.save()
         return donacion
