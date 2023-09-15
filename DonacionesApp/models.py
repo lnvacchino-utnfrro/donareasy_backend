@@ -1,7 +1,9 @@
 """Creación modelo Donación"""
+from datetime import date
 from operator import truediv
 from pkgutil import get_data
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 from baseApp.models import Donante, Institucion
 from Recoleccion.models import Recoleccion
@@ -107,10 +109,19 @@ class Donacion(models.Model):
         
         return donantes
 
-    # def get_monto_total_donaciones_monetarias(**kwargs):
-    #     donaciones = Donacion.get_donaciones(tipo='monetarias',**kwargs)
-    #     total_monto = donaciones.objects.aggregate(Sum('monto'))['monto__sum']
+    def get_monto_total_donaciones_monetarias(**kwargs):
+        donaciones = Donacion.get_donaciones(tipo='monetarias',**kwargs)
+        if not donaciones:
+            return 0
+        total_monto = donaciones.aggregate(Sum('monto'))['monto__sum']
+        return total_monto
 
+    def get_cantidad_total_donaciones_por_bien(tipo_bien,**kwargs):
+        donaciones = Donacion.get_donaciones(tipo='bienes',**kwargs)
+        result = 0
+        for donacion in donaciones:
+            result += Bien.objects.filter(tipo=tipo_bien,donacion=donacion).count()
+        return result
 
 class DonacionMonetaria(Donacion):
     """docstring"""
@@ -201,7 +212,7 @@ class Bien(models.Model):
         verbose_name_plural = 'Bienes'
 
 class Necesidad(models.Model):
-    TIPOS_BIEN = [
+    TIPOS_NECESIDAD = [
         (1,'alimento'),
         (2,'útil'),
         (3,'prenda'),
@@ -210,7 +221,7 @@ class Necesidad(models.Model):
     ]
 
     tipo = models.CharField(max_length=2,
-                            choices=TIPOS_BIEN
+                            choices=TIPOS_NECESIDAD
                         )
     # puede ser tipo alimentos, utiles, prendas u otros.
     titulo = models.CharField(blank=True,
@@ -253,3 +264,20 @@ class Necesidad(models.Model):
         ordering = ['fecha_alta']
         verbose_name = 'Necesidad'
         verbose_name_plural = 'Necesidades'
+
+    def get_necesidades(**kwargs):
+        result = Necesidad.objects.all()
+        if 'institucion' in kwargs:
+            result = result.filter(institucion=kwargs['institucion'])
+        if 'tipo' in kwargs:
+            result = result.filter(tipo=kwargs['tipo'])        
+        return result
+
+    def get_cantidad_total_necesidades(**kwargs):
+        return Necesidad.get_necesidades(**kwargs).count()
+
+    def get_cantidad_total_necesidades_activas(**kwargs):
+        return Necesidad.get_necesidades(**kwargs).filter(isDelete=False).filter(fecha_vigencia__gte=date.today()).count()
+        
+    def get_cantidad_total_necesidades_inactivas(**kwargs):
+        return Necesidad.get_necesidades(**kwargs).filter(Q(isDelete=True) & Q(fecha_vigencia__lt=date.today())).count()
