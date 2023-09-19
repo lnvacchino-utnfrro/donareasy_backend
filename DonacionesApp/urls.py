@@ -91,7 +91,7 @@ urlpatterns = [
          views.NecesidadesList.as_view(),
          name='necesidades'),
 
-    path('KPIs/',
+    path('kpi/',
          views.CalculoKpis.as_view(),
          name='KPIs'),
 ]

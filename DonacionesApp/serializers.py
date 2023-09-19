@@ -282,3 +282,6 @@ class EntregarDonacionSerializer(serializers.ModelSerializer):
         donacion.fecha_entrega_real = datetime.now()    
         donacion.save()
         return donacion
+
+class CalculoKpisSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=255)

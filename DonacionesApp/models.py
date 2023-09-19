@@ -96,7 +96,8 @@ class Donacion(models.Model):
         return result
 
     def get_cantidad_total_donaciones(**kwargs):
-        return Donacion.get_donaciones(**kwargs).count()
+        cantidad = Donacion.get_donaciones(**kwargs).count()
+        return cantidad
 
     def get_donantes(**kwargs):
         donaciones = Donacion.get_donaciones(**kwargs)
@@ -122,6 +123,17 @@ class Donacion(models.Model):
         for donacion in donaciones:
             result += Bien.objects.filter(tipo=tipo_bien,donacion=donacion).count()
         return result
+
+    def get_institucion(**kwargs):
+        donaciones = Donacion.get_donaciones(**kwargs)
+        instituciones = []
+
+        for donacion in donaciones:
+            institucion = donacion.institucion
+            if institucion not in instituciones:
+                instituciones.append(institucion)
+        
+        return instituciones
 
 class DonacionMonetaria(Donacion):
     """docstring"""

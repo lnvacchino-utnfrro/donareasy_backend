@@ -7,6 +7,7 @@ from rest_framework import status
 
 from DonacionesApp.serializers import *
 from DonacionesApp.models import Donacion, DonacionBienes, DonacionMonetaria, Bien, Necesidad
+from DonacionesApp.indicators import Indicadores
 from donareasy.utils import CsrfExemptSessionAuthentication
 
 from baseApp.models import Donante, Institucion
@@ -322,7 +323,7 @@ class CalculoKpis(APIView):
     se devuelven los datos del usuario y el token.
     """
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    # serializer_class = CalculoKpisSerializer
+    serializer_class = CalculoKpisSerializer
     # @swagger_auto_schema(
     #     request_body=UserAuthSerializer,
     #     operation_summary='Login',
@@ -332,20 +333,22 @@ class CalculoKpis(APIView):
     #         401: 'El usuario no se encuentra autorizado',
     #     }
     # )
-    def get(self,request,*args, **kwargs):
+    def post(self,request,*args, **kwargs):
         """
         
         """
-        usuario = self.request.user
-        institucion = Institucion.objects.get(usuario=usuario)
-        if institucion is not None:
-            cantidad = Donacion.get_cantidad_total_donaciones(institucion)
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            usuario =serializer.validated_data['username']
+            
+            if usuario is not None:
 
-            response = {
-                'cantidad': cantidad,
-            }
+                response = Indicadores.get_indicadores(usuario)
 
-            return Response(response,status = status.HTTP_200_OK)
+                return Response(response,status = status.HTTP_200_OK)
+
+            return Response({'mensaje':'Los datos no son válidos'},
+                            status = status.HTTP_400_BAD_REQUEST)        
 
         return Response({'mensaje':'Los datos no son válidos'},
                             status = status.HTTP_400_BAD_REQUEST)
