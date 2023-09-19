@@ -26,14 +26,14 @@ class DonanteDetail(generics.RetrieveUpdateDestroyAPIView):
 class InstitucionList(generics.ListCreateAPIView):
     """APIView para listar y crear instancias de la clase Institucion"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    queryset = Institucion.objects.all()
+    queryset = Institucion.instituciones_habilitadas()
     serializer_class = InstitucionSerializer
 
 
 class InstitucionDetail(generics.RetrieveUpdateDestroyAPIView):
     """APIView para recuperar, actualizar y destruir una instancia de la clase Institucion"""
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    queryset = Institucion.objects.all()
+    queryset = Institucion.instituciones_habilitadas()
     serializer_class = InstitucionSerializer
 
 

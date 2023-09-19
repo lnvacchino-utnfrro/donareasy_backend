@@ -46,6 +46,9 @@ def obtenerDatosUsuario(user):
             institucion = Institucion.objects.get(usuario=user.id)
             nombre = institucion.nombre
 
+            if institucion.habilitado == 0:
+                grupo = 'Institución inhabilitada'
+
         elif group.id == 3:
             # El usuario es un cadete
             grupo = group.name
@@ -102,10 +105,7 @@ class Login(APIView):
                 password=serializer.validated_data['password']
             )
             if user is not None:
-                if user.is_active:
-                    # Contraseña correcta y usuario activo
-                    auth.login(request,user)
-                    
+                if user.is_active:                   
                     #? Formas de acceder a los datos de la sesión
                     # print(request.user)
                     # print('session: ',request.session.session_key)
@@ -116,6 +116,14 @@ class Login(APIView):
 
                     # Busco los datos restantes del usuario según el tipo de usuario
                     response = obtenerDatosUsuario(user)
+
+                    #Si la institucion está inhabilitada, le niego el ingreso
+                    if response['group'] == 'Institución inhabilitada':
+                        return Response({'mensaje':'La institución se encuentra inhabilitada'},
+                                        status = status.HTTP_406_NOT_ACCEPTABLE)
+
+                    # Contraseña correcta y usuario activo y habilitado
+                    auth.login(request,user)
 
                     return Response(response, status = status.HTTP_200_OK)
 

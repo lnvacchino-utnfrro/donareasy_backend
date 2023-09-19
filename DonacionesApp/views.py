@@ -1,10 +1,13 @@
-
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication 
 from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
+from rest_framework import status
 
 from DonacionesApp.serializers import *
-from DonacionesApp.models import Donacion, DonacionBienes, DonacionMonetaria, Bien
+from DonacionesApp.models import Donacion, DonacionBienes, DonacionMonetaria, Bien, Necesidad
+from DonacionesApp.indicators import Indicadores
 from donareasy.utils import CsrfExemptSessionAuthentication
 
 from baseApp.models import Donante, Institucion
@@ -19,7 +22,7 @@ class InstitucionesList(generics.ListAPIView):
     donación a realizar
     """
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    queryset = Institucion.objects.all()
+    queryset = Institucion.instituciones_habilitadas()
     serializer_class = InstitucionSerializer
     # # permission_classes = [IsDonantePermission|IsAdminUser]
 
@@ -118,7 +121,7 @@ class InstitucionesListConCBU(generics.ListAPIView):
     """
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = InstitucionSerializer
-    queryset = Institucion.objects.filter(cbu__isnull=False)
+    queryset = Institucion.instituciones_habilitadas().filter(cbu__isnull=False)
     # permission_classes = [IsDonantePermission|IsAdminUser]
 
 
@@ -130,7 +133,7 @@ class EligeInstitucionConCBU(generics.RetrieveAPIView):
     """
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = DatosBancariosInstitucion
-    queryset = Institucion.objects.filter(cbu__isnull=False)
+    queryset = Institucion.instituciones_habilitadas().filter(cbu__isnull=False)
     # permission_classes = [IsDonantePermission|IsAdminUser]
 
 
@@ -273,7 +276,79 @@ class NecesidadesList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.groups.filter(pk=1).exists():
-            queryset = Necesidad.objects.filter(isDelete=False)
+            queryset = Necesidad.objects.filter(fecha_vigencia__gte = datetime.now()).filter(isDelete=False)
         elif user.groups.filter(pk=2).exists():
-            queryset = Necesidad.objects.filter(institucion=user.usuario_institucion).filter(isDelete=False)
+            queryset = Necesidad.objects.filter(institucion=user.usuario_institucion).filter(isDelete=False).filter(fecha_vigencia__gte = datetime.now())
         return queryset
+
+
+class EntregarDonacionUpdate(generics.UpdateAPIView):
+    """Lista todas las donaciones que están aceptadas y están pendientes de entrega"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    serializer_class = EntregarDonacionSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=2).exists():
+            queryset = Donacion.objects.filter(institucion=user.usuario_institucion).filter(cod_estado=2)
+        return queryset
+
+# class CalculoKpis(generics.ListAPIView):
+#     """ Se muestran todos los calculos de indicadores claves para presentar en un dashboard"""
+#     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+#     serializer_class = CalculoKpisSerializer
+
+#     def get_queryset(self):
+#         user = self.request.user
+#         if user.groups.filter(pk=2).exists():
+#             return Institucion.objects.filter(id=user.usuario_institucion.id)
+
+#     # def list(self, request):
+#     #     queryset = self.get_queryset()
+#     #     serializer = CalculoKpisSerializer(queryset, many=True)
+#     #     return Response(serializer.data)
+
+#     def list(self, request, *args, **kwargs):
+#         result = 153
+        
+#         kpis_serializer = CalculoKpisSerializer(cantidad_total_donaciones=15,total_donaciones_aceptadas=25,total_donaciones_rechazadas=35)
+#         if kpis_serializer.is_valid():
+#             print(kpis_serializer.data)
+#         return Response(result)
+
+
+class CalculoKpis(APIView):
+    """
+    Ingreso de un usuario al sistema. Al recibir el usuario y contraseña, 
+    se devuelven los datos del usuario y el token.
+    """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    serializer_class = CalculoKpisSerializer
+    # @swagger_auto_schema(
+    #     request_body=UserAuthSerializer,
+    #     operation_summary='Login',
+    #     responses={
+    #         200: LoginResponseSerializer,
+    #         400: 'Los datos no son válidos',
+    #         401: 'El usuario no se encuentra autorizado',
+    #     }
+    # )
+    def post(self,request,*args, **kwargs):
+        """
+        
+        """
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            usuario =serializer.validated_data['username']
+            
+            if usuario is not None:
+
+                response = Indicadores.get_indicadores(usuario)
+
+                return Response(response,status = status.HTTP_200_OK)
+
+            return Response({'mensaje':'Los datos no son válidos'},
+                            status = status.HTTP_400_BAD_REQUEST)        
+
+        return Response({'mensaje':'Los datos no son válidos'},
+                            status = status.HTTP_400_BAD_REQUEST)

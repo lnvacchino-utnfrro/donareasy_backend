@@ -266,3 +266,18 @@ class LoginResponseSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
     group = serializers.CharField(max_length=255)
     nombre = serializers.CharField(max_length=255)
+
+
+class InstitucionNoHabilitadaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Institucion
+        fields = '__all__'
+        read_only_fields = ['usuario','nombre','director','fecha_fundacion','domicilio',
+                            'localidad','provincia','pais','telefono','cant_empleados',
+                            'descripcion','cbu','habilitado']
+        
+
+    def update(self,institucion,validated_data):
+        institucion.habilitado = True
+        institucion.save()
+        return institucion

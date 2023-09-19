@@ -41,7 +41,13 @@ urlpatterns = [
         name='cadete-create'),
     # path('logup/',
     #     views.groupLinkList.as_view(),
-    #     name='logup'),    
+    #     name='logup'),
+    path('admin/institucionesNoHabilitadas/',
+         views.InstitucionesNoHabilitadasList.as_view(),
+         name='lista-instituciones-no-habilitadas'),
+    path('admin/habilitarInstitucion/<int:pk>/',
+         views.InstitucionNoHabilitadaUpdate.as_view(),
+         name='habilitar-institucion'),
 ]   
 
 # urlpatterns = format_suffix_patterns(urlpatterns)

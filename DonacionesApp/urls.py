@@ -6,11 +6,12 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from DonacionesApp import views
 
 urlpatterns = [
+#Usuario: Donación
     path('eligeInstitucion/',
         views.InstitucionesList.as_view(), #Muestra la lista de instituciones para seleccionar 1 
         name='instituciones_list'),
 
-    path('eligeInstitucion/donarBienes/',
+    path('eligeInstitucion/donarBienes/', #####se agrega observación  ###! Se agrega tipo_entrega
         views.DonacionBienesCreate.as_view(),
         name='donacion_bienes'),
 
@@ -22,7 +23,7 @@ urlpatterns = [
        views.EligeInstitucionConCBU.as_view(),
        name='institucion_elegida_cbu'),
 
-    path('donarDinero/',
+    path('donarDinero/',                #####se agrega observación
         views.DonacionMonetariaCreate.as_view(),
         name='donacion_monetaria'),
 
@@ -35,16 +36,16 @@ urlpatterns = [
         name='cancelar_transferencia'),
 
 # Informes
-    path('listadoDonaciones/',
+    path('listadoDonaciones/',          #####se agrega observación ###! Se agrega tipo_entrega
     views.DonacionesDonanteList.as_view(),
     name='listado_donaciones_realizadas'),
 
 #Usuario: Institucion
-    path('donacionesPendientes/',
+    path('donacionesPendientes/',       #####se agrega observación ###! Se agrega tipo_entrega
         views.TodasDonacionesList.as_view(),
         name='ver_donaciones'),
 
-    path('donacionesPendientes/<int:pk>/',
+    path('donacionesPendientes/<int:pk>/', #####se agrega observación ###! Se agrega tipo_entrega
         views.DonacionDetail.as_view(),
         name='ver_donacion'),
 
@@ -56,11 +57,11 @@ urlpatterns = [
         views.RechazarDonacion.as_view(),
         name='rechazar_donacion'),
 
-    path('transferenciasPendientes/',
+    path('transferenciasPendientes/',   #####se agrega observación
         views.VerDonacionMonetaria.as_view(),
         name='ver_transferencias'),
     
-    path('transferenciasPendientes/<int:pk>/',
+    path('transferenciasPendientes/<int:pk>/', #####se agrega observación
         views.TransferenciaDetail.as_view(),
         name='ver_transferencia'),
 
@@ -71,6 +72,10 @@ urlpatterns = [
     path('transferenciasPendientes/<int:pk>/rechazar/',
         views.RechazarTransferencia.as_view(),
         name='rechazar_donacion'),
+
+    path('entregarDonacion/<int:pk>/',
+        views.EntregarDonacionUpdate.as_view(),
+        name='entregar_donacion'),
 
 ## Necesidades de las instituciones
 
@@ -85,6 +90,10 @@ urlpatterns = [
     path('necesidades/',
          views.NecesidadesList.as_view(),
          name='necesidades'),
+
+    path('kpi/',
+         views.CalculoKpis.as_view(),
+         name='KPIs'),
 ]
 
 # urlpatterns = format_suffix_patterns(urlpatterns)
