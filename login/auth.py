@@ -39,12 +39,14 @@ def obtenerDatosUsuario(user):
             grupo = group.name
             donante = Donante.objects.get(usuario=user.id)
             nombre = donante.nombre + ' ' + donante.apellido
+            grupo_id = donante.id
         
         elif group.id == 2:
             # El usuario es una institución
             grupo = group.name
             institucion = Institucion.objects.get(usuario=user.id)
             nombre = institucion.nombre
+            grupo_id = institucion.id
 
             if institucion.habilitado == 0:
                 grupo = 'Institución inhabilitada'
@@ -54,6 +56,7 @@ def obtenerDatosUsuario(user):
             grupo = group.name
             cadete = Cadete.objects.get(usuario=user.id)
             nombre = cadete.nombre + ' ' + cadete.apellido
+            grupo_id = cadete.id
 
         else:
             grupo = 'Undefined'
@@ -68,7 +71,8 @@ def obtenerDatosUsuario(user):
         'id': user.id,
         'username': user.username,
         'group': grupo,
-        'nombre': nombre
+        'nombre': nombre,
+        'groupId': grupo_id,
     }
 
     return response
