@@ -119,16 +119,16 @@ WSGI_APPLICATION = 'donareasy.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'donareasy',
-        # 'USER': 'root',
-        # 'PASSWORD': 'admin',
-        # 'HOST': 'localhost',
-        # 'PORT': '3306',
-        'NAME': config('MYSQL_DATABASE', default='donareasy'),
-        'USER': config('MYSQL_USER', default="donareasy"),
-        'PASSWORD': config('MYSQL_PASSWORD', default='admin'),
-        'HOST': config('MYSQL_HOST', default="localhost"),
-        'PORT': config('MYSQL_PORT', default="3306"),
+        'NAME': 'donareasy',
+        'USER': 'root',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        # 'NAME': config('MYSQL_DATABASE', default='donareasy'),
+        # 'USER': config('MYSQL_USER', default="donareasy"),
+        # 'PASSWORD': config('MYSQL_PASSWORD', default='admin'),
+        # 'HOST': config('MYSQL_HOST', default="localhost"),
+        # 'PORT': config('MYSQL_PORT', default="3306"),
     }
 }
 

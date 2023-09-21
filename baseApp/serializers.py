@@ -18,7 +18,7 @@ class InstitucionSerializer(serializers.ModelSerializer):
     class Meta:
         # pylint: disable=missing-class-docstring
         model = Institucion
-        fields = '__all__'
+        exclude = ('codigo_habilitacion',)
 
 
 class CadeteSerializer(serializers.ModelSerializer):
@@ -48,7 +48,7 @@ class InstitucionSinForeingKeySerializer(serializers.ModelSerializer):
     class Meta:
         # pylint: disable=missing-class-docstring
         model = Institucion
-        exclude = ('usuario',)
+        exclude = ('usuario','codigo_habilitacion')
 
 
 class CadeteSinForeingKeySerializer(serializers.ModelSerializer):

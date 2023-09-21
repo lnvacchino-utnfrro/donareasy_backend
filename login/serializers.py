@@ -271,7 +271,7 @@ class LoginResponseSerializer(serializers.Serializer):
 class InstitucionNoHabilitadaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institucion
-        fields = '__all__'
+        exclude = ['codigo_habilitacion',]
         read_only_fields = ['usuario','nombre','director','fecha_fundacion','domicilio',
                             'localidad','provincia','pais','telefono','cant_empleados',
                             'descripcion','cbu','habilitado']
