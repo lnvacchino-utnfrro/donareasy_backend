@@ -268,16 +268,46 @@ class LoginResponseSerializer(serializers.Serializer):
     nombre = serializers.CharField(max_length=255)
 
 
-class InstitucionNoHabilitadaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Institucion
-        exclude = ['codigo_habilitacion',]
-        read_only_fields = ['usuario','nombre','director','fecha_fundacion','domicilio',
-                            'localidad','provincia','pais','telefono','cant_empleados',
-                            'descripcion','cbu','habilitado']
+class InstitucionNoHabilitadaSerializer(serializers.Serializer):
+
+    username = serializers.CharField(max_length=255)
+    password = serializers.CharField(max_length=255)
+    codigo_habilitacion = serializers.CharField(max_length=255)
+
+    # class Meta:
+    #     model = Institucion
+    #     fields = '__all__'
+    #     read_only_fields = ['usuario','nombre','director','fecha_fundacion','domicilio',
+    #                         'localidad','provincia','pais','telefono','cant_empleados',
+    #                         'descripcion','cbu','habilitado']
         
 
-    def update(self,institucion,validated_data):
-        institucion.habilitado = True
-        institucion.save()
-        return institucion
+    # def update(self,institucion,validated_data):
+    #     usuario_data = validated_data['username']
+    #     password_data = validated_data['password']
+    #     codigo_habilitacion = validated_data['codigo_habilitacion']
+    #     usuario = User.objects.get(username = usuario_data)
+    #     if usuario:
+    #         if usuario.check_password(password_data):
+    #             institucion = Institucion.objects.get(usuario=usuario)
+    #             if institucion:
+    #                 if not institucion.habilitado:
+    #                     if institucion.codigo_habilitacion == codigo_habilitacion:
+    #                         institucion.habilitado = True
+    #                         institucion.save()
+    #                         return institucion
+    #                     else:
+    #                         raise serializers.ValidationError("Codigo de habilitacion incorrecto")
+    #                 else:
+    #                     raise serializers.ValidationError("La institucion ya se encuentra habilitada")
+    #             else:
+    #                 raise serializers.ValidationError("No existe la institución")
+    #         else:
+    #             raise serializers.ValidationError("Contraseña Incorrecta")
+    #     else:
+    #         raise serializers.ValidationError("No existe el usuario")
+
+         
+                
+        
+        
