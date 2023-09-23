@@ -15,6 +15,7 @@ class Indicadores():
                 'cant_donaciones_bienes_por_estado': IndicadoresDonante.get_cantidad_donaciones_bienes_por_estado(donante),
                 'cant_donaciones_bienes_por_institucion': IndicadoresDonante.get_cantidad_donaciones_bienes_por_institucion(donante),
                 'cant_donaciones_bienes_por_tipo_bien': IndicadoresDonante.get_cantidad_donaciones_bienes_por_tipo_bien(donante),
+                'cant_donaciones_por_tipo_bien_por_estado': IndicadoresDonante.get_cantidad_donaciones_bienes_por_tipo_bien_por_estado(donante),
                 'cant_donaciones_monetarias': IndicadoresDonante.get_cantidad_total_donaciones_monetarias(donante),
                 'cant_donaciones_monetarias_por_estado': IndicadoresDonante.get_cantidad_donaciones_monetarias_por_estado(donante),
                 'cant_donaciones_monetarias_por_institucion': IndicadoresDonante.get_cantidad_donaciones_monetarias_por_institucion(donante),
@@ -43,6 +44,7 @@ class Indicadores():
                 'cant_donaciones_bienes_por_estado': IndicadoresInstitucion.get_cantidad_donaciones_bienes_por_estado(institucion),
                 'cant_donaciones_bienes_por_institucion': IndicadoresInstitucion.get_cantidad_donaciones_bienes_por_donante(institucion),
                 'cant_donaciones_bienes_por_tipo_bien': IndicadoresInstitucion.get_cantidad_donaciones_bienes_por_tipo_bien(institucion),
+                'cant_donaciones_por_tipo_bien_por_estado': IndicadoresInstitucion.get_cantidad_donaciones_bienes_por_tipo_bien_por_estado(institucion),
                 'cant_donaciones_monetarias': IndicadoresInstitucion.get_cantidad_total_donaciones_monetarias(institucion),
                 'cant_donaciones_monetarias_por_estado': IndicadoresInstitucion.get_cantidad_donaciones_monetarias_por_estado(institucion),
                 'cant_donaciones_monetarias_por_institucion': IndicadoresInstitucion.get_cantidad_donaciones_monetarias_por_donante(institucion),
@@ -63,6 +65,7 @@ class Indicadores():
                 'porc_necesidades_activas': IndicadoresInstitucion.get_porcentaje_necesidades_activas_sobre_total(institucion),
                 'porc_necesidades_inactivas': IndicadoresInstitucion.get_porcentaje_necesidades_inactivas_sobre_total(institucion),
                 'cant_necesidades_por_tipo': IndicadoresInstitucion.get_cantidad_necesidades_por_tipo(institucion),
+                'cant_necesidades_por_tipo_por_estado': IndicadoresInstitucion.get_cantidad_necesidades_por_tipo_por_estado(institucion),
             }
 
         return result
@@ -237,19 +240,51 @@ class IndicadoresInstitucion():
     
     def get_porcentaje_necesidades_activas_sobre_total(institucion):
         """"""
+        if Necesidad.get_cantidad_total_necesidades(institucion=institucion) == 0:
+            return None
         return Necesidad.get_cantidad_total_necesidades_activas(institucion=institucion)/Necesidad.get_cantidad_total_necesidades(institucion=institucion)
 
     def get_porcentaje_necesidades_inactivas_sobre_total(institucion):
         """"""
+        if Necesidad.get_cantidad_total_necesidades(institucion=institucion) == 0:
+            return None
         return Necesidad.get_cantidad_total_necesidades_inactivas(institucion=institucion)/Necesidad.get_cantidad_total_necesidades(institucion=institucion)
 
     def get_cantidad_necesidades_por_tipo(institucion):
         """"""
         result = {}
-        codigos_estados = [i[0] for i in Necesidad.TIPOS_NECESIDAD]
+        tipo_necesidad = [i[0] for i in Necesidad.TIPOS_NECESIDAD]
 
-        for i in codigos_estados:
+        for i in tipo_necesidad:
             result[str(i)] = Necesidad.get_cantidad_total_necesidades(institucion=institucion,tipo=i)
+
+        return result
+    
+    def get_cantidad_donaciones_bienes_por_tipo_bien_por_estado(institucion):
+        result = {}
+        tipos_bien = [i[0] for i in Bien.TIPOS_BIEN]
+
+        for tipo_bien in tipos_bien:
+            estados_tipo_bien = {}
+            codigos_estados = [i[0] for i in Donacion.CODIGOS_ESTADO]
+
+            for codigo_estado in codigos_estados:
+                estados_tipo_bien[codigo_estado] = Donacion.get_cantidad_total_donaciones_por_bien(institucion=institucion,cod_estado=codigo_estado,tipo_bien=tipo_bien)
+
+            result[tipo_bien] = estados_tipo_bien
+
+        return result
+    
+    def get_cantidad_necesidades_por_tipo_por_estado(institucion):
+        result = {}
+        tipos_necesidad = [i[0] for i in Necesidad.TIPOS_NECESIDAD]
+
+        for i in tipos_necesidad:
+            estados_tipo_necesidad = {}
+            estados_tipo_necesidad['1'] = Necesidad.get_cantidad_total_necesidades_activas(institucion=institucion,tipo=i)
+            estados_tipo_necesidad['0'] = Necesidad.get_cantidad_total_necesidades_inactivas(institucion=institucion,tipo=i)
+
+            result[i] = estados_tipo_necesidad
 
         return result
 
@@ -413,3 +448,17 @@ class IndicadoresDonante():
         return (Donacion.get_cantidad_total_donaciones(donante=donante,tipo='monetarias',cod_estado=4)
             ) / Donacion.get_cantidad_total_donaciones(donante=donante)
     
+    def get_cantidad_donaciones_bienes_por_tipo_bien_por_estado(donante):
+        result = {}
+        tipos_bien = [i[0] for i in Bien.TIPOS_BIEN]
+
+        for tipo_bien in tipos_bien:
+            estados_tipo_bien = {}
+            codigos_estados = [i[0] for i in Donacion.CODIGOS_ESTADO]
+
+            for codigo_estado in codigos_estados:
+                estados_tipo_bien[codigo_estado] = Donacion.get_cantidad_total_donaciones_por_bien(donante=donante,cod_estado=codigo_estado,tipo_bien=tipo_bien)
+
+            result[tipo_bien] = estados_tipo_bien
+
+        return result

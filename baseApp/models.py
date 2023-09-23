@@ -1,4 +1,7 @@
 """Modelos: Donante, Institucion"""
+import binascii
+import os
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -137,6 +140,11 @@ class Institucion(models.Model):
     habilitado = models.BooleanField(null=False,
                                     verbose_name='institucion_habilitada',
                                     default=False)
+
+    codigo_habilitacion = models.CharField(blank=True,
+                                           max_length=20,
+                                           verbose_name='codigo_habilitacion',
+                                           default=binascii.hexlify(os.urandom(10)).decode('utf-8'))
 
     def __str__(self):
         return str(self.nombre)

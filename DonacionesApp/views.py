@@ -5,6 +5,8 @@ from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
 from rest_framework import status
 
+from drf_yasg.utils import swagger_auto_schema
+
 from DonacionesApp.serializers import *
 from DonacionesApp.models import Donacion, DonacionBienes, DonacionMonetaria, Bien, Necesidad
 from DonacionesApp.indicators import Indicadores
@@ -317,33 +319,29 @@ class EntregarDonacionUpdate(generics.UpdateAPIView):
 #         return Response(result)
 
 
-class CalculoKpis(APIView):
+class CalculoKpisInstitucion(APIView):
     """
     Ingreso de un usuario al sistema. Al recibir el usuario y contraseña, 
     se devuelven los datos del usuario y el token.
     """
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = CalculoKpisSerializer
-    # @swagger_auto_schema(
-    #     request_body=UserAuthSerializer,
-    #     operation_summary='Login',
-    #     responses={
-    #         200: LoginResponseSerializer,
-    #         400: 'Los datos no son válidos',
-    #         401: 'El usuario no se encuentra autorizado',
-    #     }
-    # )
+    @swagger_auto_schema(
+        request_body=CalculoKpisSerializer,
+        operation_summary='CalculoKpisInstitucion',
+        responses={
+        }
+    )
     def post(self,request,*args, **kwargs):
-        """
-        
+        """        
         """
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            usuario =serializer.validated_data['username']
-            
-            if usuario is not None:
-
-                response = Indicadores.get_indicadores(usuario)
+            id_institucion=serializer.validated_data['id']
+            if id_institucion is not None:
+                institucion = Institucion.objects.get(id=id_institucion)
+                if institucion:
+                    response = Indicadores.get_indicadores(institucion.usuario)
 
                 return Response(response,status = status.HTTP_200_OK)
 
@@ -352,3 +350,37 @@ class CalculoKpis(APIView):
 
         return Response({'mensaje':'Los datos no son válidos'},
                             status = status.HTTP_400_BAD_REQUEST)
+    
+
+class CalculoKpisDonante(APIView):
+    """
+    Ingreso de un usuario al sistema. Al recibir el usuario y contraseña, 
+    se devuelven los datos del usuario y el token.
+    """
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    serializer_class = CalculoKpisSerializer
+    @swagger_auto_schema(
+        request_body=CalculoKpisSerializer,
+        operation_summary='CalculoKpisDonante',
+        responses={
+        }
+    )
+    def post(self,request,*args, **kwargs):
+        """        
+        """
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            id_donante=serializer.validated_data['id']
+            if id_donante is not None:
+                donante = Donante.objects.get(id=id_donante)
+                if donante:
+                    response = Indicadores.get_indicadores(donante.usuario)
+
+                return Response(response,status = status.HTTP_200_OK)
+
+            return Response({'mensaje':'Los datos no son válidos'},
+                            status = status.HTTP_400_BAD_REQUEST)        
+
+        return Response({'mensaje':'Los datos no son válidos'},
+                            status = status.HTTP_400_BAD_REQUEST)
+    

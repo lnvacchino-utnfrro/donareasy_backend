@@ -119,16 +119,16 @@ WSGI_APPLICATION = 'donareasy.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'donareasy',
-        # 'USER': 'root',
-        # 'PASSWORD': 'admin',
-        # 'HOST': 'localhost',
-        # 'PORT': '3306',
-        'NAME': config('MYSQL_DATABASE', default='donareasy'),
-        'USER': config('MYSQL_USER', default="donareasy"),
-        'PASSWORD': config('MYSQL_PASSWORD', default='admin'),
-        'HOST': config('MYSQL_HOST', default="localhost"),
-        'PORT': config('MYSQL_PORT', default="3306"),
+        'NAME': 'donareasy',
+        'USER': 'root',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        # 'NAME': config('MYSQL_DATABASE', default='donareasy'),
+        # 'USER': config('MYSQL_USER', default="donareasy"),
+        # 'PASSWORD': config('MYSQL_PASSWORD', default='admin'),
+        # 'HOST': config('MYSQL_HOST', default="localhost"),
+        # 'PORT': config('MYSQL_PORT', default="3306"),
     }
 }
 
@@ -208,7 +208,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'donareasy'
-EMAIL_HOST_PASSWORD = 'xhkwhhrfqnupjoiw'
+EMAIL_HOST_PASSWORD = 'kjhvaklpabcnbjwl'
 
 # Si se quiere mostrar los mails por consola, comentar todo lo anterior y usar la
 # siguiente línea
