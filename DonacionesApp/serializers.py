@@ -284,4 +284,4 @@ class EntregarDonacionSerializer(serializers.ModelSerializer):
         return donacion
 
 class CalculoKpisSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=255)
+    id = serializers.IntegerField()

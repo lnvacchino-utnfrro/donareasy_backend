@@ -292,4 +292,5 @@ class Necesidad(models.Model):
         return Necesidad.get_necesidades(**kwargs).filter(isDelete=False).filter(fecha_vigencia__gte=date.today()).count()
         
     def get_cantidad_total_necesidades_inactivas(**kwargs):
-        return Necesidad.get_necesidades(**kwargs).filter(Q(isDelete=True) & Q(fecha_vigencia__lt=date.today())).count()
+        return Necesidad.get_necesidades(**kwargs).exclude(isDelete=False,fecha_vigencia__gte=date.today()).count()
+    
