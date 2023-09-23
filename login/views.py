@@ -133,4 +133,3 @@ class InstitucionNoHabilitadaUpdate(APIView):
                 return Response({"Mensaje": "No existe el usuario"},
                                                 status=status.HTTP_400_BAD_REQUEST)
                 
-

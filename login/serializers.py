@@ -3,6 +3,11 @@ from unittest.util import _MAX_LENGTH
 from django.contrib.auth.models import User, UserManager, Group
 from django.contrib.auth.password_validation import validate_password
 
+from django.contrib.auth.models import User
+from django.core.mail import BadHeaderError, send_mail
+from django.template import loader
+from django.urls import reverse
+
 from rest_framework import serializers
 
 from baseApp.models import Cadete, Donante, Institucion
@@ -161,7 +166,31 @@ class LogupInstitucionUserSerializer(serializers.ModelSerializer):
         institucion = Institucion.objects.create(
             usuario=usuario,
             **validated_data
-        ) 
+        )
+
+         #* ENVIAR MAIL CON EL CÓDIGO DE RECUPERACIÓN
+        email = 'donareasy@gmail.com'
+        dominio = 'http://127.0.0.1:8000'
+        ruta = ''
+        template = loader.get_template('nueva_institucion.html')
+        context = {
+            'dominio': dominio,
+            'ruta':ruta,
+            'institucion':institucion,
+            'email':usuario_data['email'],
+        }
+        html_message = template.render(context)
+        try:
+            send_mail(
+                email,
+                'esto es un mensaje de institución nuevo',
+                'donareasy@gmail.com',
+                [email,],
+                html_message=html_message
+            )
+        except BadHeaderError:
+            raise serializers.ValidationError("Error en el envío de codigo de habilitación")
+
         return institucion
 
 
