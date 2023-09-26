@@ -182,6 +182,8 @@ class IndicadoresInstitucion():
 
     def get_porcentaje_donaciones_entregadas_sobre_total(institucion):
         """"""
+        if Donacion.get_cantidad_total_donaciones(institucion=institucion) == 0:
+            return None
         return (
             Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias',cod_estado=3)
             + Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=5)
@@ -189,31 +191,43 @@ class IndicadoresInstitucion():
     
     def get_porcentaje_donaciones_bienes_entregadas_sobre_total(institucion):
         """"""
+        if Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes') == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=5)
             ) / Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes')
     
     def get_porcentaje_donaciones_monetarias_entregadas_sobre_total(institucion):
         """"""
+        if Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias') == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias',cod_estado=3)
             ) / Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias')
 
     def get_porcentaje_donaciones_rechazadas_sobre_total(institucion):
         """"""
+        if Donacion.get_cantidad_total_donaciones(institucion=institucion) == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,cod_estado=0)
             ) / Donacion.get_cantidad_total_donaciones(institucion=institucion)
     
     def get_porcentaje_donaciones_bienes_rechazadas_sobre_total(institucion):
         """"""
+        if Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes') == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=0)
             ) / Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes')
     
     def get_porcentaje_donaciones_monetarias_rechazadas_sobre_total(institucion):
         """"""
+        if Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias') == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias',cod_estado=0)
             ) / Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias')
     
     def get_porcentaje_donaciones_pendientes_sobre_total(institucion):
         """"""
+        if Donacion.get_cantidad_total_donaciones(institucion=institucion) == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=1)
             + Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=2)
             + Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias',cod_estado=4)
@@ -221,12 +235,16 @@ class IndicadoresInstitucion():
     
     def get_porcentaje_donaciones_bienes_pendientes_sobre_total(institucion):
         """"""
+        if Donacion.get_cantidad_total_donaciones(institucion=institucion) == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=1)
             + Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=2)
             ) / Donacion.get_cantidad_total_donaciones(institucion=institucion)
     
     def get_porcentaje_donaciones_monetarias_pendientes_sobre_total(institucion):
         """"""
+        if Donacion.get_cantidad_total_donaciones(institucion=institucion) == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias',cod_estado=4)
             ) / Donacion.get_cantidad_total_donaciones(institucion=institucion)
 
@@ -400,6 +418,8 @@ class IndicadoresDonante():
 
     def get_porcentaje_donaciones_entregadas_sobre_total(donante):
         """"""
+        if Donacion.get_cantidad_total_donaciones(donante=donante) == 0:
+            return None
         return (
             Donacion.get_cantidad_total_donaciones(donante=donante,tipo='monetarias',cod_estado=3)
             + Donacion.get_cantidad_total_donaciones(donante=donante,tipo='bienes',cod_estado=5)
@@ -407,31 +427,43 @@ class IndicadoresDonante():
     
     def get_porcentaje_donaciones_bienes_entregadas_sobre_total(donante):
         """"""
+        if Donacion.get_cantidad_total_donaciones(donante=donante,tipo='bienes') == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(donante=donante,tipo='bienes',cod_estado=5)
             ) / Donacion.get_cantidad_total_donaciones(donante=donante,tipo='bienes')
     
     def get_porcentaje_donaciones_monetarias_entregadas_sobre_total(donante):
         """"""
+        if Donacion.get_cantidad_total_donaciones(donante=donante,tipo='monetarias') == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(donante=donante,tipo='monetarias',cod_estado=3)
             ) / Donacion.get_cantidad_total_donaciones(donante=donante,tipo='monetarias')
 
     def get_porcentaje_donaciones_rechazadas_sobre_total(donante):
         """"""
+        if Donacion.get_cantidad_total_donaciones(donante=donante) == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(donante=donante,cod_estado=0)
             ) / Donacion.get_cantidad_total_donaciones(donante=donante)
     
     def get_porcentaje_donaciones_bienes_rechazadas_sobre_total(donante):
         """"""
+        if Donacion.get_cantidad_total_donaciones(donante=donante,tipo='bienes') == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(donante=donante,tipo='bienes',cod_estado=0)
             ) / Donacion.get_cantidad_total_donaciones(donante=donante,tipo='bienes')
     
     def get_porcentaje_donaciones_monetarias_rechazadas_sobre_total(donante):
         """"""
+        if Donacion.get_cantidad_total_donaciones(donante=donante,tipo='monetarias') == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(donante=donante,tipo='monetarias',cod_estado=0)
             ) / Donacion.get_cantidad_total_donaciones(donante=donante,tipo='monetarias')
     
     def get_porcentaje_donaciones_pendientes_sobre_total(donante):
         """"""
+        if Donacion.get_cantidad_total_donaciones(donante=donante) == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(donante=donante,tipo='bienes',cod_estado=1)
             + Donacion.get_cantidad_total_donaciones(donante=donante,tipo='bienes',cod_estado=2)
             + Donacion.get_cantidad_total_donaciones(donante=donante,tipo='monetarias',cod_estado=4)
@@ -439,12 +471,16 @@ class IndicadoresDonante():
     
     def get_porcentaje_donaciones_bienes_pendientes_sobre_total(donante):
         """"""
+        if Donacion.get_cantidad_total_donaciones(donante=donante) == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(donante=donante,tipo='bienes',cod_estado=1)
             + Donacion.get_cantidad_total_donaciones(donante=donante,tipo='bienes',cod_estado=2)
             ) / Donacion.get_cantidad_total_donaciones(donante=donante)
     
     def get_porcentaje_donaciones_monetarias_pendientes_sobre_total(donante):
         """"""
+        if Donacion.get_cantidad_total_donaciones(donante=donante) == 0:
+            return None
         return (Donacion.get_cantidad_total_donaciones(donante=donante,tipo='monetarias',cod_estado=4)
             ) / Donacion.get_cantidad_total_donaciones(donante=donante)
     
