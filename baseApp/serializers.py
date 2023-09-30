@@ -1,12 +1,21 @@
 """Archivo para generar Serializadores"""
+from django.contrib.auth.models import User
+
 from rest_framework import serializers
 
 from baseApp.models import Cadete, Donante, Institucion
 
 # pylint: disable=too-few-public-methods
+class EmailSerializer(serializers.ModelSerializer):
+    """Correo electrónico de un usuario"""
+    class Meta:
+            model = User
+            fields = ['email']
 
 class DonanteSerializer(serializers.ModelSerializer):
     """Serializador para el modelo Donante"""
+    usuario = EmailSerializer()
+
     class Meta:
         # pylint: disable=missing-class-docstring
         model = Donante
@@ -15,6 +24,8 @@ class DonanteSerializer(serializers.ModelSerializer):
 
 class InstitucionSerializer(serializers.ModelSerializer):
     """Serializador para el modelo Institucion"""
+    usuario = EmailSerializer()
+
     class Meta:
         # pylint: disable=missing-class-docstring
         model = Institucion
