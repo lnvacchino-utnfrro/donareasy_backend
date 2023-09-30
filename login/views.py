@@ -1,4 +1,6 @@
 """docstring"""
+from django.core.exceptions import ObjectDoesNotExist
+
 from django.contrib.auth.models import User, Group
 
 from rest_framework.authentication import BasicAuthentication 
@@ -103,33 +105,18 @@ class InstitucionNoHabilitadaUpdate(APIView):
         """"""
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            usuario_data = serializer.validated_data['username']
-            password_data = serializer.validated_data['password']
             codigo_habilitacion = serializer.validated_data['codigo_habilitacion']
-            usuario = User.objects.get(username = usuario_data)
-            if usuario:
-                if usuario.check_password(password_data):
-                    institucion = Institucion.objects.get(usuario=usuario)
-                    if institucion:
-                        if not institucion.habilitado:
-                            if institucion.codigo_habilitacion == codigo_habilitacion:
-                                institucion.habilitado = True
-                                institucion.save()
-                                return Response({"Mensaje": "Su institucion ya fue habilitada con EXITO"},
-                                                status=status.HTTP_200_OK)
-                            else:
-                                return Response({"Mensaje": "Codigo de habilitacion incorrecto"},
-                                                status=status.HTTP_400_BAD_REQUEST)
-                        else:
-                            return Response({"Mensaje": "La institucion ya se encuentra habilitada"},
-                                                status=status.HTTP_400_BAD_REQUEST)
-                    else:
-                        return Response({"Mensaje": "No existe la institución"},
-                                                status=status.HTTP_400_BAD_REQUEST)   
-                else:
-                    return Response({"Mensaje": "Contraseña Incorrecta"},
-                                                status=status.HTTP_400_BAD_REQUEST)   
+            try:
+                institucion = Institucion.objects.get(codigo_habilitacion=codigo_habilitacion)
+            except ObjectDoesNotExist:
+                return Response({"Mensaje": "Codigo de habilitacion incorrecto"},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            
+            if not institucion.habilitado:
+                institucion.habilitado = True
+                institucion.save()
+                return Response({"Mensaje": "Su institucion ya fue habilitada con EXITO"},
+                                    status=status.HTTP_200_OK)
             else:
-                return Response({"Mensaje": "No existe el usuario"},
-                                                status=status.HTTP_400_BAD_REQUEST)
-                
+                return Response({"Mensaje": "La institucion ya se encuentra habilitada"},
+                                    status=status.HTTP_400_BAD_REQUEST)
