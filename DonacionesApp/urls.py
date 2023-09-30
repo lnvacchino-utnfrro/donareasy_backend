@@ -8,10 +8,10 @@ from DonacionesApp import views
 urlpatterns = [
 #Usuario: Donación
     path('eligeInstitucion/',
-        views.InstitucionesList.as_view(), #Muestra la lista de instituciones para seleccionar 1 
+        views.InstitucionesList.as_view(),
         name='instituciones_list'),
 
-    path('eligeInstitucion/donarBienes/', #####se agrega observación  ###! Se agrega tipo_entrega
+    path('eligeInstitucion/donarBienes/', 
         views.DonacionBienesCreate.as_view(),
         name='donacion_bienes'),
 
@@ -23,7 +23,7 @@ urlpatterns = [
        views.EligeInstitucionConCBU.as_view(),
        name='institucion_elegida_cbu'),
 
-    path('donarDinero/',                #####se agrega observación
+    path('donarDinero/', 
         views.DonacionMonetariaCreate.as_view(),
         name='donacion_monetaria'),
 
@@ -36,16 +36,20 @@ urlpatterns = [
         name='cancelar_transferencia'),
 
 # Informes
-    path('listadoDonaciones/',          #####se agrega observación ###! Se agrega tipo_entrega
+    path('listadoDonaciones/',          
     views.DonacionesDonanteList.as_view(),
     name='listado_donaciones_realizadas'),
 
+    path('listadoDonaciones/<int:pk>/',          
+    views.DonacionesDonanteDetail.as_view(),
+    name='listado_donaciones_realizadas'),
+
 #Usuario: Institucion
-    path('donacionesPendientes/',       #####se agrega observación ###! Se agrega tipo_entrega
+    path('donacionesPendientes/',      
         views.TodasDonacionesList.as_view(),
         name='ver_donaciones'),
 
-    path('donacionesPendientes/<int:pk>/', #####se agrega observación ###! Se agrega tipo_entrega
+    path('donacionesPendientes/<int:pk>/', 
         views.DonacionDetail.as_view(),
         name='ver_donacion'),
 
@@ -57,11 +61,11 @@ urlpatterns = [
         views.RechazarDonacion.as_view(),
         name='rechazar_donacion'),
 
-    path('transferenciasPendientes/',   #####se agrega observación
+    path('transferenciasPendientes/',  
         views.VerDonacionMonetaria.as_view(),
         name='ver_transferencias'),
     
-    path('transferenciasPendientes/<int:pk>/', #####se agrega observación
+    path('transferenciasPendientes/<int:pk>/', 
         views.TransferenciaDetail.as_view(),
         name='ver_transferencia'),
 

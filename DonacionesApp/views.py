@@ -217,6 +217,22 @@ class DonacionesDonanteList(generics.ListAPIView):
         elif user.groups.filter(pk=2).exists():
             queryset = DonacionBienes.objects.filter(institucion=user.usuario_institucion)
         return queryset
+    
+
+class DonacionesDonanteDetail(generics.RetrieveAPIView):
+    """Devuelve los datos de una donación"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    serializer_class = DonacionesGeneralesDonanteSeralizer
+    # permission_classes = [IsDonantePermission|IsAdminUser]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=1).exists():
+            queryset = DonacionBienes.objects.filter(donante=user.usuario_donante)
+        elif user.groups.filter(pk=2).exists():
+            queryset = DonacionBienes.objects.filter(institucion=user.usuario_institucion)
+        return queryset
+
 
 class CancelarDonacion(generics.UpdateAPIView):
     """Actualizar el estado de la donación como cancelada"""
