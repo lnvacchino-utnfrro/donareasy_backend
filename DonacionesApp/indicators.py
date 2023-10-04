@@ -62,8 +62,10 @@ class Indicadores():
                 'porc_donaciones_monetarias_pendientes': IndicadoresInstitucion.get_porcentaje_donaciones_monetarias_pendientes_sobre_total(institucion),
                 'cant_necesidades_activas_total': IndicadoresInstitucion.get_cantidad_total_necesidades_activas(institucion),
                 'cant_necesidades_inactivas_total': IndicadoresInstitucion.get_cantidad_total_necesidades_inactivas(institucion),
+                'cant_necesidades_cumplidas_total': IndicadoresInstitucion.get_cantidad_total_necesidades_cumplidas(institucion),
                 'porc_necesidades_activas': IndicadoresInstitucion.get_porcentaje_necesidades_activas_sobre_total(institucion),
                 'porc_necesidades_inactivas': IndicadoresInstitucion.get_porcentaje_necesidades_inactivas_sobre_total(institucion),
+                'porc_necesidades_cumplidas': IndicadoresInstitucion.get_porcentaje_necesidades_cumplidas_sobre_total(institucion),
                 'cant_necesidades_por_tipo': IndicadoresInstitucion.get_cantidad_necesidades_por_tipo(institucion),
                 'cant_necesidades_por_tipo_por_estado': IndicadoresInstitucion.get_cantidad_necesidades_por_tipo_por_estado(institucion),
             }
@@ -187,42 +189,42 @@ class IndicadoresInstitucion():
         return (
             Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias',cod_estado=3)
             + Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=5)
-            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion)
+            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion) * 100
     
     def get_porcentaje_donaciones_bienes_entregadas_sobre_total(institucion):
         """"""
         if Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes') == 0:
             return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=5)
-            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes')
+            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes') * 100
     
     def get_porcentaje_donaciones_monetarias_entregadas_sobre_total(institucion):
         """"""
         if Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias') == 0:
             return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias',cod_estado=3)
-            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias')
+            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias') * 100
 
     def get_porcentaje_donaciones_rechazadas_sobre_total(institucion):
         """"""
         if Donacion.get_cantidad_total_donaciones(institucion=institucion) == 0:
             return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,cod_estado=0)
-            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion)
+            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion) * 100
     
     def get_porcentaje_donaciones_bienes_rechazadas_sobre_total(institucion):
         """"""
         if Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes') == 0:
             return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=0)
-            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes')
+            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes') * 100
     
     def get_porcentaje_donaciones_monetarias_rechazadas_sobre_total(institucion):
         """"""
         if Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias') == 0:
             return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias',cod_estado=0)
-            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias')
+            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias') * 100
     
     def get_porcentaje_donaciones_pendientes_sobre_total(institucion):
         """"""
@@ -231,7 +233,7 @@ class IndicadoresInstitucion():
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=1)
             + Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=2)
             + Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias',cod_estado=4)
-            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion)
+            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion) * 100
     
     def get_porcentaje_donaciones_bienes_pendientes_sobre_total(institucion):
         """"""
@@ -239,14 +241,14 @@ class IndicadoresInstitucion():
             return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=1)
             + Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='bienes',cod_estado=2)
-            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion)
+            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion) * 100
     
     def get_porcentaje_donaciones_monetarias_pendientes_sobre_total(institucion):
         """"""
         if Donacion.get_cantidad_total_donaciones(institucion=institucion) == 0:
             return None
         return (Donacion.get_cantidad_total_donaciones(institucion=institucion,tipo='monetarias',cod_estado=4)
-            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion)
+            ) / Donacion.get_cantidad_total_donaciones(institucion=institucion) * 100
 
     def get_cantidad_total_necesidades_activas(institucion):
         """"""
@@ -255,18 +257,29 @@ class IndicadoresInstitucion():
     def get_cantidad_total_necesidades_inactivas(institucion):
         """"""
         return Necesidad.get_cantidad_total_necesidades_inactivas(institucion=institucion)
-    
+
+    def get_cantidad_total_necesidades_cumplidas(institucion):
+        """"""
+        return Necesidad.get_cantidad_total_necesidades_cumplidas(institucion=institucion)
+
     def get_porcentaje_necesidades_activas_sobre_total(institucion):
         """"""
         if Necesidad.get_cantidad_total_necesidades(institucion=institucion) == 0:
             return None
-        return Necesidad.get_cantidad_total_necesidades_activas(institucion=institucion)/Necesidad.get_cantidad_total_necesidades(institucion=institucion)
+        return Necesidad.get_cantidad_total_necesidades_activas(institucion=institucion)/Necesidad.get_cantidad_total_necesidades(institucion=institucion)*100
 
     def get_porcentaje_necesidades_inactivas_sobre_total(institucion):
         """"""
         if Necesidad.get_cantidad_total_necesidades(institucion=institucion) == 0:
             return None
-        return Necesidad.get_cantidad_total_necesidades_inactivas(institucion=institucion)/Necesidad.get_cantidad_total_necesidades(institucion=institucion)
+        return Necesidad.get_cantidad_total_necesidades_inactivas(institucion=institucion)/Necesidad.get_cantidad_total_necesidades(institucion=institucion)*100
+
+    def get_porcentaje_necesidades_cumplidas_sobre_total(institucion):
+        """"""
+        if Necesidad.get_cantidad_total_necesidades(institucion=institucion) == 0:
+            return None
+        return Necesidad.get_cantidad_total_necesidades_cumplidas(institucion=institucion)/Necesidad.get_cantidad_total_necesidades(institucion=institucion)*100
+
 
     def get_cantidad_necesidades_por_tipo(institucion):
         """"""
@@ -299,8 +312,9 @@ class IndicadoresInstitucion():
 
         for i in tipos_necesidad:
             estados_tipo_necesidad = {}
-            estados_tipo_necesidad['1'] = Necesidad.get_cantidad_total_necesidades_activas(institucion=institucion,tipo=i)
             estados_tipo_necesidad['0'] = Necesidad.get_cantidad_total_necesidades_inactivas(institucion=institucion,tipo=i)
+            estados_tipo_necesidad['1'] = Necesidad.get_cantidad_total_necesidades_activas(institucion=institucion,tipo=i)
+            estados_tipo_necesidad['2'] = Necesidad.get_cantidad_total_necesidades_cumplidas(institucion=institucion,tipo=i)
 
             result[i] = estados_tipo_necesidad
 

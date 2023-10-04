@@ -94,6 +94,10 @@ urlpatterns = [
     path('necesidades/',
          views.NecesidadesList.as_view(),
          name='necesidades'),
+    
+    path('necesidadCumplida/<int:pk>/',
+         views.CumplirNecesidadUpdate.as_view(),
+         name='cumplirNecesidad'),
 
     path('kpiInstitucion/',
          views.CalculoKpisInstitucion.as_view(),

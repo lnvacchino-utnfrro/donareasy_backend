@@ -285,3 +285,16 @@ class EntregarDonacionSerializer(serializers.ModelSerializer):
 
 class CalculoKpisSerializer(serializers.Serializer):
     id = serializers.IntegerField()
+
+
+class NecesidadCumplidaSerializer(serializers.Serializer):
+
+    class Meta:
+        model = Necesidad
+        fields = []
+    
+    def update(self,necesidad,validated_data):
+        necesidad.cumplida = True
+        necesidad.save()
+        return necesidad
+    
