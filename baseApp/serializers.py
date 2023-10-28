@@ -6,7 +6,7 @@ from rest_framework import serializers
 from baseApp.models import Cadete, Donante, Institucion
 
 # pylint: disable=too-few-public-methods
-class EmailSerializer(serializers.ModelSerializer):
+class UserEmailSerializer(serializers.ModelSerializer):
     """Correo electrónico de un usuario"""
     class Meta:
             model = User
@@ -14,7 +14,7 @@ class EmailSerializer(serializers.ModelSerializer):
 
 class DonanteSerializer(serializers.ModelSerializer):
     """Serializador para el modelo Donante"""
-    usuario = EmailSerializer()
+    usuario = UserEmailSerializer()
 
     class Meta:
         # pylint: disable=missing-class-docstring
@@ -24,7 +24,7 @@ class DonanteSerializer(serializers.ModelSerializer):
 
 class InstitucionSerializer(serializers.ModelSerializer):
     """Serializador para el modelo Institucion"""
-    usuario = EmailSerializer()
+    usuario = UserEmailSerializer()
 
     class Meta:
         # pylint: disable=missing-class-docstring

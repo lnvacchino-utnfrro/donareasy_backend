@@ -265,6 +265,10 @@ class Necesidad(models.Model):
                                 null=True,
                                 verbose_name='isDelete',
                                 default=False)
+    cumplida = models.BooleanField(blank=True,
+                                null=True,
+                                verbose_name='isCumplida',
+                                default=False)
 
     def delete(self, using=None, keep_parents=False):
         """docstring"""
@@ -289,8 +293,11 @@ class Necesidad(models.Model):
         return Necesidad.get_necesidades(**kwargs).count()
 
     def get_cantidad_total_necesidades_activas(**kwargs):
-        return Necesidad.get_necesidades(**kwargs).filter(isDelete=False).filter(fecha_vigencia__gte=date.today()).count()
+        return Necesidad.get_necesidades(**kwargs).filter(isDelete=False).filter(fecha_vigencia__gte=date.today()).filter(cumplida=False).count()
         
     def get_cantidad_total_necesidades_inactivas(**kwargs):
-        return Necesidad.get_necesidades(**kwargs).exclude(isDelete=False,fecha_vigencia__gte=date.today()).count()
+        return Necesidad.get_necesidades(**kwargs).filter(cumplida=False).exclude(isDelete=False,fecha_vigencia__gte=date.today()).count()
+    
+    def get_cantidad_total_necesidades_cumplidas(**kwargs):
+        return Necesidad.get_necesidades(**kwargs).filter(cumplida=True).count()
     

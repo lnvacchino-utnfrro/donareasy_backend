@@ -143,11 +143,17 @@ class Institucion(models.Model):
 
     codigo_habilitacion = models.CharField(blank=True,
                                            max_length=20,
-                                           verbose_name='codigo_habilitacion',
-                                           default=binascii.hexlify(os.urandom(10)).decode('utf-8'))
+                                           verbose_name='codigo_habilitacion')
 
     def __str__(self):
         return str(self.nombre)
+    
+    def save(self, *args, **kwargs):
+        # Verifica si la instancia tiene una clave primaria
+        if not self.id:
+            # Si no tiene clave primaria, es una nueva instancia
+            self.codigo_habilitacion = binascii.hexlify(os.urandom(10)).decode('utf-8')
+        super().save(*args, **kwargs)
 
     def instituciones_habilitadas():
         return Institucion.objects.filter(habilitado=True)

@@ -400,3 +400,14 @@ class CalculoKpisDonante(APIView):
         return Response({'mensaje':'Los datos no son válidos'},
                             status = status.HTTP_400_BAD_REQUEST)
     
+
+class CumplirNecesidadUpdate(generics.UpdateAPIView):
+    """Permite marcar una necesidad como cumplida"""
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    serializer_class = NecesidadCumplidaSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.groups.filter(pk=2).exists():
+            queryset = Necesidad.objects.filter(institucion=user.usuario_institucion).filter(cumplida=False)
+        return queryset
